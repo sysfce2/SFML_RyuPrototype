@@ -1,0 +1,5 @@
+1. why the compiler doesnt complain about when not implementing pure virtual functions ?
+    -> special compiler flags ?
+    -> see e.g. CharacterState/CharacterStateIdle
+
+2. How to set c++ version to 17/20 ? (esp. for cmake) -> or is this only compilerdependent ?
