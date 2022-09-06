@@ -32,9 +32,9 @@ endif()
 
 # Specific compiler options - set C++11 flag for g++ and clang
 if(CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 	
 	# Mac OS X: clang uses libc++ standard library
 	if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -134,7 +134,7 @@ endmacro()
 # C++ source code, list of all subdirectories
 # Must appear after macros, otherwise they are not visible in subdirectories
 add_subdirectory(01_Intro/src)
-#add_subdirectory(02_Resources/Source)
+add_subdirectory(02_Resources/src)
 #add_subdirectory(03_World/Source)
 #add_subdirectory(04_Input/Source)
 #add_subdirectory(05_States/Source)

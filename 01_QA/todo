@@ -1,0 +1,4 @@
+6/9/22:
+
+- implement Texture/AssetManager-class (see Texture holder pg. 38 SFML-GDBook)
+    - see also chapter 02_SFML_GD_BOOK/02_Resources

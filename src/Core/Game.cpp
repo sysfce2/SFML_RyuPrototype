@@ -7,6 +7,8 @@
 
 using namespace ryu;
 
+const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
+
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application"),
 mPlayer(std::make_unique<CharacterBase>())
@@ -17,11 +19,18 @@ mPlayer(std::make_unique<CharacterBase>())
 void Game::run()
 {
 	sf::Clock clock;
+	// uses fixed tick steps (use same delta every time)
+	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	while (mWindow.isOpen())
 	{
-		sf::Time deltaTime = clock.restart();
 		processEvents();
-		update(deltaTime);
+		timeSinceLastUpdate += clock.restart();
+		while (timeSinceLastUpdate > TimePerFrame)
+		{
+			timeSinceLastUpdate -= TimePerFrame;
+			processEvents();
+			update(TimePerFrame);
+		}	
 		render();
 	}
 }
@@ -43,7 +52,7 @@ void Game::handleUserInput(sf::Keyboard::Key key, bool keyPressed)
 		case sf::Keyboard::Down:
 		{
 			mPlayer->mIsMovingDown = keyPressed;
-			mPlayer->handleInput(keyPressed ? EInput::PRESSUP : EInput::RELEASEDOWN);
+			mPlayer->handleInput(keyPressed ? EInput::PRESSDOWN : EInput::RELEASEDOWN);
 			break;
 		}
 		case sf::Keyboard::D:
