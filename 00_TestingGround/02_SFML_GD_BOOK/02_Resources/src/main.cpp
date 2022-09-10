@@ -1,5 +1,6 @@
 #include "game.h"
-
+#include <iostream>
+#include "assetmanager.h"
 
 int main()
 {

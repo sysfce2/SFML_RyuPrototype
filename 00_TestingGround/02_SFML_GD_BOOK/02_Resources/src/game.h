@@ -28,9 +28,9 @@ class Game
 	void handleUserInput(sf::Keyboard::Key key, bool keyPressed);
   private:
 	sf::RenderWindow mWindow;
-	sf::Texture mTexture;
+	//sf::Texture mTexture;
 	sf::Sprite mPlayer;
-	sf::Font mFont;
+	//sf::Font mFont;
 	sf::Text mFpsText;
 	sf::Time mStatisticsUpdateTime;
 	std::size_t mStatisticsNumFrames;

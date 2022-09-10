@@ -2,15 +2,14 @@
 
 #include <iostream>
 #include <string>
+#include "assetmanager.h"
 #include "game.h"
 
 const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
-, mTexture()
 , mPlayer()
-, mFont()
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
 , mIsMovingUp(false)
@@ -18,27 +17,37 @@ Game::Game()
 , mIsMovingRight(false)
 , mIsMovingLeft(false)
 {
-	// enable VSYNC: sf::RenderWindow::setVerticalSyncEnabled();
-	if(!mTexture.loadFromFile("Media/Textures/Eagle.png"))
-	{
-		// ERROR
-		std::cout << "Error laoding eagle image" << std::endl;
-	}
-	mPlayer.setTexture(mTexture);
-	mPlayer.setPosition(10.f, 10.f);
 
-	mFont.loadFromFile("Media/Sansation.ttf");
-	mFpsText.setFont(mFont);
+	mPlayer.setPosition(10.f,10.f);
+	// enable VSYNC: sf::RenderWindow::setVerticalSyncEnabled();
+
 	mFpsText.setPosition(5.f,5.f);
 	mFpsText.setCharacterSize(18);
 
-	std::cout << mTexture.getMaximumSize() << " kb max for texture." << std::endl;
+	// check maxsize of textures
+	//std::cout << mTexture.getMaximumSize() << " kb max for texture." << std::endl;
 }
 
 void Game::run()
 {
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
+
+	//TODO/FIXME: first load Textures here!
+	// Be aware that Textures lifespan needs to be equal to the lifespan of the sprite using the texture
+	// when putting this in the cdor the texture lives only within the constructor althought the game object
+	// will live until the game dies
+	// the path to load the textures from is /build/[TEXTPATH])
+	ResourceHolder<sf::Texture,Textures::ID> textureManager;
+	textureManager.load(Textures::ID::Airplane,"Media/Textures/Eagle.png");
+	
+	mPlayer.setTexture(textureManager.getResource(Textures::ID::Airplane));
+	
+	ResourceHolder<sf::Font,std::string> fontManager;
+	fontManager.load("sansation","Media/Fonts/Sansation.ttf");
+
+	mFpsText.setFont(fontManager.getResource("sansation"));
+
 	while (mWindow.isOpen())
 	{
 		processEvents();
@@ -51,6 +60,7 @@ void Game::run()
 			processEvents();
 			update(TimePerFrame);
 		}
+		// show Fps etc / debug messages
 		updateStatistics(elapsedTime);	
 		render();
 	}

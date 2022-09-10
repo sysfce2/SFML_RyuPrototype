@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <SFML/Graphics.hpp>
+#include <cassert>
 
 namespace Textures
 {
@@ -13,13 +14,17 @@ namespace Textures
     };
 }
 
-class TextureHolder
+// generalized approach to hold all kinds of assets
+template <typename Resource, typename Identifier>
+class ResourceHolder
 {
     public:
-        void load(Textures::ID id, const std::string& filename);
-        sf::Texture& getTexture(Textures::ID id);
-        const sf::Texture& getTexture(Textures::ID id) const;
+        void load(Identifier id, const std::string& filename);
+        Resource& getResource(Identifier id);
+        const Resource& getResource(Identifier id) const;
 
     private:
-        std::map<Textures::ID, std::unique_ptr<sf::Texture> > mTextureMap;
+        std::map<Identifier, std::unique_ptr<Resource> > mResourceMap;
 };
+
+#include "assetmanager.inl"

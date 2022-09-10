@@ -2,3 +2,4 @@
 
 - implement Texture/AssetManager-class (see Texture holder pg. 38 SFML-GDBook)
     - see also chapter 02_SFML_GD_BOOK/02_Resources
+    - generalize this for all the other assets not just textures and no extra classes for fonts, sounds etc ...
