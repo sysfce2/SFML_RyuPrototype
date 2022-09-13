@@ -1,15 +1,18 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
+#include <Ryu/Core/AssetManager.h>
 
 using namespace ryu;
 
 CharacterBase::CharacterBase() : 
-    mPlayerShape(),
+    mPlayer(),
     characterState(new CharacterStateIdle()) /// TODO: smart pointer for states !!! ; beginn with IDLE
 {
+    /*
     mPlayerShape.setRadius(40.f);
 	mPlayerShape.setPosition(100.f, 100.f);
 	mPlayerShape.setFillColor(sf::Color::Cyan);
+    */
 }
 
 CharacterBase::~CharacterBase() {}
@@ -43,14 +46,20 @@ CharacterBase::update(sf::Time deltaTime)
 	if(mIsMovingRight)
 		movement.x += PlayerSpeed;
 
-	mPlayerShape.move(movement * deltaTime.asSeconds());
+	mPlayer.move(movement * deltaTime.asSeconds());
 	//std::cout << std::to_string(movement.x) << "," << std::to_string(movement.y) << std::endl;
 
     characterState->update(*this);
 }
 
+void 
+CharacterBase::setTexture(AssetManager<sf::Texture, Textures::ID> &textureManager, Textures::ID id)
+{
+    mPlayer.setTexture(textureManager.getResource(id));    
+}
+
 void
 CharacterBase::changeColor(sf::Color color)
 {
-    mPlayerShape.setFillColor(color);
+    //mPlayerShape.setFillColor(color);
 }

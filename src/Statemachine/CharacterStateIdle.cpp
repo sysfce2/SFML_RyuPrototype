@@ -24,7 +24,8 @@ CharacterStateIdle::handleInput(CharacterBase& character,EInput input)
        case EInput::PRESSUP:
        case EInput::PRESSDOWN:
        {
-           return new CharacterStateRun();    
+           // JUMP/DUCK
+           //return new CharacterStateRun();    
        }
      
     default:
@@ -37,7 +38,7 @@ CharacterStateIdle::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateIdle::update(CharacterBase& character)
 {
-    std::cout << "IDLE"<< std::endl;
+    //std::cout << "IDLE"<< std::endl;
 }
 
 

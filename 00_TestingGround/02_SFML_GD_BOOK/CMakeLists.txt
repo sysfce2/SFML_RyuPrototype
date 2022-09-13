@@ -135,7 +135,7 @@ endmacro()
 # Must appear after macros, otherwise they are not visible in subdirectories
 add_subdirectory(01_Intro/src)
 add_subdirectory(02_Resources/src)
-#add_subdirectory(03_World/Source)
+add_subdirectory(03_World/src)
 #add_subdirectory(04_Input/Source)
 #add_subdirectory(05_States/Source)
 #add_subdirectory(06_Menus/Source)

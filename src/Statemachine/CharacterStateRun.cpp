@@ -34,7 +34,7 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateRun::update(CharacterBase& character)
 {
-    std::cout << "RUN"<< std::endl;
+    //std::cout << "RUN"<< std::endl;
 }
 
 void

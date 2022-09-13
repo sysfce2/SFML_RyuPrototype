@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <Ryu/Core/Game.h>
+#include <Ryu/Core/AssetManager.h>
 
 using namespace ryu;
 
@@ -13,7 +14,7 @@ Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application"),
 mPlayer(std::make_unique<CharacterBase>())
 {
-	//mPlayer = std::make_unique<CharacterBase>();
+	
 }
 
 void Game::run()
@@ -21,6 +22,14 @@ void Game::run()
 	sf::Clock clock;
 	// uses fixed tick steps (use same delta every time)
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
+
+	// FIXME: encapsulate but be aware of the lifespan of the textures/resources !
+	ryu::AssetManager<sf::Texture, ryu::Textures::ID> textureManager;
+	ryu::AssetManager<sf::Font,std::string> fontManager;
+
+	textureManager.load(ryu::Textures::ID::IchiRun,"Media/assets/spritesheets/ichi/01_sheet_ichi_run.png");
+	mPlayer->setTexture(textureManager,Textures::ID::IchiRun);
+
 	while (mWindow.isOpen())
 	{
 		processEvents();

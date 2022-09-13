@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <Ryu/Character/CharacterBase.h>
 
+
 #include <memory>
 
 namespace ryu{

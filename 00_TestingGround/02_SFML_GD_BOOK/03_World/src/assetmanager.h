@@ -9,10 +9,12 @@ namespace Textures
 {
     enum class ID {
         Landscape,
-        Airplane,
+        Eagle,
+        Raptor,
         Missile
     };
 }
+
 
 // generalized approach to hold all kinds of assets
 template <typename Resource, typename Identifier>

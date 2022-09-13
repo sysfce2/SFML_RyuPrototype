@@ -2,6 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <Ryu/Statemachine/CharacterState.h>
+#include <Ryu/Core/AssetManager.h>
+
+using namespace ryu;
 
 namespace ryu{
 
@@ -29,7 +32,8 @@ class CharacterBase {
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);
 
-        sf::Drawable& getSprite() { return mPlayerShape;}
+        void setTexture(AssetManager<sf::Texture, Textures::ID> &textureManager, Textures::ID id);
+        sf::Drawable& getSprite() { return mPlayer;}
 
         void changeColor(sf::Color color);
 
@@ -44,7 +48,7 @@ class CharacterBase {
         CharacterState* characterState;
 
     private:
-        sf::CircleShape mPlayerShape;
+        sf::Sprite mPlayer;
         EMoveDirecton mMoveDirection;
         
 
