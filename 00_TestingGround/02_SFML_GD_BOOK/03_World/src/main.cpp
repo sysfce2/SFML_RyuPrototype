@@ -4,7 +4,15 @@
 
 int main()
 {
-	Game game;
-	game.run();
+	try
+	{
+		Game game;
+		game.run();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Exceptions: " << e.what() << '\n';
+	}
+	
 	return 0;
 }

@@ -16,10 +16,15 @@ class SceneNode : public sf::Drawable,
 
         void attachChild(Ptr child);
         Ptr detachChild(const SceneNode& node);
+        void update(sf::Time dt);
+        sf::Transform getWorldTransform() const;
+        sf::Vector2f getWorldPosition() const;
     
     private:
         void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
         virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+        virtual void updateCurrent(sf::Time dt);
+        void updateChildren(sf::Time dt);
 
     private:
         std::vector<Ptr> mChildren;

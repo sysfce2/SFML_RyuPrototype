@@ -11,6 +11,7 @@ namespace Textures
         Landscape,
         Eagle,
         Raptor,
+        Desert,
         Missile
     };
 }

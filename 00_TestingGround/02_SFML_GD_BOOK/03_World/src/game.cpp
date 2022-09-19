@@ -14,6 +14,7 @@ typedef ResourceHolder<sf::Font,std::string> FontHolder2;
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
 , mPlayer()
+, mWorld(mWindow)
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
 , mIsMovingUp(false)
@@ -36,16 +37,6 @@ void Game::run()
 {
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
-
-	//TODO/FIXME: first load Textures here!
-	// Be aware that Textures lifespan needs to be equal to the lifespan of the sprite using the texture
-	// when putting this in the cdor the texture lives only within the constructor althought the game object
-	// will live until the game dies
-	// the path to load the textures from is /build/[TEXTPATH])
-	TextureHolder2 textureManager;
-	textureManager.load(Textures::ID::Eagle,"Media/Textures/Eagle.png");
-	
-	mPlayer.setTexture(textureManager.getResource(Textures::ID::Eagle));
 	
 	FontHolder2 fontManager;
 	fontManager.load("sansation","Media/Fonts/Sansation.ttf");
@@ -148,7 +139,9 @@ void Game::update(sf::Time deltaTime)
 void Game::render()
 {
 	mWindow.clear();
-	mWindow.draw(mPlayer);
+	mWorld.draw();
+
+	mWindow.setView(mWindow.getDefaultView());
 	mWindow.draw(mFpsText);
 	mWindow.display();
 }

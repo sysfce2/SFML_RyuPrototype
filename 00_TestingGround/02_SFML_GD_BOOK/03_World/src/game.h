@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "world.h"
 
 enum class EMoveDirecton
 {
@@ -30,6 +31,7 @@ class Game
 	sf::RenderWindow mWindow;
 	//sf::Texture mTexture;
 	sf::Sprite mPlayer;
+	World mWorld;
 	//sf::Font mFont;
 	sf::Text mFpsText;
 	sf::Time mStatisticsUpdateTime;
