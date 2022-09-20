@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/AssetManager.h>
+#include <Ryu/Core/AssetIdentifiers.h>
 
 using namespace ryu;
 
@@ -32,7 +33,7 @@ class CharacterBase {
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);
 
-        void setTexture(AssetManager<sf::Texture, Textures::ID> &textureManager, Textures::ID id);
+        void setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id);
         sf::Drawable& getSprite() { return mPlayer;}
 
         void changeColor(sf::Color color);

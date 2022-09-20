@@ -1,3 +1,9 @@
+19/9/22:
+- entity, 
+- scenegraph, 
+- world, 
+- assetmamager update
+
 10/9/22:
 - use component driven design for character/npc etc ?!
     - see gamedevelopment design repo ! git@github.com:TankOs/GDD.git

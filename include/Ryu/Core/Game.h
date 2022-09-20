@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <Ryu/Character/CharacterBase.h>
-
+#include <Ryu/Core/World.h>
 
 #include <memory>
 
@@ -20,6 +20,7 @@ class Game
 	void handleUserInput(sf::Keyboard::Key key, bool keyPressed);
   private:
 	sf::RenderWindow mWindow;
+	World mWorld;
 	std::unique_ptr<CharacterBase> mPlayer;
 
 };

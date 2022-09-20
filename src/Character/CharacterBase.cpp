@@ -53,7 +53,7 @@ CharacterBase::update(sf::Time deltaTime)
 }
 
 void 
-CharacterBase::setTexture(AssetManager<sf::Texture, Textures::ID> &textureManager, Textures::ID id)
+CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)
 {
     mPlayer.setTexture(textureManager.getResource(id));    
 }

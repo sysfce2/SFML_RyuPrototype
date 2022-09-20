@@ -45,7 +45,7 @@ World::buildScene()
 
     sf::Texture& texture = mTextures.getResource(Textures::ID::Desert);
     sf::IntRect textureRect(mWorldBounds);
-    texture.setRepeated(true);
+    //texture.setRepeated(true);
 
     std::unique_ptr<SpriteNode> backgroundSprite = std::make_unique<SpriteNode>(texture, textureRect);
     backgroundSprite->setPosition(

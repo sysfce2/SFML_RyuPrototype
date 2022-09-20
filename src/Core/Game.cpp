@@ -4,15 +4,18 @@
 #include <memory>
 
 #include <Ryu/Core/Game.h>
+#include <Ryu/Core/World.h>
 #include <Ryu/Core/AssetManager.h>
+#include <Ryu/Core/AssetIdentifiers.h>
 
 using namespace ryu;
 
 const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-: mWindow(sf::VideoMode(1024, 768), "SFML Application"),
-mPlayer(std::make_unique<CharacterBase>())
+: mWindow(sf::VideoMode(1024, 768), "SFML Application")
+,mPlayer(std::make_unique<CharacterBase>())
+,mWorld(mWindow)
 {
 	
 }
@@ -24,11 +27,11 @@ void Game::run()
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
 	// FIXME: encapsulate but be aware of the lifespan of the textures/resources !
-	ryu::AssetManager<sf::Texture, ryu::Textures::ID> textureManager;
+	ryu::AssetManager<sf::Texture, ryu::Textures::CharacterID> IchiTextureManager;
 	ryu::AssetManager<sf::Font,std::string> fontManager;
 
-	textureManager.load(ryu::Textures::ID::IchiRun,"Media/assets/spritesheets/ichi/01_sheet_ichi_run.png");
-	mPlayer->setTexture(textureManager,Textures::ID::IchiRun);
+	IchiTextureManager.load(ryu::Textures::CharacterID::Ichi,"Media/assets/spritesheets/ichi/01_sheet_ichi_run.png");
+	mPlayer->setTexture(IchiTextureManager,Textures::CharacterID::Ichi);
 
 	while (mWindow.isOpen())
 	{
@@ -115,6 +118,10 @@ void Game::update(sf::Time deltaTime)
 void Game::render()
 {
 	mWindow.clear();
+	mWorld.draw();
+
+	mWindow.setView(mWindow.getDefaultView());
 	mWindow.draw(mPlayer->getSprite());
+	//TODO: statistics fps text ....
 	mWindow.display();
 }
