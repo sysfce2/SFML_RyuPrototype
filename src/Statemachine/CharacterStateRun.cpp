@@ -41,6 +41,7 @@ void
 CharacterStateRun::enter(CharacterBase& character)
 {
     character.changeColor(sf::Color::Green);
+    character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
 }
 
 void

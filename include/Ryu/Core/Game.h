@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <Ryu/Character/CharacterBase.h>
+#include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Core/World.h>
 
 #include <memory>
@@ -21,8 +21,9 @@ class Game
   private:
 	sf::RenderWindow mWindow;
 	World mWorld;
-	std::unique_ptr<CharacterBase> mPlayer;
+	std::unique_ptr<CharacterIchi> mPlayer;
 
+	//ryu::AssetManager<sf::Font,std::string> fontManager;
 };
 
 } /// namespace ryu

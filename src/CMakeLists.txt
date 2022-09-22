@@ -3,6 +3,7 @@ set (SRC
 	Core/Game.cpp
 	Core/SpriteNode.cpp
 	Core/World.cpp
+	Character/CharacterIchi.cpp
 	Character/CharacterBase.cpp
 	Scene/Box.cpp
 	Scene/Entity.cpp

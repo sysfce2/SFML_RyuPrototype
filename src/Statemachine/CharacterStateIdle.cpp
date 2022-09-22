@@ -1,3 +1,4 @@
+#include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Statemachine/CharacterStateRun.h>
 #include <Ryu/Statemachine/CharacterState.h>
@@ -45,7 +46,7 @@ CharacterStateIdle::update(CharacterBase& character)
 void
 CharacterStateIdle::enter(CharacterBase& character)
 {
-
+    character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
 }
 
 void

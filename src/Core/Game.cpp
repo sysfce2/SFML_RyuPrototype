@@ -7,6 +7,7 @@
 #include <Ryu/Core/World.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/AssetIdentifiers.h>
+#include <Ryu/Character/CharacterBase.h>
 
 using namespace ryu;
 
@@ -14,10 +15,11 @@ const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
-,mPlayer(std::make_unique<CharacterBase>())
+,mPlayer(std::make_unique<CharacterIchi>(CharacterBase::ECharacterState::Idle))
 ,mWorld(mWindow)
 {
-	
+	// todo: how to load ichis tzextures at  startup ? 
+	//mPlayer->loadTextures();
 }
 
 void Game::run()
@@ -26,13 +28,7 @@ void Game::run()
 	// uses fixed tick steps (use same delta every time)
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-	// FIXME: encapsulate but be aware of the lifespan of the textures/resources !
-	ryu::AssetManager<sf::Texture, ryu::Textures::CharacterID> IchiTextureManager;
-	ryu::AssetManager<sf::Font,std::string> fontManager;
-
-	IchiTextureManager.load(ryu::Textures::CharacterID::Ichi,"Media/assets/spritesheets/ichi/01_sheet_ichi_run.png");
-	mPlayer->setTexture(IchiTextureManager,Textures::CharacterID::Ichi);
-
+	
 	while (mWindow.isOpen())
 	{
 		processEvents();

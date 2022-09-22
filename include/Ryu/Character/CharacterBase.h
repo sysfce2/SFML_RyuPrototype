@@ -4,41 +4,57 @@
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/AssetIdentifiers.h>
+#include <Ryu/Scene/SceneNode.h>
 
 using namespace ryu;
 
 namespace ryu{
 
-enum class EMoveDirecton
-{
-	NONE,
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-	UPLEFT,
-	UPRIGHT,
-	DOWNLEFT,
-	DOWNRIGHT
-};
 
-class CharacterBase {
+
+class CharacterBase : public SceneNode {
+
+public:
+    enum class ECharacterState{
+        None,
+        Idle,
+        Walk,
+        Run,
+        //...
+    };
+
+    enum class EMoveDirecton
+    {
+        None,
+        Up,
+        Down,
+        Left,
+        Right,
+        UpLeft,
+        UpRight,
+        DownLeft,
+        DownRight
+    };
+
 
     public:
         // TODO: implement rule of 5 !
         // (morph one character into another ^^)
         CharacterBase();
+        explicit CharacterBase(ECharacterState startState);
         ~CharacterBase();
 
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);
-
-        void setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id);
-        sf::Drawable& getSprite() { return mPlayer;}
+        virtual void loadTextures();
+        
+        virtual void setTextureOnCharacter(Textures::CharacterID textureId);
+        virtual void setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id);
+        sf::Drawable& getSprite() { return mCharacterSprite;}
 
         void changeColor(sf::Color color);
 
-// TODO: make private/setter and make Vector or st ? -> see Game.cpp
+        // TODO: make private/setter and make Vector or st ? -> see Game.cpp
         bool mIsMovingUp=false;
         bool mIsMovingDown=false;
         bool mIsMovingLeft=false;
@@ -46,10 +62,11 @@ class CharacterBase {
 
     protected:
         // TODO: use smart pointers instead ?!!! and move semantics
-        CharacterState* characterState;
+        CharacterState* mCharacterState;
+        ECharacterState mECharacterState;
 
     private:
-        sf::Sprite mPlayer;
+        sf::Sprite mCharacterSprite;
         EMoveDirecton mMoveDirection;
         
 

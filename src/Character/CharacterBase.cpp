@@ -5,14 +5,31 @@
 using namespace ryu;
 
 CharacterBase::CharacterBase() : 
-    mPlayer(),
-    characterState(new CharacterStateIdle()) /// TODO: smart pointer for states !!! ; beginn with IDLE
+    mCharacterSprite(),
+    mCharacterState(new CharacterStateIdle()) /// TODO: smart pointer for states !!! ; beginn with IDLE
 {
     /*
-    mPlayerShape.setRadius(40.f);
-	mPlayerShape.setPosition(100.f, 100.f);
-	mPlayerShape.setFillColor(sf::Color::Cyan);
+    mCharacterSpriteShape.setRadius(40.f);
+	mCharacterSpriteShape.setPosition(100.f, 100.f);
+	mCharacterSpriteShape.setFillColor(sf::Color::Cyan);
     */
+}
+
+void
+CharacterBase::loadTextures()
+{}
+
+CharacterBase::CharacterBase(ECharacterState startState)
+: mECharacterState(startState)
+{
+   switch(mECharacterState)
+   {
+       case ECharacterState::Idle:
+        mCharacterState = new CharacterStateIdle();
+        break;
+       default:
+        mCharacterState = new CharacterStateIdle();
+   } 
 }
 
 CharacterBase::~CharacterBase() {}
@@ -20,16 +37,16 @@ CharacterBase::~CharacterBase() {}
 void 
 CharacterBase::handleInput(EInput input)
 {
-    // if new state is cretead through the input we change the characterstate to this
+    // if new state is cretead through the input we change the mCharacterState to this
     // TODO: smartpointers !!!
-    CharacterState* state = characterState->handleInput(*this,input);
+    CharacterState* state = mCharacterState->handleInput(*this,input);
 
     if(state != nullptr)
     {
-        characterState->exit(*this);
-        delete characterState;
-        characterState = state;
-        characterState->enter(*this);
+        mCharacterState->exit(*this);
+        delete mCharacterState;
+        mCharacterState = state;
+        mCharacterState->enter(*this);
     }
 }
  
@@ -46,20 +63,26 @@ CharacterBase::update(sf::Time deltaTime)
 	if(mIsMovingRight)
 		movement.x += PlayerSpeed;
 
-	mPlayer.move(movement * deltaTime.asSeconds());
+	mCharacterSprite.move(movement * deltaTime.asSeconds());
 	//std::cout << std::to_string(movement.x) << "," << std::to_string(movement.y) << std::endl;
 
-    characterState->update(*this);
+    mCharacterState->update(*this);
 }
 
 void 
 CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)
 {
-    mPlayer.setTexture(textureManager.getResource(id));    
+    mCharacterSprite.setTexture(textureManager.getResource(id));    
+}
+
+void
+CharacterBase::setTextureOnCharacter(Textures::CharacterID textureId)
+{
+    // TODO implement st here ?
 }
 
 void
 CharacterBase::changeColor(sf::Color color)
 {
-    //mPlayerShape.setFillColor(color);
+    //mCharacterSpriteShape.setFillColor(color);
 }
