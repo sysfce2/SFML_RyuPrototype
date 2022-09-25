@@ -3,6 +3,7 @@
 #include <Ryu/Character/CharacterBase.h>
 
 #include <iostream>
+#include <memory>
 
 using namespace ryu;
 
@@ -10,7 +11,7 @@ CharacterStateRun::CharacterStateRun(){}
 
 CharacterStateRun::~CharacterStateRun(){}
 
-CharacterState* 
+std::unique_ptr<CharacterState> 
 CharacterStateRun::handleInput(CharacterBase& character,EInput input)
 {
     switch (input)
@@ -20,7 +21,7 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
        case EInput::RELEASEUP:
        case EInput::RELEASEDOWN:
        {
-           return new CharacterStateIdle();    
+           return std::move(std::make_unique<CharacterStateIdle>());    
        }
        break;
      

@@ -4,6 +4,10 @@
 #include <Ryu/Statemachine/CharacterState.h>
 
 #include <iostream>
+#include <memory>
+#include <type_traits>
+#include <typeinfo>
+
 
 using namespace ryu;
 
@@ -11,7 +15,7 @@ CharacterStateIdle::CharacterStateIdle(){}
 
 CharacterStateIdle::~CharacterStateIdle(){}
 
-CharacterState* 
+std::unique_ptr<CharacterState>
 CharacterStateIdle::handleInput(CharacterBase& character,EInput input)
 {
     switch (input)
@@ -19,7 +23,7 @@ CharacterStateIdle::handleInput(CharacterBase& character,EInput input)
        case EInput::PRESSLEFT:
        case EInput::PRESSRIGHT:
        {
-           return new CharacterStateRun();    
+           return std::move(std::make_unique<CharacterStateRun>());    
        }
 
        case EInput::PRESSUP:
@@ -46,6 +50,9 @@ CharacterStateIdle::update(CharacterBase& character)
 void
 CharacterStateIdle::enter(CharacterBase& character)
 {
+    std::cout << "state idle enter " << std::endl;
+    //std::cout << decltype(character) << '\n';
+    std::cout << "chartype: " << typeid(character).name() << std::endl;
     character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
 }
 

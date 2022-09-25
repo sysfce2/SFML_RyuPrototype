@@ -2,17 +2,16 @@
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Core/AssetManager.h>
 
+#include <iostream>
+#include <memory>
+
 using namespace ryu;
 
 CharacterBase::CharacterBase() : 
     mCharacterSprite(),
     mCharacterState(new CharacterStateIdle()) /// TODO: smart pointer for states !!! ; beginn with IDLE
 {
-    /*
-    mCharacterSpriteShape.setRadius(40.f);
-	mCharacterSpriteShape.setPosition(100.f, 100.f);
-	mCharacterSpriteShape.setFillColor(sf::Color::Cyan);
-    */
+
 }
 
 void
@@ -25,10 +24,12 @@ CharacterBase::CharacterBase(ECharacterState startState)
    switch(mECharacterState)
    {
        case ECharacterState::Idle:
-        mCharacterState = new CharacterStateIdle();
+        //mCharacterState = new CharacterStateIdle();
+        mCharacterState = std::make_unique<CharacterStateIdle>();
         break;
        default:
-        mCharacterState = new CharacterStateIdle();
+        mCharacterState = std::make_unique<CharacterStateIdle>();
+        //mCharacterState = new CharacterStateIdle();
    } 
 }
 
@@ -38,14 +39,12 @@ void
 CharacterBase::handleInput(EInput input)
 {
     // if new state is cretead through the input we change the mCharacterState to this
-    // TODO: smartpointers !!!
-    CharacterState* state = mCharacterState->handleInput(*this,input);
+    std::unique_ptr<CharacterState> state = mCharacterState->handleInput(*this,input);
 
     if(state != nullptr)
     {
         mCharacterState->exit(*this);
-        delete mCharacterState;
-        mCharacterState = state;
+        mCharacterState = std::move(state);
         mCharacterState->enter(*this);
     }
 }

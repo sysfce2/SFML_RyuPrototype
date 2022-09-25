@@ -62,7 +62,8 @@ public:
 
     protected:
         // TODO: use smart pointers instead ?!!! and move semantics
-        CharacterState* mCharacterState;
+        //CharacterState* mCharacterState;
+        std::unique_ptr<CharacterState> mCharacterState;
         ECharacterState mECharacterState;
 
     private:
