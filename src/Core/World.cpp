@@ -59,13 +59,13 @@ World::buildScene()
         mWorldBounds.left,
         mWorldBounds.top
     );
-    mSceneLayers[std::uint16_t(Layer::Ground1)]->attachChild(std::move(backgroundSprite));
+    mSceneLayers[static_cast<unsigned>(Layer::Ground1)]->attachChild(std::move(backgroundSprite));
 
     // pushable Box
     std::unique_ptr<Box> box = std::make_unique<Box>(Box::Type::Pushable, mSceneTextures);
     mPushBox = box.get();
     mPushBox->setPosition(mSpawnPosition);
-    mSceneLayers[std::uint16_t(Layer::Foreground)]->attachChild(std::move(box));
+    mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(box));
     
 }
 

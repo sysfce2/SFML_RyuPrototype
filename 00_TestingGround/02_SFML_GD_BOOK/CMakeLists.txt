@@ -3,6 +3,11 @@
 
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
+#add_compile_options(-Wall -Wextra -pedantic -Werror)
+#add_compile_options(-Wall -Wextra -pedantic )
+add_compile_options(-Wall -pedantic )
+
+
 message("Your C++ compiler supports these C++ features:")
 foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
   message("${i}")
@@ -136,7 +141,7 @@ endmacro()
 add_subdirectory(01_Intro/src)
 add_subdirectory(02_Resources/src)
 add_subdirectory(03_World/src)
-#add_subdirectory(04_Input/Source)
+add_subdirectory(04_Input/src)
 #add_subdirectory(05_States/Source)
 #add_subdirectory(06_Menus/Source)
 #add_subdirectory(07_Gameplay/Source)

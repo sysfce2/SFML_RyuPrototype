@@ -13,17 +13,14 @@ typedef ResourceHolder<sf::Font,std::string> FontHolder2;
 
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
-, mPlayer()
+, mPlayerSpite()
 , mWorld(mWindow)
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
-, mIsMovingUp(false)
-, mIsMovingDown(false)
-, mIsMovingRight(false)
-, mIsMovingLeft(false)
+, mIsPaused(false)
 {
 
-	mPlayer.setPosition(10.f,10.f);
+	mPlayerSpite.setPosition(10.f,10.f);
 	// enable VSYNC: sf::RenderWindow::setVerticalSyncEnabled();
 
 	mFpsText.setPosition(5.f,5.f);
@@ -53,7 +50,10 @@ void Game::run()
 		{
 			timeSinceLastUpdate -= TimePerFrame;
 			processEvents();
-			update(TimePerFrame);
+			if(!mIsPaused) /// simple pause through gaied & lostfocus -events
+			{
+				update(TimePerFrame);
+			}	
 		}
 		// show Fps etc / debug messages
 		updateStatistics(elapsedTime);	
@@ -61,54 +61,26 @@ void Game::run()
 	}
 }
 
-void Game::handleUserInput(sf::Keyboard::Key key, bool keyPressed)
-{
-	std::cout << std::to_string(key) << (keyPressed ? " pressed" : " released") << std::endl;
-	switch(key)
-	{
-		case sf::Keyboard::W:
-		case sf::Keyboard::Up:
-		{
-			mIsMovingUp = keyPressed;
-			break;
-		}
-
-		case sf::Keyboard::S:
-		case sf::Keyboard::Down:
-		{
-			mIsMovingDown = keyPressed;
-			break;
-		}
-		case sf::Keyboard::D:
-		case sf::Keyboard::Right:
-		{
-			mIsMovingRight = keyPressed;
-			break;
-		}
-		case sf::Keyboard::A:
-		case sf::Keyboard::Left:
-		{
-			mIsMovingLeft = keyPressed;
-			break;
-		}
-	}
-}
-
 void Game::processEvents()
 {
+
+	CommandQueue& commands = mWorld.getActiveCommands();
+
 	sf::Event event;
 	while (mWindow.pollEvent(event))
 	{
 		switch(event.type)
 		{
-			case sf::Event::KeyPressed:
+			mPlayer.handleEvent(event, commands);
+
+			case sf::Event::GainedFocus:
 			{
-				handleUserInput(event.key.code,true);
+				mIsPaused = false;
 				break;
 			}
-			case sf::Event::KeyReleased:
+			case sf::Event::LostFocus:
 			{
-				handleUserInput(event.key.code,false);
+				mIsPaused = true;
 				break;
 			}
 			case sf::Event::Closed:
@@ -118,23 +90,16 @@ void Game::processEvents()
 			}
 		}
 	}
+
+	mPlayer.handleRealtimeInput(commands);
 }
 
 void Game::update(sf::Time deltaTime)
 {
+
+	mWorld.update(deltaTime);
 	
-	sf::Vector2f movement(0.f, 0.f);
 	
-	if(mIsMovingUp)
-		movement.y -= PlayerSpeed;
-	if(mIsMovingDown)
-		movement.y += PlayerSpeed;
-	if(mIsMovingLeft)
-		movement.x -= PlayerSpeed;
-	if(mIsMovingRight)
-		movement.x += PlayerSpeed;
-	
-	mPlayer.move(movement * deltaTime.asSeconds());
 	//std::cout << std::to_string(movement.x) << "," << std::to_string(movement.y) << std::endl;
 }
 
