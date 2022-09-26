@@ -1,6 +1,7 @@
 #include "player.h"
 #include "aircarft.h"
 #include "category.h"
+#include "commandqueue.h"
 
 struct AircraftMover
 {
@@ -46,4 +47,14 @@ Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 
 void
 Player::handleRealtimeInput(CommandQueue& commands)
-{}
+{
+    const float playerSpeed = 30.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    {
+        Command moveLeft;
+        moveLeft.category = static_cast<unsigned>(Category::Type::Player);
+        moveLeft.action = derivedAction<Aircraft>(
+        AircraftMover(-playerSpeed, 0.f));
+        commands.push(moveLeft);
+    }
+}
