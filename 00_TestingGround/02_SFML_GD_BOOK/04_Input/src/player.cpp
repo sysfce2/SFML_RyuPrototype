@@ -9,15 +9,27 @@ struct AircraftMover
 	{
 	}
 
-	void operator() (SceneNode& node, sf::Time) const
+	void operator() (Aircraft& aircraft, sf::Time) const
 	{
-        // downcast SceneNode -> Aircrat needable
-        Aircraft& aircraft = static_cast<Aircraft&>(node);
-		aircraft.accelerate(velocity);
+       aircraft.accelerate(velocity);
 	}
 
 	sf::Vector2f velocity;
 };
+
+// small adapter that takes a function on a derived class and converts it to a function on the SceneNode base class
+template <typename GameObject, typename Function>
+std::function<void(SceneNode&, sf::Time)> derivedAction(Function fn)
+{
+    return [=](SceneNode& node, sf::Time dt)
+    {
+        // check if cast is safe (debug-mode)
+        assert(dynamic_cast<GameObject*>(&node) != nullptr);
+
+        // downcast node and invoke function on it
+        fn(static_cast<GameObject&>(node),dt);
+    }
+}
 
 void
 Player::setActions()
@@ -25,7 +37,7 @@ Player::setActions()
     Command moveLeft;
     float playerSpeed = 50.f;
     moveLeft.category = static_cast<unsigned>(Category::Type::Player);
-    moveLeft.action = AircraftMover(-playerSpeed, 0.f);
+    moveLeft.action = derivedAction<Aircraft>(AircraftMover(-playerSpeed, 0.f));
 }
 
 void
