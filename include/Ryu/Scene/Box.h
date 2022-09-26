@@ -17,7 +17,8 @@ class Box : public Entity
     public:
         //explicit Box(Type type);
         Box(Box::Type type, const SceneTextureHolder& textures); 
-        void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;    
+        void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+        void updateCurrent(sf::Time dt) override;    
         
     private:
         Type mType;

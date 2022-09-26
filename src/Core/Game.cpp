@@ -17,6 +17,7 @@ Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
 ,mPlayer(std::make_unique<CharacterIchi>(CharacterBase::ECharacterState::Idle))
 ,mWorld(mWindow)
+,mIsPaused(false)
 {
 	// todo: how to load ichis tzextures at  startup ? 
 	//mPlayer->loadTextures();
@@ -37,7 +38,10 @@ void Game::run()
 		{
 			timeSinceLastUpdate -= TimePerFrame;
 			processEvents();
-			update(TimePerFrame);
+			if (!mIsPaused)
+			{
+				update(TimePerFrame);
+			}
 		}	
 		render();
 	}
@@ -97,6 +101,16 @@ void Game::processEvents()
 				handleUserInput(event.key.code,false);
 				break;
 			}
+			case sf::Event::GainedFocus:
+			{
+				mIsPaused = false;
+				break;
+			}
+			case sf::Event::LostFocus:
+			{
+				mIsPaused = true;
+				break;
+			}
 			case sf::Event::Closed:
 			{
 				mWindow.close();
@@ -109,6 +123,7 @@ void Game::processEvents()
 void Game::update(sf::Time deltaTime)
 {
 	mPlayer->update(deltaTime);
+	mWorld.update(deltaTime);
 }
 
 void Game::render()

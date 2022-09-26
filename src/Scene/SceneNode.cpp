@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
+#include <typeinfo>
+
 
 SceneNode::SceneNode()
 : mChildren()

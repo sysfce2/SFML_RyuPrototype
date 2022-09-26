@@ -1,6 +1,7 @@
 #include <Ryu/Scene/Box.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Core/AssetManager.h>
+#include <iostream>
 
 namespace ryu {
 
@@ -19,12 +20,34 @@ Textures::SceneID toTextureID(Box::Type type)
 
 Box::Box(Type boxType, const SceneTextureHolder& textures) 
     : mType(boxType), mSprite(textures.getResource(toTextureID(boxType)))
+
 {
     // TODO: add another ctor for positioning !
     
     // set origin of texture to center 
     sf::FloatRect bounds = mSprite.getLocalBounds();
     mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    setVelocity(sf::Vector2f(50.f,0.f));
+}
+
+
+void
+Box::updateCurrent(sf::Time dt)
+{
+    sf::Vector2f position = getPosition();
+    sf::Vector2f velocity = getVelocity();
+
+    // TODO: no magic mnumbers
+    if ((position.x <= 150)
+    || (position.x >= 1000))
+    {
+        velocity.x = -velocity.x;
+        setVelocity(velocity); 
+    }
+
+    move(velocity.x * dt.asSeconds(),0.f);
+
+    // t,b,c
 }
 
 void 

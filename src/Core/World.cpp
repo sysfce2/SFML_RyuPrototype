@@ -3,6 +3,8 @@
 #include <memory>
 #include <array>
 #include <Ryu/Core/SpriteNode.h>
+#include <iostream>
+
 
 World::World(sf::RenderWindow& window)
 : mWindow(window)
