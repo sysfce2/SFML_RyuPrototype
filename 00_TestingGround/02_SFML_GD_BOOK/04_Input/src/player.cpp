@@ -103,4 +103,6 @@ Player::handleRealtimeInput(CommandQueue& commands)
             AircraftMover(0.f,playerSpeed));
         commands.push(moveDown);
     }
+
+    
 }

@@ -2,6 +2,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <memory>
 #include <array>
+#include <math.h>
 #include "spritenode.h"
 
 World::World(sf::RenderWindow& window)
@@ -88,53 +89,45 @@ World::draw()
 void
 World::update(sf::Time dt)
 {
-/* Scroll the world, reset player velocity
-	mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());	
-	mPlayerAircraft->setVelocity(0.f, 0.f);
-
-	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
-	while (!mCommandQueue.isEmpty())
-		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
-	adaptPlayerVelocity();
-
-	// Regular update step, adapt position (correct if outside view)
-	mSceneGraph.update(dt);
-	adaptPlayerPosition();
-*/
-    float PlayerSpeed = 10.f;
+    /*
+    float PlayerSpeed = 40.f;
     sf::Vector2f movement(0.f, 0.f);
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		movement.y -= PlayerSpeed;
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		movement.y += PlayerSpeed;
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		movement.x -= PlayerSpeed;
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		movement.x += PlayerSpeed;
-
-	//mPlayer.move(movement * deltaTime.asSeconds());
-
+*/
 
     mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
-
-
-    sf::Vector2f position = mPlayerAircraft->getPosition();
-    sf::Vector2f velocity = mPlayerAircraft->getVelocity();
-
-    if ((position.x <= mWorldBounds.left + 150)
-    || (position.x >= mWorldBounds.left + mWorldBounds.width - 150))
-    {
-        velocity.x = -velocity.x;
-        mPlayerAircraft->setVelocity(velocity);
-    }
+    
+    mPlayerAircraft->setVelocity(0.f,0.f);
+    
 
     while(!mActiveCommands.isEmpty())
     {
         mSceneGraph.onCommand(mActiveCommands.pop(),dt);
     }
 
-    mSceneGraph.update(dt);   
 
+    sf::Vector2f velocity = mPlayerAircraft->getVelocity();
 
+    if(velocity.x != 0.f && velocity.y != 0.f)
+    {
+        mPlayerAircraft->setVelocity(velocity / std::sqrt(2.f));
+    }
+
+    mPlayerAircraft->accelerate({0.f,mScrollSpeed});
+
+    mSceneGraph.update(dt); 
+
+    sf::FloatRect viewBounds(
+        mWorldView.getCenter() - mWorldView.getSize() / 2.f,
+        mWorldView.getSize());
+    const float borderDistance = 40.f;
+
+    // keeping the aircraft inside the screens view
+    sf::Vector2f position = mPlayerAircraft->getPosition();
+    position.x = std::max(position.x, viewBounds.left + borderDistance);
+    position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+
+    position.y = std::max(position.y, viewBounds.top + borderDistance);
+    position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+
+    mPlayerAircraft->setPosition(position);
 }
