@@ -15,7 +15,4 @@ class Player
 
         void handleRealtimeInput(CommandQueue& commands);
 
-    private:
-        void setActions();
-
 };

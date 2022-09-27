@@ -14,6 +14,7 @@ typedef ResourceHolder<sf::Font,std::string> FontHolder2;
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
 , mPlayerSpite()
+, mPlayer()
 , mWorld(mWindow)
 , mStatisticsUpdateTime()
 , mStatisticsNumFrames(0)
@@ -69,10 +70,9 @@ void Game::processEvents()
 	sf::Event event;
 	while (mWindow.pollEvent(event))
 	{
+		mPlayer.handleEvent(event, commands);
 		switch(event.type)
 		{
-			mPlayer.handleEvent(event, commands);
-
 			case sf::Event::GainedFocus:
 			{
 				mIsPaused = false;
