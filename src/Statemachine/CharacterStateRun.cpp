@@ -5,7 +5,7 @@
 #include <iostream>
 #include <memory>
 
-using namespace ryu;
+//namespace ryu{
 
 CharacterStateRun::CharacterStateRun(){}
 
@@ -50,3 +50,5 @@ CharacterStateRun::exit(CharacterBase& character)
 {
     character.changeColor(sf::Color::Magenta);
 }
+
+//} /// namespace ryu

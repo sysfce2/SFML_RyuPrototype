@@ -1,5 +1,8 @@
 #include <Ryu/Scene/Entity.h>
 
+//namespace ryu {
+
+Entity::~Entity() {}
 
 void
 Entity::setVelocity(sf::Vector2f velocity)
@@ -25,3 +28,5 @@ Entity::updateCurrent(sf::Time dt)
 {
     move(mVelocity * dt.asSeconds()); /// == setPosition(getPosition() + offset)
 }
+
+//} /// namespace ryu

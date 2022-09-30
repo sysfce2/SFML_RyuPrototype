@@ -3,7 +3,7 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 
-namespace ryu {
+//namespace ryu {
 
 typedef AssetManager<sf::Texture, Textures::CharacterID> IchiTextureManager;
 
@@ -16,8 +16,10 @@ class CharacterIchi : public CharacterBase
         //TODO: make it private and load otherwise ? / atm. public for Game when creating the mPlayer in Cdor
         void loadTextures();
 
+        void moveCharacter(sf::Vector2f velocity);
+
     private:        
         IchiTextureManager ichiTextureManager;
 };
 
-} /// namespace ryu
+//} /// namespace ryu

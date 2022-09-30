@@ -6,7 +6,7 @@ namespace sf
 	class Texture;
 }
 
-namespace ryu{
+//namespace ryu{
 
 namespace Textures
 {
@@ -35,4 +35,4 @@ class AssetManager;
 
 typedef AssetManager<sf::Texture, Textures::SceneID> SceneTextureHolder;
 
-}
+//}

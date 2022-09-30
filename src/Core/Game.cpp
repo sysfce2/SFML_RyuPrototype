@@ -8,14 +8,17 @@
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Character/CharacterBase.h>
+#include <Ryu/Character/CharacterIchi.h>
+#include <Ryu/Control/PlayerController.h>
 
-using namespace ryu;
+//namespace ryu{
 
 const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
 ,mPlayer(std::make_unique<CharacterIchi>(CharacterBase::ECharacterState::Idle))
+,mPlayerController(std::make_unique<PlayerController>())
 ,mWorld(mWindow)
 ,mIsPaused(false)
 {
@@ -28,7 +31,6 @@ void Game::run()
 	sf::Clock clock;
 	// uses fixed tick steps (use same delta every time)
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
-
 	
 	while (mWindow.isOpen())
 	{
@@ -47,60 +49,18 @@ void Game::run()
 	}
 }
 
-void Game::handleUserInput(sf::Keyboard::Key key, bool keyPressed)
-{
-	//std::cout << std::to_string(key) << (keyPressed ? " pressed" : " released") << std::endl;
-	switch(key)
-	{
-		case sf::Keyboard::W:
-		case sf::Keyboard::Up:
-		{
-			mPlayer->mIsMovingUp = keyPressed;
-			mPlayer->handleInput(keyPressed ? EInput::PRESSUP : EInput::RELEASEUP);
-			break;
-		}
-
-		case sf::Keyboard::S:
-		case sf::Keyboard::Down:
-		{
-			mPlayer->mIsMovingDown = keyPressed;
-			mPlayer->handleInput(keyPressed ? EInput::PRESSDOWN : EInput::RELEASEDOWN);
-			break;
-		}
-		case sf::Keyboard::D:
-		case sf::Keyboard::Right:
-		{
-			mPlayer->mIsMovingRight = keyPressed;
-			mPlayer->handleInput(keyPressed ? EInput::PRESSRIGHT : EInput::RELEASERIGHT);
-			break;
-		}
-		case sf::Keyboard::A:
-		case sf::Keyboard::Left:
-		{
-			mPlayer->mIsMovingLeft = keyPressed;
-			mPlayer->handleInput(keyPressed ? EInput::PRESSLEFT : EInput::RELEASELEFT);
-			break;
-		}
-	}
-}
-
 void Game::processEvents()
 {
+	CommandQueue& commands = mWorld.getActiveCommands();
+
 	sf::Event event;
 	while (mWindow.pollEvent(event))
 	{
+		// Player-related one-time events
+		mPlayerController->handleEvent(event, commands);
+
 		switch(event.type)
-		{
-			case sf::Event::KeyPressed:
-			{
-				handleUserInput(event.key.code,true);
-				break;
-			}
-			case sf::Event::KeyReleased:
-			{
-				handleUserInput(event.key.code,false);
-				break;
-			}
+		{		
 			case sf::Event::GainedFocus:
 			{
 				mIsPaused = false;
@@ -118,6 +78,8 @@ void Game::processEvents()
 			}
 		}
 	}
+
+	mPlayerController->handleRealtimeInput(commands);
 }
 
 void Game::update(sf::Time deltaTime)
@@ -136,3 +98,4 @@ void Game::render()
 	//TODO: statistics fps text ....
 	mWindow.display();
 }
+//} /// namespace ryu

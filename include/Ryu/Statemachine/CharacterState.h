@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace ryu{
+//namespace ryu{
 
 class CharacterBase;
 
@@ -30,4 +30,4 @@ class CharacterState
         virtual void exit(CharacterBase& character) = 0;
 };
 
-} /// namespace ryu
+//} /// namespace ryu

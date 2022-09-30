@@ -1,7 +1,7 @@
 #include <Ryu/Core/SpriteNode.h>
 #include <SFML/Graphics/RenderTarget.hpp>
 
-using namespace ryu;
+//namespace ryu{
 
 SpriteNode::SpriteNode(const sf::Texture& texture)
 : mSprite(texture)
@@ -17,3 +17,4 @@ void SpriteNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) 
 {
 	target.draw(mSprite, states);
 }
+//} /// namespace ryu

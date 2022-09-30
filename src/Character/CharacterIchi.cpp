@@ -1,7 +1,7 @@
 #include <Ryu/Character/CharacterIchi.h>
 
 #include <iostream>
-using namespace ryu;
+//namespace ryu {
 
 CharacterIchi::CharacterIchi(ECharacterState startState)
 : CharacterBase(startState)
@@ -22,5 +22,14 @@ void
 CharacterIchi::loadTextures()
 {
     std::cout << "ichi loadtex " << std::endl;
-    ichiTextureManager.load(ryu::Textures::CharacterID::IchiIdleRun,"assets/spritesheets/ichi/01_sheet_ichi_run.png");
+    ichiTextureManager.load(Textures::CharacterID::IchiIdleRun,"assets/spritesheets/ichi/01_sheet_ichi_run.png");
 }
+
+void
+CharacterIchi::moveCharacter(sf::Vector2f velocity)
+{
+    // do we need this ?
+    //setVelocity(getVelocity()+ velocity);
+}
+
+//} /// namespace ryu

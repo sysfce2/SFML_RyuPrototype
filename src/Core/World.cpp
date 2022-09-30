@@ -5,6 +5,7 @@
 #include <Ryu/Core/SpriteNode.h>
 #include <iostream>
 
+//namespace ryu{
 
 World::World(sf::RenderWindow& window)
 : mWindow(window)
@@ -77,8 +78,21 @@ World::draw()
     mWindow.draw(mSceneGraph);
 }
 
+CommandQueue&
+World::getActiveCommands()
+{
+    return mActiveCommands;
+}
+
 void
 World::update(sf::Time dt)
 {
+    while(!mActiveCommands.isEmpty())
+    {
+        mSceneGraph.onCommand(mActiveCommands.pop(),dt);
+    }
+
     mSceneGraph.update(dt);   
 }
+
+//} /// namespace ryu

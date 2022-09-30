@@ -2,11 +2,15 @@
 
 #include <SFML/Graphics.hpp>
 #include <Ryu/Character/CharacterIchi.h>
+#include <Ryu/Control/PlayerController.h>
 #include <Ryu/Core/World.h>
 
 #include <memory>
 
-namespace ryu{
+class CharacterIchi;
+class PlayerController;
+
+//namespace ryu{
 
 class Game
 {
@@ -23,8 +27,8 @@ class Game
 	World mWorld;
 	bool mIsPaused;
 	std::unique_ptr<CharacterIchi> mPlayer;
-
+	std::unique_ptr<PlayerController> mPlayerController;
 	//ryu::AssetManager<sf::Font,std::string> fontManager;
 };
 
-} /// namespace ryu
+//} /// namespace ryu

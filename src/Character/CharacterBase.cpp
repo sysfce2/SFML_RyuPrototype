@@ -5,7 +5,7 @@
 #include <iostream>
 #include <memory>
 
-using namespace ryu;
+//namespace ryu {
 
 CharacterBase::CharacterBase() : 
     mCharacterSprite(),
@@ -85,3 +85,5 @@ CharacterBase::changeColor(sf::Color color)
 {
     //mCharacterSpriteShape.setFillColor(color);
 }
+
+//} /// namespace ryu

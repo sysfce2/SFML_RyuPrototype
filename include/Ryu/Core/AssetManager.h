@@ -5,8 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <cassert>
 
-namespace ryu
-{
+//namespace ryu{
 
 // generalized approach to hold all kinds of assets
 template <typename Resource, typename Identifier>
@@ -22,5 +21,5 @@ class AssetManager
     private:
         std::map<Identifier, std::unique_ptr<Resource> > mResourceMap;
 };
-} /// namespace ryu
+//} /// namespace ryu
 #include "AssetManager.inl"

@@ -4,6 +4,10 @@
 #include <memory>
 #include <vector>
 
+class Command;
+
+//namespace ryu {
+
 class SceneNode : public sf::Drawable, 
                 public sf::Transformable, 
                 private sf::NonCopyable
@@ -13,12 +17,16 @@ class SceneNode : public sf::Drawable,
 
     public:
         SceneNode();
+        virtual ~SceneNode();
 
         void attachChild(Ptr child);
         Ptr detachChild(const SceneNode& node);
         void update(sf::Time dt);
+        virtual unsigned int getCategory() const;
         sf::Transform getWorldTransform() const;
         sf::Vector2f getWorldPosition() const;
+        void onCommand(const Command& command, sf::Time dt);
+    
     
     private:
         void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
@@ -32,3 +40,5 @@ class SceneNode : public sf::Drawable,
         std::vector<Ptr> mChildren;
         SceneNode* mParent;
 };
+
+//} /// namespace ryu

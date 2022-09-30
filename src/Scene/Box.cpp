@@ -2,8 +2,9 @@
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Core/AssetManager.h>
 #include <iostream>
+#include <Ryu/Core/Category.h>
 
-namespace ryu {
+//namespace ryu {
 
 Textures::SceneID toTextureID(Box::Type type)
 {
@@ -56,4 +57,24 @@ Box::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(mSprite, states);
 }
 
-} /// namespace ryu
+
+unsigned int 
+Box::getCategory() const
+{
+    switch (mType)
+    {
+        case Box::Type::Heavy:
+        {
+            return static_cast<unsigned>(Category::Type::StaticObjects);
+        }
+        case Box::Type::Pushable:
+        {
+            return static_cast<unsigned>(Category::Type::MovableObjects);
+        }
+       
+    default:
+            return static_cast<unsigned>(Category::Type::StaticObjects);
+   } 
+} 
+
+//} /// namespace ryu

@@ -6,11 +6,13 @@
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Scene/SceneNode.h>
 
-using namespace ryu;
+namespace sf{
+    class Event;
+}
 
-namespace ryu{
+class CommandQueue;
 
-
+//namespace ryu{
 
 class CharacterBase : public SceneNode {
 
@@ -75,4 +77,4 @@ public:
 
 };
 
-} /// namespace ryu
+//} /// namespace ryu

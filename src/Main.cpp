@@ -5,7 +5,7 @@ int main()
 {
 	try
 	{
-		ryu::Game game;
+		Game game;
 		game.run();
 	}
 	catch(const std::exception& e)

@@ -3,8 +3,6 @@
 #include "CharacterState.h"
 #include <memory>
 
-using namespace ryu;
-
 class CharacterStateRun : public CharacterState
 {
     public:

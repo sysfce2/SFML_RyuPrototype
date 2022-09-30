@@ -9,7 +9,7 @@
 #include <typeinfo>
 
 
-using namespace ryu;
+//namespace ryu{
 
 CharacterStateIdle::CharacterStateIdle(){}
 
@@ -61,3 +61,5 @@ CharacterStateIdle::exit(CharacterBase& character)
 {
 
 }
+
+//} /// namespace ryu

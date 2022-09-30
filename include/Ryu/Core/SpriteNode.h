@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <Ryu/Scene/SceneNode.h>
 
-namespace ryu {
+//namespace ryu {
 class SpriteNode : public SceneNode
 {
     public:
@@ -15,4 +15,4 @@ class SpriteNode : public SceneNode
 
         sf::Sprite mSprite;
 };
-} ///namespace ryu
+//} ///namespace ryu

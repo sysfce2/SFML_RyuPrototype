@@ -2,7 +2,7 @@
 #include <Ryu/Scene/Entity.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 
-namespace ryu{
+//namespace ryu{
 
 class Box : public Entity
 {
@@ -18,6 +18,7 @@ class Box : public Entity
         //explicit Box(Type type);
         Box(Box::Type type, const SceneTextureHolder& textures); 
         void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+        unsigned int getCategory() const override;
         void updateCurrent(sf::Time dt) override;    
         
     private:
@@ -26,4 +27,4 @@ class Box : public Entity
 
 };
 
-} /// namespace ryu
+//} /// namespace ryu

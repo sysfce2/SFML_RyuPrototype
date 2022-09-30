@@ -1,16 +1,20 @@
 #include <Ryu/Scene/SceneNode.h>
+#include <Ryu/Core/Category.h>
+#include <Ryu/Core/Command.h>
 
 #include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <typeinfo>
 
+//namespace ryu {
 
 SceneNode::SceneNode()
 : mChildren()
 , mParent(nullptr)
-{
-}
+{}
+
+SceneNode::~SceneNode() {}
 
 void
 SceneNode::attachChild(Ptr child)
@@ -102,3 +106,26 @@ SceneNode::getWorldPosition() const
 {
     return getWorldTransform() * sf::Vector2f();
 }
+
+unsigned int 
+SceneNode::getCategory() const
+{
+    return static_cast<unsigned>(Category::Type::Scene);
+}
+
+void
+SceneNode::onCommand(const Command& command, sf::Time dt)
+{
+    // the bitwise AND operate checks if the current category and the commandscategory match the same value
+    if(command.category & getCategory())
+    {
+        command.action(*this, dt);
+    }
+
+    // forward the command to all children
+    for (const auto& child : mChildren)
+    {
+        child->onCommand(command,dt);
+    }
+}
+//} /// namespace ryu

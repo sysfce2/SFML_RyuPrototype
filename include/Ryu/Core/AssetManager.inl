@@ -1,5 +1,5 @@
 
-using namespace ryu;
+//using namespace ryu;
 
 template <typename Resource, typename Identifier>
 Resource&
