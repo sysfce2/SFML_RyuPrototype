@@ -1,10 +1,12 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include <SFML/Window/Keyboard.hpp>
 
 class CommandQueue;
 class Command;
+class CharacterIchi;
 
 namespace sf{
     class Event;
@@ -23,7 +25,7 @@ class PlayerController
 
     public:
 
-        PlayerController();
+        PlayerController(std::unique_ptr<CharacterIchi> const &character);
 
         void assignKey(Action action, sf::Keyboard::Key key);
         sf::Keyboard::Key getAssignedKey(Action action) const;
@@ -39,5 +41,7 @@ class PlayerController
 
         std::map<sf::Keyboard::Key, Action> mKeyBinding;
         std::map<Action, Command> mActionBinding;
+
+        std::unique_ptr<CharacterIchi> const &playerCharacter;
 
 };

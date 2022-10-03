@@ -4,6 +4,7 @@
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/AssetIdentifiers.h>
+#include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Scene/SceneNode.h>
 
 namespace sf{
@@ -16,35 +17,14 @@ class CommandQueue;
 
 class CharacterBase : public SceneNode {
 
-public:
-    enum class ECharacterState{
-        None,
-        Idle,
-        Walk,
-        Run,
-        //...
-    };
-
-    enum class EMoveDirecton
-    {
-        None,
-        Up,
-        Down,
-        Left,
-        Right,
-        UpLeft,
-        UpRight,
-        DownLeft,
-        DownRight
-    };
-
-
     public:
         // TODO: implement rule of 5 !
         // (morph one character into another ^^)
         CharacterBase();
         explicit CharacterBase(ECharacterState startState);
         ~CharacterBase();
+        float getPlayerSpeed() {return PlayerSpeed;}
+
 
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);

@@ -1,6 +1,8 @@
 #include <Ryu/Statemachine/CharacterStateRun.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Character/CharacterBase.h>
+#include <Ryu/Character/CharacterIchi.h>
+
 
 #include <iostream>
 #include <memory>
@@ -35,20 +37,27 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateRun::update(CharacterBase& character)
 {
-    //std::cout << "RUN"<< std::endl;
+    character.move(character.getPlayerSpeed(),0.f);
+    /* move only mainchar ?
+    if (auto ichi = dynamic_cast<CharacterIchi*>(character))
+    {
+        ichi.
+    }
+    */
+
 }
 
 void
 CharacterStateRun::enter(CharacterBase& character)
 {
     character.changeColor(sf::Color::Green);
-    character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
+    character.setTextureOnCharacter(Textures::CharacterID::IchiKatanaWalk);
 }
 
 void
 CharacterStateRun::exit(CharacterBase& character)
 {
-    character.changeColor(sf::Color::Magenta);
+    //character.changeColor(sf::Color::Magenta);
 }
 
 //} /// namespace ryu

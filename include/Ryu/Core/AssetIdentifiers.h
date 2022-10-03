@@ -24,6 +24,7 @@ namespace Textures
     enum class CharacterID {
         IchiIdleRun,
 		IchiJump,
+		IchiKatanaWalk,
 		// ... Spritesheets
     };
 }

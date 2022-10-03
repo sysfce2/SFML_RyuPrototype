@@ -3,6 +3,7 @@
 #include <SFML/Window/Keyboard.hpp>
 
 #include <Ryu/Control/PlayerController.h>
+#include <Ryu/Control/CharacterEnums.h>
 
 //#include "aircarft.h"
 #include <Ryu/Core/Category.h>
@@ -22,7 +23,7 @@ struct CharacterMover
     // execute CharacterMover
 	void operator() (CharacterIchi& character, sf::Time) const
 	{
-       character.moveCharacter(velocity);
+        character.moveCharacter(velocity);
 	}
 
 	sf::Vector2f velocity;
@@ -49,10 +50,15 @@ PlayerController::initializeBindings()
     float playerSpeed = 10.0f;
 
     mKeyBinding[sf::Keyboard::Left] = Action::MoveLeft;
+    mKeyBinding[sf::Keyboard::A] = Action::MoveLeft;
     mKeyBinding[sf::Keyboard::Right] = Action::MoveRight;
+    mKeyBinding[sf::Keyboard::D] = Action::MoveRight;
     mKeyBinding[sf::Keyboard::Up] = Action::MoveUp;
+    mKeyBinding[sf::Keyboard::W] = Action::MoveUp;
     mKeyBinding[sf::Keyboard::Down] = Action::MoveDown;
+    mKeyBinding[sf::Keyboard::S] = Action::MoveDown;
 
+    
     mActionBinding[Action::MoveLeft].action = derivedAction<CharacterIchi>(
             CharacterMover(-playerSpeed,0.f));
     mActionBinding[Action::MoveRight].action = derivedAction<CharacterIchi>(
@@ -61,14 +67,22 @@ PlayerController::initializeBindings()
             CharacterMover(0.f,-playerSpeed));
     mActionBinding[Action::MoveDown].action = derivedAction<CharacterIchi>(
             CharacterMover(0.f,playerSpeed));
-    
+
+    /*
+    mActionBinding[Action::MoveLeft].action = derivedAction<CharacterIchi>(playerCharacter->handleInput(EInput::PRESSLEFT));
+    mActionBinding[Action::MoveRight].action = ;
+    mActionBinding[Action::MoveUp].action = ;
+    mActionBinding[Action::MoveDown].action = ;
+    */
+
     for(auto& actionBinding : mActionBinding)
     {
         actionBinding.second.category = static_cast<unsigned>(Category::Type::Player); 
     }
 }
 
-PlayerController::PlayerController()
+PlayerController::PlayerController(std::unique_ptr<CharacterIchi> const &character)
+: playerCharacter(character)
 {
     initializeBindings();
 }
@@ -90,18 +104,67 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
 			}
     */
 
+   /* use a binding map from Action to functioncall*/
 
-    //std::cout << "PlayerHandleEvent" << std::endl;
+    std::cout << "PlayerHandleEvent " << event.type << std::endl;
     // first test for one-time events
-    if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
+    if(event.type == sf::Event::KeyPressed)
     {
-        Command output;
-        output.category = static_cast<unsigned>(Category::Type::Player);
-        output.action = [](SceneNode& s,sf::Time)
+        switch (event.key.code)
         {
-            std::cout << s.getPosition().x << "," << s.getPosition().y << "\n";
-        };
-        commands.push(output);
+            case sf::Keyboard::P:
+            {
+                std::cout << "P pressed " << std::endl;
+                Command output;
+                output.category = static_cast<unsigned>(Category::Type::Player);
+                output.action = [](SceneNode& s,sf::Time)
+                {
+                    std::cout << s.getPosition().x << "," << s.getPosition().y << "\n";
+                };
+                commands.push(output);
+                break;
+            }
+
+            case sf::Keyboard::D:
+            case sf::Keyboard::Right:
+            {
+                std::cout << "Right pressed " << std::endl;
+                playerCharacter->handleInput(EInput::PRESSRIGHT);
+                break;
+            }
+
+            case sf::Keyboard::A:
+            case sf::Keyboard::Left:
+            {
+                std::cout << "Left pressed " << std::endl;
+                playerCharacter->handleInput(EInput::PRESSLEFT);
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    if(event.type == sf::Event::KeyReleased)
+    {
+        switch (event.key.code)
+        {
+            case sf::Keyboard::D:
+            case sf::Keyboard::Right:
+            {
+                std::cout << "Right released " << std::endl;
+                playerCharacter->handleInput(EInput::RELEASERIGHT);
+                break;
+            }
+            case sf::Keyboard::A:
+            case sf::Keyboard::Left:
+            {
+                std::cout << "Left released " << std::endl;
+                playerCharacter->handleInput(EInput::RELEASELEFT);
+                break;
+            }
+            default:
+                break;
+        }
     }
 }
 
@@ -118,7 +181,7 @@ PlayerController::handleRealtimeInput(CommandQueue& commands)
 
     /*
  	switch(key)
-		case sf::Keyboard::W:
+		case :
 		case sf::Keyboard::Up:
 		{
 			mPlayer->handleInput(keyPressed ? EInput::PRESSUP : EInput::RELEASEUP);

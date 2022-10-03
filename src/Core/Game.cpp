@@ -10,6 +10,8 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/PlayerController.h>
+#include <Ryu/Control/CharacterEnums.h>
+
 
 //namespace ryu{
 
@@ -17,8 +19,8 @@ const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
-,mPlayer(std::make_unique<CharacterIchi>(CharacterBase::ECharacterState::Idle))
-,mPlayerController(std::make_unique<PlayerController>())
+,mPlayer(std::make_unique<CharacterIchi>(ECharacterState::Idle))
+,mPlayerController(std::make_unique<PlayerController>(mPlayer))
 ,mWorld(mWindow)
 ,mIsPaused(false)
 {

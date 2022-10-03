@@ -38,7 +38,7 @@ CharacterBase::~CharacterBase() {}
 void 
 CharacterBase::handleInput(EInput input)
 {
-    // if new state is cretead through the input we change the mCharacterState to this
+    // if new state is created through the input we change the mCharacterState to this
     std::unique_ptr<CharacterState> state = mCharacterState->handleInput(*this,input);
 
     if(state != nullptr)

@@ -1,24 +1,11 @@
 #pragma once
 
 #include <memory>
+#include <Ryu/Control/CharacterEnums.h>
 
 //namespace ryu{
 
 class CharacterBase;
-
-// TODO: move to inputcontroller or enumfile
-enum class EInput 
-{
-    NONE,
-    PRESSUP,
-    PRESSDOWN,
-    PRESSRIGHT,
-    PRESSLEFT,
-    RELEASEUP,
-    RELEASEDOWN,
-    RELEASERIGHT,
-    RELEASELEFT,
-};
 
 class CharacterState
 {
