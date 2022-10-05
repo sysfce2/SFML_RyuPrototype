@@ -8,11 +8,10 @@
 //namespace ryu {
 
 CharacterBase::CharacterBase() : 
-    mCharacterSprite(),
-    mCharacterState(new CharacterStateIdle()) /// TODO: smart pointer for states !!! ; beginn with IDLE
-{
-
-}
+    mCharacterSprite()
+    ,mCharacterState(std::make_unique<CharacterStateIdle>())
+    ,movement(0.f,0.f)
+{}
 
 void
 CharacterBase::loadTextures()
@@ -52,6 +51,7 @@ CharacterBase::handleInput(EInput input)
 void
 CharacterBase::update(sf::Time deltaTime)
 {
+    /*
     sf::Vector2f movement(0.f, 0.f);
 	if(mIsMovingUp)
 		movement.y -= PlayerSpeed;
@@ -61,12 +61,19 @@ CharacterBase::update(sf::Time deltaTime)
 		movement.x -= PlayerSpeed;
 	if(mIsMovingRight)
 		movement.x += PlayerSpeed;
-
-	mCharacterSprite.move(movement * deltaTime.asSeconds());
+    */
+   
 	//std::cout << std::to_string(movement.x) << "," << std::to_string(movement.y) << std::endl;
+	mCharacterSprite.move(movement * deltaTime.asSeconds());
 
     mCharacterState->update(*this);
 }
+
+ void 
+ CharacterBase::setMovement(sf::Vector2f _movement)
+ {
+     movement = _movement;
+ }
 
 void 
 CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)

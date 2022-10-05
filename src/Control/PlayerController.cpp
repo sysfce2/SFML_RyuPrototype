@@ -13,6 +13,7 @@
 
 class CharacterIchi;
 
+// command-actions
 struct CharacterMover
 {
 	CharacterMover(float vx, float vy)
@@ -32,7 +33,7 @@ struct CharacterMover
 
 // small adapter that takes a function on a derived class and converts it to a function on the SceneNode base class
 template <typename GameObject, typename Function>
-std::function<void(SceneNode&, sf::Time)> derivedAction(Function fn)
+std::function<void(SceneNode&, sf::Time)> derivedEInput(Function fn)
 {
     return [=](SceneNode& node, sf::Time dt)
     {
@@ -45,68 +46,81 @@ std::function<void(SceneNode&, sf::Time)> derivedAction(Function fn)
 }
 
 void
+PlayerController::setActionBindingPlayerSpeed()
+{
+    mActionBindingPress[EInput::PressLeft].action = derivedEInput<CharacterIchi>(
+            CharacterMover(-mPlayerSpeed,0.f));
+    mActionBindingPress[EInput::PressRight].action = derivedEInput<CharacterIchi>(
+            CharacterMover(mPlayerSpeed,0.f));
+    mActionBindingPress[EInput::PressUp].action = derivedEInput<CharacterIchi>(
+            CharacterMover(0.f,-mPlayerSpeed));
+    mActionBindingPress[EInput::PressDown].action = derivedEInput<CharacterIchi>(
+            CharacterMover(0.f,mPlayerSpeed));
+}
+
+void
 PlayerController::initializeBindings()
 {
-    float playerSpeed = 10.0f;
+    mKeyBindingPress[sf::Keyboard::Left] = EInput::PressLeft;
+    mKeyBindingPress[sf::Keyboard::A] = EInput::PressLeft;
+    mKeyBindingPress[sf::Keyboard::Right] = EInput::PressRight;
+    mKeyBindingPress[sf::Keyboard::D] = EInput::PressRight;
+    mKeyBindingPress[sf::Keyboard::Up] = EInput::PressUp;
+    mKeyBindingPress[sf::Keyboard::W] = EInput::PressUp;
+    mKeyBindingPress[sf::Keyboard::Down] = EInput::PressDown;
+    mKeyBindingPress[sf::Keyboard::S] = EInput::PressDown;
 
-    mKeyBinding[sf::Keyboard::Left] = Action::MoveLeft;
-    mKeyBinding[sf::Keyboard::A] = Action::MoveLeft;
-    mKeyBinding[sf::Keyboard::Right] = Action::MoveRight;
-    mKeyBinding[sf::Keyboard::D] = Action::MoveRight;
-    mKeyBinding[sf::Keyboard::Up] = Action::MoveUp;
-    mKeyBinding[sf::Keyboard::W] = Action::MoveUp;
-    mKeyBinding[sf::Keyboard::Down] = Action::MoveDown;
-    mKeyBinding[sf::Keyboard::S] = Action::MoveDown;
+    mKeyBindingRelease[sf::Keyboard::Left] = EInput::ReleaseLeft;
+    mKeyBindingRelease[sf::Keyboard::A] = EInput::ReleaseLeft;
+    mKeyBindingRelease[sf::Keyboard::Right] = EInput::ReleaseRight;
+    mKeyBindingRelease[sf::Keyboard::D] = EInput::ReleaseRight;
+    mKeyBindingRelease[sf::Keyboard::Up] = EInput::ReleaseUp;
+    mKeyBindingRelease[sf::Keyboard::W] = EInput::ReleaseUp;
+    mKeyBindingRelease[sf::Keyboard::Down] = EInput::ReleaseDown;
+    mKeyBindingRelease[sf::Keyboard::S] = EInput::ReleaseDown;
 
-    
-    mActionBinding[Action::MoveLeft].action = derivedAction<CharacterIchi>(
-            CharacterMover(-playerSpeed,0.f));
-    mActionBinding[Action::MoveRight].action = derivedAction<CharacterIchi>(
-            CharacterMover(playerSpeed,0.f));
-    mActionBinding[Action::MoveUp].action = derivedAction<CharacterIchi>(
-            CharacterMover(0.f,-playerSpeed));
-    mActionBinding[Action::MoveDown].action = derivedAction<CharacterIchi>(
-            CharacterMover(0.f,playerSpeed));
+    setActionBindingPlayerSpeed();
 
-    /*
-    mActionBinding[Action::MoveLeft].action = derivedAction<CharacterIchi>(playerCharacter->handleInput(EInput::PRESSLEFT));
-    mActionBinding[Action::MoveRight].action = ;
-    mActionBinding[Action::MoveUp].action = ;
-    mActionBinding[Action::MoveDown].action = ;
-    */
+    mActionBindingRelease[EInput::ReleaseLeft].action = derivedEInput<CharacterIchi>(
+            CharacterMover(0.f,0.f));
+    mActionBindingRelease[EInput::ReleaseRight].action = derivedEInput<CharacterIchi>(
+            CharacterMover(0.f,0.f));
+    mActionBindingRelease[EInput::ReleaseUp].action = derivedEInput<CharacterIchi>(
+            CharacterMover(0.f,0.f));
+    mActionBindingRelease[EInput::ReleaseDown].action = derivedEInput<CharacterIchi>(
+            CharacterMover(0.f,0.f));
 
-    for(auto& actionBinding : mActionBinding)
+    for(auto& actionBinding : mActionBindingPress,mActionBindingRelease)
     {
         actionBinding.second.category = static_cast<unsigned>(Category::Type::Player); 
     }
 }
 
-PlayerController::PlayerController(std::unique_ptr<CharacterIchi> const &character)
+PlayerController::PlayerController(CharacterIchi* character)
 : playerCharacter(character)
+, mPlayerSpeed(20.f)  // startvalue playerspeed
 {
     initializeBindings();
+}
+
+void 
+PlayerController::setPlayerSpeed(float speed)
+{
+    mPlayerSpeed = speed;
+
+    setActionBindingPlayerSpeed();
 }
 
 void
 PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
 {
+   /* 
+   * TODO
+   * use a binding map from EInput to functioncall
+   * 
+   */
 
-    /*
-    case sf::Event::KeyPressed:
-			{
-				handleUserInput(event.key.code,true);
-				break;
-			}
-			case sf::Event::KeyReleased:
-			{
-				handleUserInput(event.key.code,false);
-				break;
-			}
-    */
-
-   /* use a binding map from Action to functioncall*/
-
-    std::cout << "PlayerHandleEvent " << event.type << std::endl;
+    //std::cout << "PlayerHandleEvent " << event.type << std::endl;
     // first test for one-time events
     if(event.type == sf::Event::KeyPressed)
     {
@@ -128,16 +142,33 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::D:
             case sf::Keyboard::Right:
             {
-                std::cout << "Right pressed " << std::endl;
-                playerCharacter->handleInput(EInput::PRESSRIGHT);
+                //std::cout << "Right pressed " << std::endl;
+                // TODO: send sf::events (release/press and which key to pc!!! -)
+                playerCharacter->handleInput(EInput::PressRight);
                 break;
             }
 
             case sf::Keyboard::A:
             case sf::Keyboard::Left:
             {
-                std::cout << "Left pressed " << std::endl;
-                playerCharacter->handleInput(EInput::PRESSLEFT);
+                //std::cout << "Left pressed " << std::endl;
+                playerCharacter->handleInput(EInput::PressLeft);
+                break;
+            }
+
+            case sf::Keyboard::W:
+            case sf::Keyboard::Up:
+            {
+                //std::cout << "Left pressed " << std::endl;
+                playerCharacter->handleInput(EInput::PressUp);
+                break;
+            }
+
+            case sf::Keyboard::S:
+            case sf::Keyboard::Down:
+            {
+                //std::cout << "Left pressed " << std::endl;
+                playerCharacter->handleInput(EInput::PressDown);
                 break;
             }
             default:
@@ -151,34 +182,50 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::D:
             case sf::Keyboard::Right:
             {
-                std::cout << "Right released " << std::endl;
-                playerCharacter->handleInput(EInput::RELEASERIGHT);
+                //std::cout << "Right released " << std::endl;
+                playerCharacter->handleInput(EInput::ReleaseRight);
+                commands = {};
+                commands.push(mActionBindingRelease[EInput::ReleaseRight]);
                 break;
             }
             case sf::Keyboard::A:
             case sf::Keyboard::Left:
             {
-                std::cout << "Left released " << std::endl;
-                playerCharacter->handleInput(EInput::RELEASELEFT);
+                //std::cout << "Left released " << std::endl;
+                playerCharacter->handleInput(EInput::ReleaseLeft);
+                /* TODO: make this less boilerplate ! 
+                here we need to clear all pending movement-commands 
+                -> is this a problem for later commands ? maybe only remove category commands
+                */
+                commands = {};
+                commands.push(mActionBindingRelease[EInput::ReleaseLeft]);
                 break;
             }
+
+            case sf::Keyboard::S:
+            case sf::Keyboard::Down:
+            {
+                //std::cout << "Left pressed " << std::endl;
+                playerCharacter->handleInput(EInput::ReleaseDown);
+                commands = {};
+                commands.push(mActionBindingRelease[EInput::ReleaseDown]);
+                break;
+            }
+
+            case sf::Keyboard::W:
+            case sf::Keyboard::Up:
+            {
+                //std::cout << "Left pressed " << std::endl;
+                playerCharacter->handleInput(EInput::ReleaseUp);
+                commands = {};
+                commands.push(mActionBindingRelease[EInput::ReleaseUp]);
+                break;
+            }
+
             default:
                 break;
         }
     }
-}
-
-void
-PlayerController::handleRealtimeInput(CommandQueue& commands)
-{
-    for(auto const& binding : mKeyBinding)
-    {
-        if(sf::Keyboard::isKeyPressed(binding.first) && isRealtimeAction(binding.second))
-        {
-            commands.push(mActionBinding[binding.second]);
-        }
-    }
-
     /*
  	switch(key)
 		case :
@@ -202,18 +249,43 @@ PlayerController::handleRealtimeInput(CommandQueue& commands)
 		{
 			mPlayer->handleInput(keyPressed ? EInput::PRESSLEFT : EInput::RELEASELEFT);
 		}
-    */    
+    */
+}
+
+void
+PlayerController::handleRealtimeInput(CommandQueue& commands)
+{
+    /*
+    sf::Vector2f movement(0.f, 0.f);
+	if(mIsMovingUp)
+		movement.y -= PlayerSpeed;
+	if(mIsMovingDown)
+		movement.y += PlayerSpeed;
+	if(mIsMovingLeft)
+		movement.x -= PlayerSpeed;
+	if(mIsMovingRight)
+		movement.x += PlayerSpeed;
+    */
+
+
+    for(auto const& binding : mKeyBindingPress)
+    {
+        if(sf::Keyboard::isKeyPressed(binding.first) && isRealtimeAction(binding.second))
+        {
+            commands.push(mActionBindingPress[binding.second]);
+        }
+    }    
 }
 
 bool
-PlayerController::isRealtimeAction(Action action)
+PlayerController::isRealtimeAction(EInput action)
 {
 	switch (action)
 	{
-		case Action::MoveLeft:
-		case Action::MoveRight:
-		case Action::MoveDown:
-		case Action::MoveUp:
+		case EInput::PressLeft:
+		case EInput::PressRight:
+		case EInput::PressDown:
+		case EInput::PressUp:
 			return true;
 
 		default:
@@ -222,25 +294,25 @@ PlayerController::isRealtimeAction(Action action)
 }
 
 void
-PlayerController::assignKey(Action action, sf::Keyboard::Key key)
+PlayerController::assignKey(EInput action, sf::Keyboard::Key key)
 {
 	// Remove all keys that already map to action
-	for (auto itr = mKeyBinding.begin(); itr != mKeyBinding.end(); )
+	for (auto itr = mKeyBindingPress.begin(); itr != mKeyBindingPress.end(); )
 	{
 		if (itr->second == action)
-			mKeyBinding.erase(itr++);
+			mKeyBindingPress.erase(itr++);
 		else
 			++itr;
 	}
 
 	// Insert new binding
-	mKeyBinding[key] = action;
+	mKeyBindingPress[key] = action;
 }
 
 sf::Keyboard::Key
-PlayerController::getAssignedKey(Action action) const
+PlayerController::getAssignedKey(EInput action) const
 {
-    for(auto& binding : mKeyBinding)
+    for(auto& binding : mKeyBindingPress)
     {
         if (binding.second == action)
 			return binding.first;

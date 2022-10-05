@@ -26,7 +26,6 @@ class Game
 	sf::RenderWindow mWindow;
 	World mWorld;
 	bool mIsPaused;
-	std::unique_ptr<CharacterIchi> mPlayer;
 	std::unique_ptr<PlayerController> mPlayerController;
 	//ryu::AssetManager<sf::Font,std::string> fontManager;
 };

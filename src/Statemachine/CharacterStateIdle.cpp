@@ -20,14 +20,14 @@ CharacterStateIdle::handleInput(CharacterBase& character,EInput input)
 {
     switch (input)
     {
-       case EInput::PRESSLEFT:
-       case EInput::PRESSRIGHT:
+       case EInput::PressLeft:
+       case EInput::PressRight:
        {
            return std::move(std::make_unique<CharacterStateRun>());    
        }
 
-       case EInput::PRESSUP:
-       case EInput::PRESSDOWN:
+       case EInput::PressUp:
+       case EInput::PressDown:
        {
            // JUMP/DUCK
            //return new CharacterStateRun();    

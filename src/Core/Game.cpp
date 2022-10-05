@@ -19,9 +19,8 @@ const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
 : mWindow(sf::VideoMode(1024, 768), "SFML Application")
-,mPlayer(std::make_unique<CharacterIchi>(ECharacterState::Idle))
-,mPlayerController(std::make_unique<PlayerController>(mPlayer))
 ,mWorld(mWindow)
+,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
 ,mIsPaused(false)
 {
 	// todo: how to load ichis tzextures at  startup ? 
@@ -86,7 +85,6 @@ void Game::processEvents()
 
 void Game::update(sf::Time deltaTime)
 {
-	mPlayer->update(deltaTime);
 	mWorld.update(deltaTime);
 }
 
@@ -96,7 +94,7 @@ void Game::render()
 	mWorld.draw();
 
 	mWindow.setView(mWindow.getDefaultView());
-	mWindow.draw(mPlayer->getSprite());
+	mWindow.draw(mWorld.getPlayerSprite());
 	//TODO: statistics fps text ....
 	mWindow.display();
 }

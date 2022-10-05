@@ -1,4 +1,5 @@
 #include <Ryu/Character/CharacterIchi.h>
+#include <Ryu/Core/Category.h>
 
 #include <iostream>
 #include <string>
@@ -9,6 +10,7 @@ CharacterIchi::CharacterIchi(ECharacterState startState)
  , ichiTextureManager()
 {
     loadTextures();
+    
     mCharacterState->enter(*this);    
 }
 
@@ -29,13 +31,31 @@ CharacterIchi::loadTextures()
     ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
 }
 
+unsigned int 
+CharacterIchi::getCategory() const
+{
+    return static_cast<unsigned>(Category::Type::Player);
+}
+
 void
 CharacterIchi::moveCharacter(sf::Vector2f velocity)
 {
     std::cout << "MOVE CHAR " /* std::string(velocity.x) <<*/ << "\n";
-    //this->move(getVelocity()+ velocity);
-    // do we need this ?
-    //setVelocity(getVelocity()+ velocity);
+    
+
+    bool xMove = true;
+    bool yMove = true;
+
+    if(velocity.x == 0.f && velocity.y == 0.f)
+    {
+        setMovement({0.f,0.f});
+    }
+
+    // TODO: here we need to check if movement in the wanted direction is allowed
+    if((xMove && velocity.x != 0.f) || (yMove && velocity.y != 0.f))
+    {
+        setMovement(velocity);
+    }
 }
 
 //} /// namespace ryu

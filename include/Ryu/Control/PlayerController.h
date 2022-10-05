@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <SFML/Window/Keyboard.hpp>
+#include <Ryu/Control/CharacterEnums.h>
 
 class CommandQueue;
 class Command;
@@ -15,20 +16,14 @@ namespace sf{
 class PlayerController
 {
     public:
-        enum class Action
-        {
-            MoveLeft,
-            MoveRight,
-            MoveUp,
-            MoveDown
-        };
 
-    public:
+        //PlayerController(std::unique_ptr<CharacterIchi> const &character);
+        PlayerController(CharacterIchi* character);
 
-        PlayerController(std::unique_ptr<CharacterIchi> const &character);
 
-        void assignKey(Action action, sf::Keyboard::Key key);
-        sf::Keyboard::Key getAssignedKey(Action action) const;
+        void assignKey(EInput action, sf::Keyboard::Key key);
+        sf::Keyboard::Key getAssignedKey(EInput action) const;
+        void setPlayerSpeed(float speed);
 
         void handleEvent(const sf::Event& event,
                          CommandQueue& commands);
@@ -36,12 +31,18 @@ class PlayerController
         void handleRealtimeInput(CommandQueue& commands);
 
     private:
-        static bool isRealtimeAction(Action action);
+        static bool isRealtimeAction(EInput action);
         void initializeBindings();
+        void setActionBindingPlayerSpeed();
 
-        std::map<sf::Keyboard::Key, Action> mKeyBinding;
-        std::map<Action, Command> mActionBinding;
+        std::map<sf::Keyboard::Key, EInput> mKeyBindingPress;
+        std::map<EInput, Command> mActionBindingPress;
+        std::map<sf::Keyboard::Key, EInput> mKeyBindingRelease;
+        std::map<EInput, Command> mActionBindingRelease;
 
-        std::unique_ptr<CharacterIchi> const &playerCharacter;
+
+        float mPlayerSpeed;
+
+        CharacterIchi* playerCharacter;
 
 };

@@ -36,6 +36,7 @@ class CharacterBase : public SceneNode {
 
         void changeColor(sf::Color color);
 
+        void setMovement(sf::Vector2f _movement);
         // TODO: make private/setter and make Vector or st ? -> see Game.cpp
         bool mIsMovingUp=false;
         bool mIsMovingDown=false;
@@ -52,7 +53,7 @@ class CharacterBase : public SceneNode {
         sf::Sprite mCharacterSprite;
         EMoveDirecton mMoveDirection;
         
-
+        sf::Vector2f movement;
         float PlayerSpeed = 75.f;
 
 };

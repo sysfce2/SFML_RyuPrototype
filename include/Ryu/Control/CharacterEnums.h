@@ -2,15 +2,15 @@
 
 enum class EInput 
 {
-    NONE,
-    PRESSUP,
-    PRESSDOWN,
-    PRESSRIGHT,
-    PRESSLEFT,
-    RELEASEUP,
-    RELEASEDOWN,
-    RELEASERIGHT,
-    RELEASELEFT,
+    None,
+    PressUp,
+    PressDown,
+    PressRight,
+    PressLeft,
+    ReleaseUp,
+    ReleaseDown,
+    ReleaseRight,
+    ReleaseLeft,
 };
 
 enum class ECharacterState{

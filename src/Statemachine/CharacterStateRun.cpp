@@ -18,10 +18,10 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
 {
     switch (input)
     {
-       case EInput::RELEASELEFT:
-       case EInput::RELEASERIGHT:
-       case EInput::RELEASEUP:
-       case EInput::RELEASEDOWN:
+       case EInput::ReleaseLeft:
+       case EInput::ReleaseRight:
+       case EInput::ReleaseUp:
+       case EInput::ReleaseDown:
        {
            return std::move(std::make_unique<CharacterStateIdle>());    
        }
@@ -37,13 +37,16 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateRun::update(CharacterBase& character)
 {
-    character.move(character.getPlayerSpeed(),0.f);
+    
+    //character.move(character.getPlayerSpeed(),0.f);
+    character.mIsMovingRight = true;
     /* move only mainchar ?
     if (auto ichi = dynamic_cast<CharacterIchi*>(character))
     {
         ichi.
     }
     */
+   std::cout << "RUN UPDATE" << "\n";
 
 }
 
@@ -57,6 +60,7 @@ CharacterStateRun::enter(CharacterBase& character)
 void
 CharacterStateRun::exit(CharacterBase& character)
 {
+    character.mIsMovingRight=false;
     //character.changeColor(sf::Color::Magenta);
 }
 

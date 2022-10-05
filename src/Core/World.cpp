@@ -1,9 +1,12 @@
-#include <Ryu/Core/World.h>
 #include <SFML/Graphics/RenderWindow.hpp>
+
+#include <Ryu/Core/World.h>
+#include <Ryu/Core/SpriteNode.h>
+#include <Ryu/Character/CharacterIchi.h>
+#include <Ryu/Control/CharacterEnums.h>
+#include <iostream>
 #include <memory>
 #include <array>
-#include <Ryu/Core/SpriteNode.h>
-#include <iostream>
 
 //namespace ryu{
 
@@ -22,11 +25,30 @@ World::World(sf::RenderWindow& window)
     mWorldView.getSize().x / 2.f,
     (mWorldBounds.height - mWorldView.getSize().y))
 , mPushBox(nullptr)
+, mPlayer(nullptr)
 {
     loadTextures();
     buildScene();
 
     mWorldView.setCenter(mSpawnPosition);
+}
+
+World::~World()
+{
+    mPlayer = nullptr;
+    mPushBox = nullptr;
+}
+
+CharacterIchi*
+World::getPlayer()
+{
+    return mPlayer;
+}
+
+const sf::Drawable&
+World::getPlayerSprite()
+{
+    return mPlayer->getSprite();
 }
 
 void
@@ -66,8 +88,11 @@ World::buildScene()
     std::unique_ptr<Box> box = std::make_unique<Box>(Box::Type::Pushable, mSceneTextures);
     mPushBox = box.get();
     mPushBox->setPosition(mSpawnPosition);
+
+    std::unique_ptr<CharacterIchi> ichi = std::make_unique<CharacterIchi>(ECharacterState::Idle);
+    mPlayer = ichi.get();
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(box));
-    
+    mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(ichi));
 }
 
 void
@@ -91,7 +116,8 @@ World::update(sf::Time dt)
     {
         mSceneGraph.onCommand(mActiveCommands.pop(),dt);
     }
-
+    //needable or already in scenegraph ?
+    mPlayer->update(dt);
     mSceneGraph.update(dt);   
 }
 

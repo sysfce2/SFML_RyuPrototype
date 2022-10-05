@@ -10,15 +10,20 @@
 
 typedef AssetManager<sf::Texture, Textures::SceneID> SceneTextureHolder;
 
+class CharacterIchi;
+
 //namespace ryu {
 class World : private sf::NonCopyable
 {
 
     public: 
         explicit World(sf::RenderWindow& window);
+        ~World();
         void update(sf::Time dt);
         void draw();
         CommandQueue& getActiveCommands();
+        CharacterIchi* getPlayer();
+        const sf::Drawable& getPlayerSprite();
 
     private:
         enum class Layer
@@ -42,6 +47,7 @@ class World : private sf::NonCopyable
         sf::FloatRect mWorldBounds;
         sf::Vector2f mSpawnPosition;
         Box* mPushBox;
+        CharacterIchi* mPlayer;
 
         CommandQueue mActiveCommands;
 
