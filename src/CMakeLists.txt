@@ -1,5 +1,6 @@
 
 set (SRC
+	Animation/Animation.cpp
 	Scene/Box.cpp
 	Scene/Entity.cpp
 	Scene/SceneNode.cpp

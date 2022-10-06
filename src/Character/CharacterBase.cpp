@@ -8,7 +8,7 @@
 //namespace ryu {
 
 CharacterBase::CharacterBase() : 
-    mCharacterSprite()
+    mCharacterAnimation()
     ,mCharacterState(std::make_unique<CharacterStateIdle>())
     ,movement(0.f,0.f)
 {}
@@ -77,7 +77,7 @@ CharacterBase::update(sf::Time deltaTime)
     */
    
 	//std::cout << std::to_string(movement.x) << "," << std::to_string(movement.y) << std::endl;
-	mCharacterSprite.move(movement * deltaTime.asSeconds());
+	mCharacterAnimation.move(movement * deltaTime.asSeconds());
 
     mCharacterState->update(*this);
 }
@@ -91,7 +91,7 @@ CharacterBase::update(sf::Time deltaTime)
 void 
 CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)
 {
-    mCharacterSprite.setTexture(textureManager.getResource(id));    
+    mCharacterAnimation.setTexture(textureManager.getResource(id));    
 }
 
 void
@@ -103,7 +103,7 @@ CharacterBase::setTextureOnCharacter(Textures::CharacterID textureId)
 void
 CharacterBase::changeColor(sf::Color color)
 {
-    //mCharacterSpriteShape.setFillColor(color);
+    //mCharacterAnimationShape.setFillColor(color);
 }
 
 //} /// namespace ryu

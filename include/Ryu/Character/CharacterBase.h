@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <Ryu/Animation/Animation.h>
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/AssetIdentifiers.h>
@@ -36,7 +37,7 @@ class CharacterBase : public SceneNode , public Subject
         
         virtual void setTextureOnCharacter(Textures::CharacterID textureId);
         virtual void setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id);
-        sf::Drawable& getSprite() { return mCharacterSprite;}
+        sf::Drawable& getSprite() { return mCharacterAnimation;}
 
         void changeColor(sf::Color color);
 
@@ -51,7 +52,8 @@ class CharacterBase : public SceneNode , public Subject
         float mCharacterSpeed;
 
     private:
-        sf::Sprite mCharacterSprite;
+        //sf::Sprite mCharacterSprite;
+        Animation mCharacterAnimation;
         EMoveDirecton mMoveDirection;
         
         sf::Vector2f movement;
