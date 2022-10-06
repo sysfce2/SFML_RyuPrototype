@@ -4,6 +4,7 @@
 
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Control/CharacterEnums.h>
+#include <Ryu/Events/EventEnums.h>
 
 //#include "aircarft.h"
 #include <Ryu/Core/Category.h>
@@ -46,16 +47,37 @@ std::function<void(SceneNode&, sf::Time)> derivedEInput(Function fn)
 }
 
 void
-PlayerController::setActionBindingPlayerSpeed()
+PlayerController::onNotify(const SceneNode& entity, Event event)
 {
+    std::cout << "received change for characterspeed" << std::endl;
+    switch (event)
+    {
+        case Event::CharacterSpeedChanged:
+        {
+            setActionBindingCharacterSpeed();
+            break; 
+        }
+            
+        default:
+            break;
+        }
+}
+
+
+void
+PlayerController::setActionBindingCharacterSpeed()
+{
+    // TODO: check if this is also called correctly if we change the characterspeed
+    float characterSpeed = playerCharacter->getCharacterSpeed();
+
     mActionBindingPress[EInput::PressLeft].action = derivedEInput<CharacterIchi>(
-            CharacterMover(-mPlayerSpeed,0.f));
+            CharacterMover(-characterSpeed,0.f));
     mActionBindingPress[EInput::PressRight].action = derivedEInput<CharacterIchi>(
-            CharacterMover(mPlayerSpeed,0.f));
+            CharacterMover(characterSpeed,0.f));
     mActionBindingPress[EInput::PressUp].action = derivedEInput<CharacterIchi>(
-            CharacterMover(0.f,-mPlayerSpeed));
+            CharacterMover(0.f,-characterSpeed));
     mActionBindingPress[EInput::PressDown].action = derivedEInput<CharacterIchi>(
-            CharacterMover(0.f,mPlayerSpeed));
+            CharacterMover(0.f,characterSpeed));
 }
 
 void
@@ -79,7 +101,7 @@ PlayerController::initializeBindings()
     mKeyBindingRelease[sf::Keyboard::Down] = EInput::ReleaseDown;
     mKeyBindingRelease[sf::Keyboard::S] = EInput::ReleaseDown;
 
-    setActionBindingPlayerSpeed();
+    setActionBindingCharacterSpeed();
 
     mActionBindingRelease[EInput::ReleaseLeft].action = derivedEInput<CharacterIchi>(
             CharacterMover(0.f,0.f));
@@ -97,18 +119,11 @@ PlayerController::initializeBindings()
 }
 
 PlayerController::PlayerController(CharacterIchi* character)
-: playerCharacter(character)
-, mPlayerSpeed(20.f)  // startvalue playerspeed
+: Observer("Playercontroller")
+, playerCharacter(character)
 {
+    
     initializeBindings();
-}
-
-void 
-PlayerController::setPlayerSpeed(float speed)
-{
-    mPlayerSpeed = speed;
-
-    setActionBindingPlayerSpeed();
 }
 
 void

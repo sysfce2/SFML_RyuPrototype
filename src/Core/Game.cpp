@@ -25,6 +25,14 @@ Game::Game()
 {
 	// todo: how to load ichis tzextures at  startup ? 
 	//mPlayer->loadTextures();
+	addObservers();
+}
+
+void
+Game::addObservers()
+{
+	auto player = mWorld.getPlayer();
+	player->addObserver(mPlayerController.get());
 }
 
 void Game::run()

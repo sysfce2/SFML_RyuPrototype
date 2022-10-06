@@ -11,6 +11,7 @@ set (SRC
 	Core/World.cpp
 	Character/CharacterIchi.cpp
 	Character/CharacterBase.cpp
+	Events/Subject.cpp
 	Statemachine/CharacterStateIdle.cpp
 	Statemachine/CharacterStateRun.cpp
 )

@@ -40,7 +40,7 @@ CharacterIchi::getCategory() const
 void
 CharacterIchi::moveCharacter(sf::Vector2f velocity)
 {
-    std::cout << "MOVE CHAR " /* std::string(velocity.x) <<*/ << "\n";
+    //std::cout << "MOVE CHAR " /* std::string(velocity.x) <<*/ << "\n";
     
 
     bool xMove = true;

@@ -19,6 +19,7 @@ CharacterBase::loadTextures()
 
 CharacterBase::CharacterBase(ECharacterState startState)
 : mECharacterState(startState)
+, mCharacterSpeed(55.0f) // startvalue playerspeed
 {
    switch(mECharacterState)
    {
@@ -33,6 +34,18 @@ CharacterBase::CharacterBase(ECharacterState startState)
 }
 
 CharacterBase::~CharacterBase() {}
+
+void 
+CharacterBase::notifyObservers(Event event)
+{   
+    notify(*this,event);
+}
+
+std::unique_ptr<CharacterState>& 
+CharacterBase::getCurrentCharacterState()
+{
+    return mCharacterState;
+}
 
 void 
 CharacterBase::handleInput(EInput input)

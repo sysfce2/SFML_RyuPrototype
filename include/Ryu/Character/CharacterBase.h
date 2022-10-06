@@ -6,6 +6,8 @@
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Scene/SceneNode.h>
+#include <Ryu/Events/Subject.h>
+#include <Ryu/Events/EventEnums.h>
 
 namespace sf{
     class Event;
@@ -15,7 +17,8 @@ class CommandQueue;
 
 //namespace ryu{
 
-class CharacterBase : public SceneNode {
+class CharacterBase : public SceneNode , public Subject
+{
 
     public:
         // TODO: implement rule of 5 !
@@ -23,8 +26,9 @@ class CharacterBase : public SceneNode {
         CharacterBase();
         explicit CharacterBase(ECharacterState startState);
         ~CharacterBase();
-        float getPlayerSpeed() {return PlayerSpeed;}
-
+        float getCharacterSpeed() {return mCharacterSpeed;}
+        void setCharacterSpeed(float speed) {mCharacterSpeed = speed;};
+        std::unique_ptr<CharacterState>& getCurrentCharacterState();
 
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);
@@ -37,25 +41,20 @@ class CharacterBase : public SceneNode {
         void changeColor(sf::Color color);
 
         void setMovement(sf::Vector2f _movement);
-        // TODO: make private/setter and make Vector or st ? -> see Game.cpp
-        bool mIsMovingUp=false;
-        bool mIsMovingDown=false;
-        bool mIsMovingLeft=false;
-        bool mIsMovingRight=false;
-
+        void notifyObservers(Event event);
+ 
+        
     protected:
-        // TODO: use smart pointers instead ?!!! and move semantics
-        //CharacterState* mCharacterState;
+        
         std::unique_ptr<CharacterState> mCharacterState;
         ECharacterState mECharacterState;
+        float mCharacterSpeed;
 
     private:
         sf::Sprite mCharacterSprite;
         EMoveDirecton mMoveDirection;
         
         sf::Vector2f movement;
-        float PlayerSpeed = 75.f;
-
 };
 
 //} /// namespace ryu

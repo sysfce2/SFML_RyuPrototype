@@ -22,6 +22,7 @@ class Game
 	void update(sf::Time deltaTime);
 	void render();
 	void handleUserInput(sf::Keyboard::Key key, bool keyPressed);
+	void addObservers();
   private:
 	sf::RenderWindow mWindow;
 	World mWorld;

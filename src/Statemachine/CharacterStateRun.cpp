@@ -2,16 +2,23 @@
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Character/CharacterIchi.h>
-
+#include <Ryu/Events/EventEnums.h>
 
 #include <iostream>
 #include <memory>
 
 //namespace ryu{
 
-CharacterStateRun::CharacterStateRun(){}
+CharacterStateRun::CharacterStateRun()
+: mRunCharacterSpeed(150.f)
+{
+    std::cout << "RunStateCreated" << std::endl;
+}
 
-CharacterStateRun::~CharacterStateRun(){}
+CharacterStateRun::~CharacterStateRun()
+{
+    std::cout << "RunStateDestroyed" << std::endl;
+}
 
 std::unique_ptr<CharacterState> 
 CharacterStateRun::handleInput(CharacterBase& character,EInput input)
@@ -38,16 +45,6 @@ void
 CharacterStateRun::update(CharacterBase& character)
 {
     
-    //character.move(character.getPlayerSpeed(),0.f);
-    character.mIsMovingRight = true;
-    /* move only mainchar ?
-    if (auto ichi = dynamic_cast<CharacterIchi*>(character))
-    {
-        ichi.
-    }
-    */
-   std::cout << "RUN UPDATE" << "\n";
-
 }
 
 void
@@ -55,13 +52,17 @@ CharacterStateRun::enter(CharacterBase& character)
 {
     character.changeColor(sf::Color::Green);
     character.setTextureOnCharacter(Textures::CharacterID::IchiKatanaWalk);
+
+    mLastCharacterSpeed = character.getCharacterSpeed();
+    character.setCharacterSpeed(mRunCharacterSpeed);
+    character.notifyObservers(Event::CharacterSpeedChanged);
 }
 
 void
 CharacterStateRun::exit(CharacterBase& character)
 {
-    character.mIsMovingRight=false;
-    //character.changeColor(sf::Color::Magenta);
+    character.setCharacterSpeed(mLastCharacterSpeed);
+    character.notifyObservers(Event::CharacterSpeedChanged);
 }
 
 //} /// namespace ryu

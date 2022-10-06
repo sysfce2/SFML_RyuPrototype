@@ -117,10 +117,10 @@ void
 SceneNode::onCommand(const Command& command, sf::Time dt)
 {
     // the bitwise AND operate checks if the current category and the commandscategory match the same value
-    std::cout << "rec. category: " << command.category << ", cur cat: " <<  getCategory() << "\n";
+    //std::cout << "rec. category: " << command.category << ", cur cat: " <<  getCategory() << "\n";
     if(command.category & getCategory())
     {
-        std::cout << "category: " << command.category << "\n";
+        //std::cout << "category: " << command.category << "\n";
         command.action(*this, dt);
     }
 
