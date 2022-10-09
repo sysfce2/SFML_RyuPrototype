@@ -1,7 +1,9 @@
-1. why the compiler doesnt complain about when not implementing pure virtual functions ?
+3.
+
+2. why the compiler doesnt complain about when not implementing pure virtual functions ?
     -> special compiler flags ?: 
     -> see e.g. CharacterState/CharacterStateIdle
 
-2. How to set c++ version to 17/20 ? (esp. for cmake) -> or is this only compilerdependent ?
+1. How to set c++ version to 17/20 ? (esp. for cmake) -> or is this only compilerdependent ?
     -> set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 

@@ -51,12 +51,13 @@ Box::updateCurrent(sf::Time dt)
     // t,b,c
 }
 
+
+
 void 
 Box::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(mSprite, states);
 }
-
 
 unsigned int 
 Box::getCategory() const

@@ -64,21 +64,9 @@ CharacterBase::handleInput(EInput input)
 void
 CharacterBase::update(sf::Time deltaTime)
 {
-    /*
-    sf::Vector2f movement(0.f, 0.f);
-	if(mIsMovingUp)
-		movement.y -= PlayerSpeed;
-	if(mIsMovingDown)
-		movement.y += PlayerSpeed;
-	if(mIsMovingLeft)
-		movement.x -= PlayerSpeed;
-	if(mIsMovingRight)
-		movement.x += PlayerSpeed;
-    */
-   
-	//std::cout << std::to_string(movement.x) << "," << std::to_string(movement.y) << std::endl;
-	mCharacterAnimation.move(movement * deltaTime.asSeconds());
-
+    mCharacterAnimation.move(movement * deltaTime.asSeconds());
+    mCharacterAnimation.update(deltaTime);
+    
     mCharacterState->update(*this);
 }
 
@@ -88,16 +76,25 @@ CharacterBase::update(sf::Time deltaTime)
      movement = _movement;
  }
 
+ void 
+ CharacterBase::setMoveDirection(EMoveDirecton _movementDir)
+ {
+     mMoveDirection = _movementDir;
+ }
+
 void 
 CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)
 {
-    mCharacterAnimation.setTexture(textureManager.getResource(id));    
+    
+    mCharacterAnimation.setTexture(textureManager.getResource(id));
+    
 }
 
 void
 CharacterBase::setTextureOnCharacter(Textures::CharacterID textureId)
 {
     // TODO implement st here ?
+    
 }
 
 void

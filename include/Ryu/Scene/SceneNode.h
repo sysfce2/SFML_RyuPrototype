@@ -29,7 +29,7 @@ class SceneNode : public sf::Drawable,
     
     
     private:
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const /*TODO: for a test : remove comment  !final*/;
         virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
         void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
         

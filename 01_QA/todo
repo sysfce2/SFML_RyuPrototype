@@ -1,13 +1,22 @@
+9/10/22:
+
+- animationsystem: timing per frame allowed
+
+
+7/10/22:
+
+- nice logger (activatable, categories etc ... see open source c++ libs)
+
 19/9/22:
-- entity, 
-- scenegraph, 
-- world, 
-- assetmamager update
+x entity, 
+x scenegraph, 
+x world, 
+x assetmamager update
 
 10/9/22:
 - use component driven design for character/npc etc ?!
     - see gamedevelopment design repo ! git@github.com:TankOs/GDD.git
-- use smart pointers for states
+x use smart pointers for states
 - implement rule of 5
 
 6/9/22:

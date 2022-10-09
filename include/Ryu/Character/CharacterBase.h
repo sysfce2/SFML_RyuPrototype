@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <Ryu/Animation/Animation.h>
+#include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/AssetIdentifiers.h>
@@ -27,35 +28,37 @@ class CharacterBase : public SceneNode , public Subject
         CharacterBase();
         explicit CharacterBase(ECharacterState startState);
         ~CharacterBase();
+        
         float getCharacterSpeed() {return mCharacterSpeed;}
         void setCharacterSpeed(float speed) {mCharacterSpeed = speed;};
+        
         std::unique_ptr<CharacterState>& getCurrentCharacterState();
+
+        virtual void setTextureOnCharacter(Textures::CharacterID textureId);
+        virtual void setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id);
+        SpritesheetAnimation& getSpriteAnimation() { return mCharacterAnimation;}
+
+        void setMovement(sf::Vector2f _movement);
+        void setMoveDirection(EMoveDirecton _movementDir);
+        EMoveDirecton getMoveDirection() {return mMoveDirection;}
 
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);
         virtual void loadTextures();
-        
-        virtual void setTextureOnCharacter(Textures::CharacterID textureId);
-        virtual void setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id);
-        sf::Drawable& getSprite() { return mCharacterAnimation;}
-
+                
         void changeColor(sf::Color color);
 
-        void setMovement(sf::Vector2f _movement);
         void notifyObservers(Event event);
- 
-        
+
     protected:
+        SpritesheetAnimation mCharacterAnimation;
         
         std::unique_ptr<CharacterState> mCharacterState;
         ECharacterState mECharacterState;
         float mCharacterSpeed;
-
+    
     private:
-        //sf::Sprite mCharacterSprite;
-        Animation mCharacterAnimation;
         EMoveDirecton mMoveDirection;
-        
         sf::Vector2f movement;
 };
 

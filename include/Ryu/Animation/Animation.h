@@ -1,45 +1,40 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <vector>
 
-class Animation : public sf::Drawable, public sf::Transformable
+/*
+*   this is a alternative animation class took from th SFML-wiki.
+*   with this approach we can start a animation at a certain position 
+*   in the spritesheet and are more flexible with timings for every frame
+*   looping,rewind or play animation X times needs to be added
+*/
+
+struct Frame {
+   sf::IntRect rect;
+   double duration; // in seconds
+};
+
+enum class modes
 {
-    public:
-        Animation();
-		explicit Animation(const sf::Texture& texture);
+   Single,
+   Loop
+};
 
-		void setTexture(const sf::Texture& texture);
-		const sf::Texture* getTexture() const;
+class Animation {
+   public:
+    explicit Animation(sf::Sprite &target);
+    virtual ~Animation() {};
+    void addFrame(Frame&& frame);
+    void update(double elapsed); 
+    const double getLength() const { return totalLength; }
+    sf::Sprite& getSprite() {return target;}
 
-		void setFrameSize(sf::Vector2i mFrameSize);
-		sf::Vector2i getFrameSize() const;
+ private:
+    std::vector<Frame> frames;
+    double totalLength;
+    double progress;
+    sf::Sprite &target;
+    modes playbackMode;
 
-		void setNumFrames(std::size_t numFrames);
-		std::size_t getNumFrames() const;
-
-		void setDuration(sf::Time duration);
-		sf::Time getDuration() const;
-
-		void setRepeating(bool flag);
-		bool isRepeating() const;
-
-		void restart();
-		bool isFinished() const;
-
-		sf::FloatRect getLocalBounds() const;
-		sf::FloatRect getGlobalBounds() const;
-        void update(sf::Time dt);
-
-
-	private:
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-    private:
-        sf::Sprite mSprite;
-        sf::Vector2i mFrameSize;
-        std::size_t mNumFrames;
-        std::size_t mCurrentFrame;
-        sf::Time mDuration;
-        sf::Time mElapsedTime;
-        bool mRepeat;
 };

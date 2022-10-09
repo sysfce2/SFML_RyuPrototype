@@ -18,7 +18,7 @@ class CharacterIchi : public CharacterBase
 
         void moveCharacter(sf::Vector2f velocity);
         unsigned int getCategory() const override;
-    private:        
+    private:
         IchiTextureManager ichiTextureManager;
 };
 

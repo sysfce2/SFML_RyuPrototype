@@ -48,7 +48,7 @@ World::getPlayer()
 const sf::Drawable&
 World::getPlayerSprite()
 {
-    return mPlayer->getSprite();
+    return mPlayer->getSpriteAnimation();
 }
 
 void

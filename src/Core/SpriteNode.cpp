@@ -1,6 +1,8 @@
 #include <Ryu/Core/SpriteNode.h>
 #include <SFML/Graphics/RenderTarget.hpp>
 
+#include <iostream>
+
 //namespace ryu{
 
 SpriteNode::SpriteNode(const sf::Texture& texture)

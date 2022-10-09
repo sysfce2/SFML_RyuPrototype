@@ -53,6 +53,13 @@ CharacterStateIdle::enter(CharacterBase& character)
     std::cout << "state idle enter " << std::endl;
     //std::cout << decltype(character) << '\n';
     std::cout << "chartype: " << typeid(character).name() << std::endl;
+    
+    // TODO: animation spec tospecial class / manager ?
+    character.getSpriteAnimation().setFrameSize(sf::Vector2i(80,96));
+    character.getSpriteAnimation().setStartFrame({0,0});
+    character.getSpriteAnimation().setNumFrames(1);
+    character.getSpriteAnimation().setDuration(sf::seconds(1));
+    character.getSpriteAnimation().setRepeating(true);
     character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
 }
 

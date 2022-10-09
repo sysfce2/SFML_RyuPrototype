@@ -10,7 +10,7 @@
 //namespace ryu{
 
 CharacterStateRun::CharacterStateRun()
-: mRunCharacterSpeed(150.f)
+: mRunCharacterSpeed(180.f)
 {
     std::cout << "RunStateCreated" << std::endl;
 }
@@ -43,19 +43,24 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
      
 void 
 CharacterStateRun::update(CharacterBase& character)
-{
-    
-}
+{}
 
 void
 CharacterStateRun::enter(CharacterBase& character)
 {
-    character.changeColor(sf::Color::Green);
-    character.setTextureOnCharacter(Textures::CharacterID::IchiKatanaWalk);
+    //character.setTextureOnCharacter(Textures::CharacterID::IchiKatanaWalk);
+    character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
 
     mLastCharacterSpeed = character.getCharacterSpeed();
     character.setCharacterSpeed(mRunCharacterSpeed);
     character.notifyObservers(Event::CharacterSpeedChanged);
+
+    // TODO: animation spec tospecial class / manager ?
+    character.getSpriteAnimation().setFrameSize(sf::Vector2i(80,96));
+    character.getSpriteAnimation().setStartFrame({80,0});
+    character.getSpriteAnimation().setNumFrames(8);
+    character.getSpriteAnimation().setDuration(sf::seconds(1));
+    character.getSpriteAnimation().setRepeating(true);
 }
 
 void
@@ -63,6 +68,9 @@ CharacterStateRun::exit(CharacterBase& character)
 {
     character.setCharacterSpeed(mLastCharacterSpeed);
     character.notifyObservers(Event::CharacterSpeedChanged);
+
+    character.getSpriteAnimation().setNumFrames(1);
+    character.getSpriteAnimation().restart();
 }
 
 //} /// namespace ryu
