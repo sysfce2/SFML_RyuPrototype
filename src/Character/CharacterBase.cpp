@@ -7,31 +7,32 @@
 
 //namespace ryu {
 
-CharacterBase::CharacterBase() : 
-    mCharacterAnimation()
+CharacterBase::CharacterBase() 
+    :mCharacterAnimation()
     ,mCharacterState(std::make_unique<CharacterStateIdle>())
     ,movement(0.f,0.f)
+    ,mMoveDirection(EMoveDirecton::Right)
 {}
+
+CharacterBase::CharacterBase(ECharacterState startState)
+    :mECharacterState(startState)
+    ,mCharacterSpeed(55.0f) // startvalue playerspeed
+    ,mMoveDirection(EMoveDirecton::Right)
+{
+   switch(mECharacterState)
+   {
+       case ECharacterState::Idle:
+        mCharacterState = std::make_unique<CharacterStateIdle>();
+        break;
+       default:
+        mCharacterState = std::make_unique<CharacterStateIdle>();
+   } 
+}
 
 void
 CharacterBase::loadTextures()
 {}
 
-CharacterBase::CharacterBase(ECharacterState startState)
-: mECharacterState(startState)
-, mCharacterSpeed(55.0f) // startvalue playerspeed
-{
-   switch(mECharacterState)
-   {
-       case ECharacterState::Idle:
-        //mCharacterState = new CharacterStateIdle();
-        mCharacterState = std::make_unique<CharacterStateIdle>();
-        break;
-       default:
-        mCharacterState = std::make_unique<CharacterStateIdle>();
-        //mCharacterState = new CharacterStateIdle();
-   } 
-}
 
 CharacterBase::~CharacterBase() {}
 
@@ -64,10 +65,12 @@ CharacterBase::handleInput(EInput input)
 void
 CharacterBase::update(sf::Time deltaTime)
 {
+     mCharacterAnimation.update(deltaTime);
     mCharacterAnimation.move(movement * deltaTime.asSeconds());
-    mCharacterAnimation.update(deltaTime);
-    
+   
+
     mCharacterState->update(*this);
+
 }
 
  void 
@@ -85,9 +88,8 @@ CharacterBase::update(sf::Time deltaTime)
 void 
 CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)
 {
-    
     mCharacterAnimation.setTexture(textureManager.getResource(id));
-    
+   
 }
 
 void

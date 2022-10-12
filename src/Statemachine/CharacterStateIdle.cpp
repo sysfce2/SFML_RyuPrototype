@@ -61,6 +61,12 @@ CharacterStateIdle::enter(CharacterBase& character)
     character.getSpriteAnimation().setDuration(sf::seconds(1));
     character.getSpriteAnimation().setRepeating(true);
     character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
+    // set origin of texture to center
+    sf::FloatRect bounds = character.getSpriteAnimation().getSprite().getLocalBounds();
+    character.getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    //mSprite.setOrigin(120.f, 144.f);
+    std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
+
 }
 
 void

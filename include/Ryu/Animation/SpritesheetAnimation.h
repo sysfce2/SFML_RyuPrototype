@@ -29,20 +29,19 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
 		void restart();
 		bool isFinished() const;
 
-		void flipAnimationX(EMoveDirecton moveDir);
-
-		void flipAnimationY(EMoveDirecton moveDir);
+		void flipAnimationLeft();
+		void flipAnimationRight();
 
 		sf::FloatRect getLocalBounds() const;
 		sf::FloatRect getGlobalBounds() const;
         void update(sf::Time dt);
-
-
+		sf::Sprite& getSprite() { return mSprite;}
+        
 	private:
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     private:
-        sf::Sprite mSprite;
+		sf::Sprite mSprite;
         sf::Vector2i mFrameSize;
 		sf::Vector2i mStartFrame;
         std::size_t mNumFrames;

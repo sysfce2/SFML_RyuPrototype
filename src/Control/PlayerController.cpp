@@ -141,6 +141,38 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
     {
         switch (event.key.code)
         {
+            case sf::Keyboard::D:
+            case sf::Keyboard::Right:
+            {
+                playerCharacter->handleInput(EInput::PressRight);
+                playerCharacter->getSpriteAnimation().flipAnimationRight();
+                break;
+            }
+
+            case sf::Keyboard::A:
+            case sf::Keyboard::Left:
+            {
+                playerCharacter->handleInput(EInput::PressLeft);
+                playerCharacter->getSpriteAnimation().flipAnimationLeft();
+                break;
+            }
+
+            case sf::Keyboard::W:
+            case sf::Keyboard::Up:
+            {
+                playerCharacter->handleInput(EInput::PressUp);
+                break;
+            }
+
+            case sf::Keyboard::S:
+            case sf::Keyboard::Down:
+            {
+                //std::cout << "Left pressed " << std::endl;
+                playerCharacter->handleInput(EInput::PressDown);
+                break;
+            }
+            // TODO: introduce debug trigger
+            // Debug Area
             case sf::Keyboard::P:
             {
                 std::cout << "P pressed " << std::endl;
@@ -153,39 +185,24 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 commands.push(output);
                 break;
             }
-
-            case sf::Keyboard::D:
-            case sf::Keyboard::Right:
+            case sf::Keyboard::O:
             {
-                //std::cout << "Right pressed " << std::endl;
-                // TODO: send sf::events (release/press and which key to pc!!! -)
-                playerCharacter->handleInput(EInput::PressRight);
+                std::cout << "Scale(" << playerCharacter->getSpriteAnimation().getSprite().getScale().x << "," 
+                << playerCharacter->getSpriteAnimation().getSprite().getScale().y <<  ")\n"; //.scale({1,1});
+                std::cout << "MoveDir: " << (int)playerCharacter->getMoveDirection() << "\n";
+                break;
+            }
+            case sf::Keyboard::U:
+            {
+                playerCharacter->getSpriteAnimation().getSprite().setScale({-1,1});
+                break;
+            }
+            case sf::Keyboard::I:
+            {
+                playerCharacter->getSpriteAnimation().getSprite().setScale({1,1});
                 break;
             }
 
-            case sf::Keyboard::A:
-            case sf::Keyboard::Left:
-            {
-                //std::cout << "Left pressed " << std::endl;
-                playerCharacter->handleInput(EInput::PressLeft);
-                break;
-            }
-
-            case sf::Keyboard::W:
-            case sf::Keyboard::Up:
-            {
-                //std::cout << "Left pressed " << std::endl;
-                playerCharacter->handleInput(EInput::PressUp);
-                break;
-            }
-
-            case sf::Keyboard::S:
-            case sf::Keyboard::Down:
-            {
-                //std::cout << "Left pressed " << std::endl;
-                playerCharacter->handleInput(EInput::PressDown);
-                break;
-            }
             default:
                 break;
         }
@@ -197,7 +214,6 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::D:
             case sf::Keyboard::Right:
             {
-                //std::cout << "Right released " << std::endl;
                 playerCharacter->handleInput(EInput::ReleaseRight);
                 commands = {};
                 commands.push(mActionBindingRelease[EInput::ReleaseRight]);
@@ -206,7 +222,6 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::A:
             case sf::Keyboard::Left:
             {
-                //std::cout << "Left released " << std::endl;
                 playerCharacter->handleInput(EInput::ReleaseLeft);
                 /* TODO: make this less boilerplate ! 
                 here we need to clear all pending movement-commands 
@@ -220,7 +235,6 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::S:
             case sf::Keyboard::Down:
             {
-                //std::cout << "Left pressed " << std::endl;
                 playerCharacter->handleInput(EInput::ReleaseDown);
                 commands = {};
                 commands.push(mActionBindingRelease[EInput::ReleaseDown]);
@@ -230,7 +244,6 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::W:
             case sf::Keyboard::Up:
             {
-                //std::cout << "Left pressed " << std::endl;
                 playerCharacter->handleInput(EInput::ReleaseUp);
                 commands = {};
                 commands.push(mActionBindingRelease[EInput::ReleaseUp]);
@@ -241,48 +254,11 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 break;
         }
     }
-    /*
- 	switch(key)
-		case :
-		case sf::Keyboard::Up:
-		{
-			mPlayer->handleInput(keyPressed ? EInput::PRESSUP : EInput::RELEASEUP);
-		}
-
-		case sf::Keyboard::S:
-		case sf::Keyboard::Down:
-		{
-			mPlayer->handleInput(keyPressed ? EInput::PRESSDOWN : EInput::RELEASEDOWN);
-		}
-		case sf::Keyboard::D:
-		case sf::Keyboard::Right:
-		{
-			mPlayer->handleInput(keyPressed ? EInput::PRESSRIGHT : EInput::RELEASERIGHT);
-		}
-		case sf::Keyboard::A:
-		case sf::Keyboard::Left:
-		{
-			mPlayer->handleInput(keyPressed ? EInput::PRESSLEFT : EInput::RELEASELEFT);
-		}
-    */
 }
 
 void
 PlayerController::handleRealtimeInput(CommandQueue& commands)
 {
-    /*
-    sf::Vector2f movement(0.f, 0.f);
-	if(mIsMovingUp)
-		movement.y -= PlayerSpeed;
-	if(mIsMovingDown)
-		movement.y += PlayerSpeed;
-	if(mIsMovingLeft)
-		movement.x -= PlayerSpeed;
-	if(mIsMovingRight)
-		movement.x += PlayerSpeed;
-    */
-
-
     for(auto const& binding : mKeyBindingPress)
     {
         if(sf::Keyboard::isKeyPressed(binding.first) && isRealtimeAction(binding.second))

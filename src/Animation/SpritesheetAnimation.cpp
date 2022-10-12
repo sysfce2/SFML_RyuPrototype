@@ -14,7 +14,8 @@ SpritesheetAnimation::SpritesheetAnimation()
 , mElapsedTime(sf::Time::Zero)
 , mRepeat(false)
 , mStartFrame({0,0})
-{}
+{
+}
 
 SpritesheetAnimation::SpritesheetAnimation(const sf::Texture& texture)
 : mSprite(texture)
@@ -25,7 +26,12 @@ SpritesheetAnimation::SpritesheetAnimation(const sf::Texture& texture)
 , mElapsedTime(sf::Time::Zero)
 , mRepeat(false)
 , mStartFrame({0,0})
-{}
+{    // set origin of texture to center
+    sf::FloatRect bounds = mSprite.getLocalBounds();
+    mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+    std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
+    //mSprite.setOrigin(120.f, 144.f);
+}
 
 void SpritesheetAnimation::setTexture(const sf::Texture& texture)
 {
@@ -149,33 +155,27 @@ SpritesheetAnimation::update(sf::Time dt)
 }
 
 void
-SpritesheetAnimation::flipAnimationX(EMoveDirecton moveDir)
-{
-    /*
-    if(moveDir == EMoveDirecton::Left)
+SpritesheetAnimation::flipAnimationLeft()
+{   
+    if(mSprite.getScale().x != -1)
     {
-        // flip X
-        mSprite.setTextureRect
-        (sf::IntRect(
-            mSprite.getTextureRect().width, 
-            0, 
-            -(mSprite.getTextureRect().width), 
-            mSprite.getTextureRect().height)
-        );
-    }
-    else
-    {
-        mSprite.setTextureRect
-        (sf::IntRect(
-            mSprite.getTextureRect().width, 
-            0, 
-            (mSprite.getTextureRect().width), 
-            mSprite.getTextureRect().height)
-        );
-    }
-    */
+        // do not ever use mSprite.scale({x,y}) !!!
+        mSprite.setScale({-1,1});
+        std::cout << "Flipx LEFT" << "\n";
+    }   
 }
 
+void
+SpritesheetAnimation::flipAnimationRight()
+{   
+    if(mSprite.getScale().x != 1)
+    {
+        // do not ever use mSprite.scale({x,y}) !!!     
+        mSprite.setScale({1,1});
+        std::cout << "Flipx Right" << "\n";
+    }
+}
+    
 void SpritesheetAnimation::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   	states.transform *= getTransform();

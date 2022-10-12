@@ -1,10 +1,11 @@
-9/10/22:
+12/10/22:
+- set position of player (spawnposition)
+- cleanup playercontroller/handle input
 
+9/10/22:
 - animationsystem: timing per frame allowed
 
-
 7/10/22:
-
 - nice logger (activatable, categories etc ... see open source c++ libs)
 
 19/9/22:
