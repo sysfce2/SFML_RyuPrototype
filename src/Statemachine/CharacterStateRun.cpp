@@ -66,6 +66,7 @@ CharacterStateRun::enter(CharacterBase& character)
     character.getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
     //mSprite.setOrigin(120.f, 144.f);
     std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
+    //character.initPhysics(phWorld);
 }
 
 void

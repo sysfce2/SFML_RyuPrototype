@@ -1,12 +1,14 @@
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Core/Category.h>
 
+#include <box2d/box2d.h>
+
 #include <iostream>
 #include <string>
 //namespace ryu {
 
-CharacterIchi::CharacterIchi(ECharacterState startState)
-: CharacterBase(startState)
+CharacterIchi::CharacterIchi(ECharacterState startState, std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position)
+: CharacterBase(startState, phWorld, position)
  , ichiTextureManager()
 {
     loadTextures();
@@ -55,8 +57,24 @@ CharacterIchi::moveCharacter(sf::Vector2f velocity)
     {
         setMovement(velocity);
     }
-
     //std::cout << "move: " << (int)getMoveDirection() << "\n";
+}
+
+void 
+CharacterIchi::update(sf::Time deltaTime)
+{
+    // call in Baseclass
+    updateCharacterState(deltaTime);
+
+    b2Vec2 v = getBody()->GetLinearVelocity();
+    //g_debugDraw.DrawString(5, m_textLine, "Character Linear Velocity: %f", v.y);
+
+
+    auto posi = getBody()->GetLinearVelocity(); //>GetLinearVelocityFromLocalPoint({getPosition().x,getPosition().y});
+    //std::cout << "ichi(y):" << v.y <<"\n";
+    //mCharacterAnimation.setPosition({posi.x*50,posi.y*50});
+
+    
 }
 
 //} /// namespace ryu

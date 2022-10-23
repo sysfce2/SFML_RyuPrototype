@@ -20,6 +20,11 @@ namespace Textures
 		Unknown
 	};
 
+	enum class PhysicAssetsID
+	{
+		Crate,
+	};
+
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
     enum class CharacterID {
         IchiIdleRun,

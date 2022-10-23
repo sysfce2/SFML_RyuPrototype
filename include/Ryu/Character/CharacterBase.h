@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <Ryu/Animation/Animation.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Statemachine/CharacterState.h>
@@ -11,11 +10,18 @@
 #include <Ryu/Events/Subject.h>
 #include <Ryu/Events/EventEnums.h>
 
+#include <Thirdparty/glm/glm.hpp>
+#include <SFML/Graphics.hpp>
+#include <memory.h>
+
 namespace sf{
     class Event;
 }
 
 class CommandQueue;
+class b2World;
+class b2Body;
+class b2Fixture;
 
 //namespace ryu{
 
@@ -25,8 +31,8 @@ class CharacterBase : public SceneNode , public Subject
     public:
         // TODO: implement rule of 5 !
         // (morph one character into another ^^)
-        CharacterBase();
-        explicit CharacterBase(ECharacterState startState);
+        CharacterBase(std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position);
+        CharacterBase(ECharacterState startState,  std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position);
         ~CharacterBase();
         
         float getCharacterSpeed() {return mCharacterSpeed;}
@@ -44,11 +50,19 @@ class CharacterBase : public SceneNode , public Subject
 
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);
+        void updateCharacterState(sf::Time deltaTime);
         virtual void loadTextures();
                 
         void changeColor(sf::Color color);
 
         void notifyObservers(Event event);
+
+        b2Body* getBody(){return mBody;}
+        b2Fixture* getFixture(){return mFixture;}
+        void initPhysics(const glm::vec2 &position);
+
+    private:
+        void initPhysics(std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position);
 
     protected:
         SpritesheetAnimation mCharacterAnimation;
@@ -60,6 +74,11 @@ class CharacterBase : public SceneNode , public Subject
     private:
         EMoveDirecton mMoveDirection;
         sf::Vector2f movement;
+
+        // physics
+        std::unique_ptr<b2World>& phWorldRef;
+        b2Body* mBody;
+        b2Fixture* mFixture;
 };
 
 //} /// namespace ryu

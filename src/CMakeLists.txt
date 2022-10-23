@@ -4,6 +4,7 @@ set (SRC
 	Scene/Box.cpp
 	Scene/Entity.cpp
 	Scene/SceneNode.cpp
+	Scene/Crate.cpp
 	Control/PlayerController.cpp
 	Core/Command.cpp
 	Core/CommandQueue.cpp
@@ -13,6 +14,7 @@ set (SRC
 	Character/CharacterIchi.cpp
 	Character/CharacterBase.cpp
 	Events/Subject.cpp
+	Physics/DebugDraw.cpp
 	Statemachine/CharacterStateIdle.cpp
 	Statemachine/CharacterStateRun.cpp
 )

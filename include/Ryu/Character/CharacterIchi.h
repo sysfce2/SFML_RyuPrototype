@@ -10,7 +10,7 @@ typedef AssetManager<sf::Texture, Textures::CharacterID> IchiTextureManager;
 class CharacterIchi : public CharacterBase
 {
     public:
-        explicit CharacterIchi(ECharacterState startState);
+        CharacterIchi(ECharacterState startState, std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position);
         void setTextureOnCharacter(Textures::CharacterID textureId) override;
     
         //TODO: make it private and load otherwise ? / atm. public for Game when creating the mPlayer in Cdor
@@ -18,6 +18,7 @@ class CharacterIchi : public CharacterBase
 
         void moveCharacter(sf::Vector2f velocity);
         unsigned int getCategory() const override;
+        void update(sf::Time deltaTime) override;
     private:
     
         IchiTextureManager ichiTextureManager;

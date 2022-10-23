@@ -22,6 +22,10 @@ endif()
 # Project name
 project(Ryu)
 
+find_package(box2d CONFIG REQUIRED)
+
+
+
 # Configuration options
 set(SFML_STATIC_LIBRARIES FALSE CACHE BOOL "Use static SFML librares")
 
@@ -128,8 +132,8 @@ macro(build_chapter CHAPTER_NAME)
 	if(SFML_VERSION_MINOR LESS 2)
         set(SFML_DEPENDENCIES "")
 	endif()
-	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
-
+	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d)
+	
 	install(TARGETS ${PROJECT_NAME}	RUNTIME DESTINATION ${CHAPTER_NAME})
 
 	install(DIRECTORY ${CHAPTER_DIR}/Media

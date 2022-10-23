@@ -5,12 +5,17 @@
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/CommandQueue.h>
 #include <Ryu/Scene/Box.h>
-#include <array>
+#include <Ryu/Scene/Crate.h>
 
+#include <array>
+#include <vector>
 
 typedef AssetManager<sf::Texture, Textures::SceneID> SceneTextureHolder;
 
 class CharacterIchi;
+class b2World;
+class b2Body;
+
 
 //namespace ryu {
 class World : private sf::NonCopyable
@@ -24,6 +29,8 @@ class World : private sf::NonCopyable
         CommandQueue& getActiveCommands();
         CharacterIchi* getPlayer();
         const sf::Drawable& getPlayerSprite();
+        // TODO: make this static ? -> access from everywhere
+        std::unique_ptr<b2World>& getPhysicsWorld(){return phWorld;};
 
     private:
         enum class Layer
@@ -36,6 +43,7 @@ class World : private sf::NonCopyable
 
         void loadTextures();
         void buildScene();
+        void setPhysics();
 
     private:
         sf::RenderWindow& mWindow;
@@ -50,6 +58,14 @@ class World : private sf::NonCopyable
         CharacterIchi* mPlayer;
 
         CommandQueue mActiveCommands;
+
+        // box2d physics
+        std::unique_ptr<b2World> phWorld;
+        b2Body* phGroundBody;
+        bool phDebugPhysics;
+        float phTimeStep;
+        
+        std::vector<Crate*> mCrates;
 
 };
 //} /// namespace ryu
