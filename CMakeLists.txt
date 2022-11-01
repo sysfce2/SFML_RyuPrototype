@@ -144,7 +144,7 @@ endmacro()
 # C++ source code, list of all subdirectories
 # Must appear after macros, otherwise they are not visible in subdirectories
 add_subdirectory(src)
-#add_subdirectory(02_Resources/Source)
+add_subdirectory(TestBed)
 #add_subdirectory(03_World/Source)
 #add_subdirectory(04_Input/Source)
 #add_subdirectory(05_States/Source)

@@ -168,12 +168,12 @@ World::update(sf::Time dt)
     mPlayer->update(dt);
     mSceneGraph.update(dt);
 
-    
+    /*
     for(auto& crate : mCrates)
     {
         std::cout << crate.getBody()->GetPosition().x << crate.getBody()->GetPosition().y << "\n"; 
     }
-    
+    */
    
 }
 
