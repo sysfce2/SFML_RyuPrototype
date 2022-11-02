@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <box2d/box2d.h>
+#include <box2d/b2_settings.h>
 #include <list>
 
 namespace testing {
@@ -29,12 +30,11 @@ namespace testing {
         shape->setPosition(sf::Vector2f(pos_x,pos_y));                                                                                                                                        
                                                                                                                                                                                               
         if(type == b2_dynamicBody)                                                                                                                                                            
-            shape->setFillColor(sf::Color::Blue);                                                                                                                                             
+            shape->setFillColor(sf::Color::Red);                                                                                                                                             
         else                                                                                                                                                                                  
             shape->setFillColor(sf::Color::White);                                                                                                                                            
 
-        b2BodyUserData data = res->GetUserData(); 
-        data.pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);                                                                                                                                                              
+        res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);                                                                                                                                                              
                                                                                                                                                                                               
         return res;                                                                                                                                                                           
     }
@@ -47,12 +47,9 @@ namespace testing {
                                                                                                                                                                                               
         for (b2Body* body=world.GetBodyList(); body!=nullptr; body=body->GetNext())                                                                                                           
         {   
-            b2BodyUserData& data = body->GetUserData();
-            
-            //sf::Shape* shape = dynamic_cast<sf::RectangleShape*>(data->GetUserData());
-            sf::Shape* shape = (sf::RectangleShape*)data;
-            
-            //sf::Shape* shape = new sf::RectangleShape(sf::Vector2f(size_x,size_y)); 
+            b2BodyUserData& data = body->GetUserData();   
+            sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
+
             shape->setPosition(converter::metersToPixels(body->GetPosition().x),converter::metersToPixels(body->GetPosition().y));
             shape->setRotation(converter::radToDeg<double>(body->GetAngle()));
             render.draw(*shape);

@@ -117,7 +117,7 @@ macro(build_chapter CHAPTER_NAME)
 	project(${CHAPTER_NAME})
 
 	set(CHAPTER_DIR "${PROJECT_SOURCE_DIR}/..")
-	include_directories("${CHAPTER_DIR}//include")
+	include_directories("${CHAPTER_DIR}/include")
 
 	# Executable: Add only Main.cpp, set name without _EXE postfix
 	add_executable(${PROJECT_NAME} Main.cpp ${CHAPTER_SOURCES})
