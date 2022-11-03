@@ -44,6 +44,8 @@ class World : private sf::NonCopyable
         void loadTextures();
         void buildScene();
         void setPhysics();
+        b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type);
+
 
     private:
         sf::RenderWindow& mWindow;

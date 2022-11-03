@@ -62,7 +62,7 @@ namespace testing {
 
 int main(int argc, char* argv[])
 {
-    sf:: RenderWindow window(sf::VideoMode(800, 600, 32), "Box2DTests");
+    sf:: RenderWindow window(sf::VideoMode(1300, 600, 32), "Box2DTests");
     window.setFramerateLimit(60);
     b2Vec2 gravity(0.f,9.8f);
     b2World world(gravity);

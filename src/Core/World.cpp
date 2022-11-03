@@ -1,18 +1,20 @@
-#include <SFML/Graphics/RenderWindow.hpp>
-
 #include <Ryu/Core/World.h>
 #include <Ryu/Core/SpriteNode.h>
+#include <Ryu/Core/Utilities.h>
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Physics/DebugDraw.h>
 #include <Ryu/Scene/Crate.h>
-#include <iostream>
-#include <memory>
-#include <array>
+
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include <box2d/b2_world.h>
 #include <box2d/b2_body.h>
 #include <box2d/b2_draw.h>
+
+#include <iostream>
+#include <memory>
+#include <array>
 
 //namespace ryu{
 World::World(sf::RenderWindow& window)
@@ -115,29 +117,54 @@ World::buildScene()
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(ichi));
 }
 
+b2Body*
+World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type = b2_dynamicBody)
+{
+        b2BodyDef bodyDef;
+        bodyDef.position.Set(Converter::pixelsToMeters<double>(pos_x)
+                            ,Converter::pixelsToMeters<double>(pos_y));
+        bodyDef.type = type;
+        b2PolygonShape b2Shape;
+
+        b2Shape.SetAsBox(Converter::pixelsToMeters<double>(size_x/2.0)
+                        ,Converter::pixelsToMeters<double>(size_y/2.0));
+
+        b2FixtureDef fixtureDef;                                                                                                                                                              
+        fixtureDef.density = 1.0;                                                                                                                                                             
+        fixtureDef.friction = 0.4;                                                                                                                                                            
+        fixtureDef.restitution= 0.5;                                                                                                                                                          
+        fixtureDef.shape = &b2Shape;                                                                                                                                                          
+                                                                                                                                                                                              
+        b2Body* res = phWorld->CreateBody(&bodyDef);                                                                                                                                             
+        res->CreateFixture(&fixtureDef);                                                                                                                                                      
+                                                                                                                                                                                              
+        sf::Shape* shape = new sf::RectangleShape(sf::Vector2f(size_x,size_y));                                                                                                               
+        shape->setOrigin(size_x/2.0,size_y/2.0);                                                                                                                                              
+        shape->setPosition(sf::Vector2f(pos_x,pos_y));                                                                                                                                        
+                                                                                                                                                                                              
+        if(type == b2_dynamicBody)                                                                                                                                                            
+            shape->setFillColor(sf::Color::Red);                                                                                                                                             
+        else                                                                                                                                                                                  
+            shape->setFillColor(sf::Color::Green);                                                                                                                                            
+
+        res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);                                                                                                                                                              
+                                                                                                                                                                                              
+        return res;
+
+}
+
 void
 World::setPhysics()
 {
-    b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, -2.0f); // remember this is meter!
-    phGroundBody = phWorld->CreateBody(&groundBodyDef);
-
-    b2PolygonShape groundBox;
-    groundBox.SetAsBox(50.0f, 10.0f);
-
-    phGroundBody->CreateFixture(&groundBox, 0.0f); // static object so density == 0
-
-    uint32 flags = 0;
-    flags += phDebugPhysics * b2Draw::e_shapeBit; /// draw physicShapes
-    // TODO: we need to use GLFW and implement the draw methods ourself
-    phWorld->SetDebugDraw(&g_debugDraw);
-    g_debugDraw.SetFlags(flags);
-
+    phGroundBody = createPhysicalBox(600,780,1000,20,b2_staticBody);
+    
+    /*
     //Test crate, need a Texture
     Crate newCrate;
     newCrate.init(phWorld.get(),glm::vec2(0.0f,14.0f),glm::vec2(15.f,15.f));
 
     mCrates.push_back(&newCrate);
+    */
 }
 
 void
@@ -147,7 +174,17 @@ World::draw()
     // delegate work to the scenegraph
     mWindow.draw(mSceneGraph);
     // draw physics
-    phWorld->DebugDraw();
+    //phWorld->DebugDraw();
+
+    // TODO: extract own method : draw physics ground
+    b2BodyUserData& data = phGroundBody->GetUserData();
+    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
+
+    shape->setPosition(Converter::metersToPixels(phGroundBody->GetPosition().x),
+                       Converter::metersToPixels(phGroundBody->GetPosition().y));
+    shape->setRotation(Converter::radToDeg<double>(phGroundBody->GetAngle()));
+
+    mWindow.draw(*shape);
 }
 
 CommandQueue&

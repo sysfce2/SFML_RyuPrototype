@@ -18,7 +18,7 @@
 const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-: mWindow(sf::VideoMode(1024, 768), "SFML Application")
+: mWindow(sf::VideoMode(1200, 800), "SFML Application")
 ,mWorld(mWindow)
 ,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
 ,mIsPaused(false)

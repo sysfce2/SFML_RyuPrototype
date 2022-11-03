@@ -1,4 +1,4 @@
-# RyuPrototypeSMFL
+# RyuPrototypeSFML
 
 Ryu prototype build finally with SFML .
 
