@@ -17,6 +17,14 @@ Crate::Crate()
 Crate::~Crate(){}
 
 void
+Crate::init(b2Body* pBody, sf::Shape* pShape)
+{
+    mBody = pBody;
+    mFixture = pBody->GetFixtureList();
+    mShape = pShape;
+}
+
+void
 Crate::init(b2World* phWorld, const glm::vec2 &position, const glm::vec2 &dimension)
 {
     // Create the body of the falling Crate

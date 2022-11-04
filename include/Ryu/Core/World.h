@@ -45,7 +45,7 @@ class World : private sf::NonCopyable
         void buildScene();
         void setPhysics();
         b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type);
-
+        sf::Shape* getShapeFromPhysicsBody(b2Body* physicsBody);
 
     private:
         sf::RenderWindow& mWindow;
@@ -64,6 +64,7 @@ class World : private sf::NonCopyable
         // box2d physics
         std::unique_ptr<b2World> phWorld;
         b2Body* phGroundBody;
+        b2Body* pBoxTest;
         bool phDebugPhysics;
         float phTimeStep;
         

@@ -42,7 +42,7 @@ World::World(sf::RenderWindow& window)
     // TODO: refine/think where to put physics
     // is this the correct place ?
     // box2D physics-world
-    b2Vec2 gravity(0.0f, -10.0f);
+    b2Vec2 gravity(0.0f, 10.0f);
     phWorld = std::make_unique<b2World>(gravity);
     // build pyhsics    
     setPhysics();
@@ -131,8 +131,8 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyTyp
 
         b2FixtureDef fixtureDef;                                                                                                                                                              
         fixtureDef.density = 1.0;                                                                                                                                                             
-        fixtureDef.friction = 0.4;                                                                                                                                                            
-        fixtureDef.restitution= 0.5;                                                                                                                                                          
+        fixtureDef.friction = 0.1;                                                                                                                                                            
+        fixtureDef.restitution= 0.2;                                                                                                                                                          
         fixtureDef.shape = &b2Shape;                                                                                                                                                          
                                                                                                                                                                                               
         b2Body* res = phWorld->CreateBody(&bodyDef);                                                                                                                                             
@@ -142,8 +142,13 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyTyp
         shape->setOrigin(size_x/2.0,size_y/2.0);                                                                                                                                              
         shape->setPosition(sf::Vector2f(pos_x,pos_y));                                                                                                                                        
                                                                                                                                                                                               
-        if(type == b2_dynamicBody)                                                                                                                                                            
-            shape->setFillColor(sf::Color::Red);                                                                                                                                             
+        if(type == b2_dynamicBody)
+        {
+            //shape->setFillColor(sf::Color::Red);
+            //shape->setOutlineColor(sf::Color::Red);                                                                                                                                             
+            //shape->setOutlineThickness(2.0f);
+            shape->setTexture(&mSceneTextures.getResource(Textures::SceneID::BoxPushable));
+        }                                                                                                                                                            
         else                                                                                                                                                                                  
             shape->setFillColor(sf::Color::Green);                                                                                                                                            
 
@@ -158,13 +163,29 @@ World::setPhysics()
 {
     phGroundBody = createPhysicalBox(600,780,1000,20,b2_staticBody);
     
-    /*
+    
     //Test crate, need a Texture
-    Crate newCrate;
-    newCrate.init(phWorld.get(),glm::vec2(0.0f,14.0f),glm::vec2(15.f,15.f));
+    //Crate newCrate;
+    //newCrate.init(phWorld.get(),glm::vec2(0.0f,14.0f),glm::vec2(15.f,15.f));
+    pBoxTest = createPhysicalBox(300,100,64,64);
+    //sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
+    //newCrate.init(std::move(box),std::move(boxShape));
 
-    mCrates.push_back(&newCrate);
-    */
+    //mCrates.push_back(std::move(&newCrate));
+    
+}
+
+sf::Shape*
+World::getShapeFromPhysicsBody(b2Body* physicsBody)
+{
+// TODO: extract own method : draw physics ground
+    b2BodyUserData& data = physicsBody->GetUserData();
+    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
+
+    shape->setPosition(Converter::metersToPixels(physicsBody->GetPosition().x),
+                       Converter::metersToPixels(physicsBody->GetPosition().y));
+    shape->setRotation(Converter::radToDeg<double>(physicsBody->GetAngle()));
+    return shape;
 }
 
 void
@@ -176,15 +197,17 @@ World::draw()
     // draw physics
     //phWorld->DebugDraw();
 
-    // TODO: extract own method : draw physics ground
-    b2BodyUserData& data = phGroundBody->GetUserData();
-    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
-
-    shape->setPosition(Converter::metersToPixels(phGroundBody->GetPosition().x),
-                       Converter::metersToPixels(phGroundBody->GetPosition().y));
-    shape->setRotation(Converter::radToDeg<double>(phGroundBody->GetAngle()));
-
-    mWindow.draw(*shape);
+    // TODO: add the ground and stuff to the scenegraph !
+    mWindow.draw(*(getShapeFromPhysicsBody(phGroundBody)));
+    
+    mWindow.draw(*(getShapeFromPhysicsBody(pBoxTest)));
+    
+    /*
+    for(const auto& crate : mCrates)
+    {
+        mWindow.draw(*(getShapeFromPhysicsBody(crate->getBody())));
+    }
+    */
 }
 
 CommandQueue&
