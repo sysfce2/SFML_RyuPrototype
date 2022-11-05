@@ -111,7 +111,7 @@ World::buildScene()
     mPushBox = box.get();
     mPushBox->setPosition(mSpawnPosition);
 
-    std::unique_ptr<CharacterIchi> ichi = std::make_unique<CharacterIchi>(ECharacterState::Idle, phWorld,glm::vec2(1,4));
+    std::unique_ptr<CharacterIchi> ichi = std::make_unique<CharacterIchi>(ECharacterState::Idle, phWorld,sf::Vector2f(100,200));
     mPlayer = ichi.get();
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(box));
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(ichi));
@@ -178,7 +178,6 @@ World::setPhysics()
 sf::Shape*
 World::getShapeFromPhysicsBody(b2Body* physicsBody)
 {
-// TODO: extract own method : draw physics ground
     b2BodyUserData& data = physicsBody->GetUserData();
     sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
 
@@ -198,9 +197,15 @@ World::draw()
     //phWorld->DebugDraw();
 
     // TODO: add the ground and stuff to the scenegraph !
-    mWindow.draw(*(getShapeFromPhysicsBody(phGroundBody)));
+    if(phGroundBody)
+    {
+        mWindow.draw(*(getShapeFromPhysicsBody(phGroundBody)));
+    }
     
-    mWindow.draw(*(getShapeFromPhysicsBody(pBoxTest)));
+    if(pBoxTest)
+    {
+        mWindow.draw(*(getShapeFromPhysicsBody(pBoxTest)));
+    }
     
     /*
     for(const auto& crate : mCrates)

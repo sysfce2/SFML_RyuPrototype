@@ -1,3 +1,10 @@
+4/11/22:
+- docu, what we can do already etc ... docu code !
+- physics boxes destructable
+- physics for character only falling, collision
+- try transparent textures with light outlines for physicbodies (debug)
+- move physcsbody when character moves
+
 12/10/22:
 - set position of player (spawnposition)
 - cleanup playercontroller/handle input

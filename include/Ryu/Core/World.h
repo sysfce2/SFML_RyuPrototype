@@ -31,6 +31,8 @@ class World : private sf::NonCopyable
         const sf::Drawable& getPlayerSprite();
         // TODO: make this static ? -> access from everywhere
         std::unique_ptr<b2World>& getPhysicsWorld(){return phWorld;};
+        sf::Shape* getShapeFromPhysicsBody(b2Body* physicsBody);
+
 
     private:
         enum class Layer
@@ -45,8 +47,7 @@ class World : private sf::NonCopyable
         void buildScene();
         void setPhysics();
         b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type);
-        sf::Shape* getShapeFromPhysicsBody(b2Body* physicsBody);
-
+        
     private:
         sf::RenderWindow& mWindow;
         sf::View mWorldView;

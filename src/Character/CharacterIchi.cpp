@@ -2,12 +2,13 @@
 #include <Ryu/Core/Category.h>
 
 #include <box2d/box2d.h>
+#include <SFML/Graphics.hpp>
 
 #include <iostream>
 #include <string>
 //namespace ryu {
 
-CharacterIchi::CharacterIchi(ECharacterState startState, std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position)
+CharacterIchi::CharacterIchi(ECharacterState startState, std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position)
 : CharacterBase(startState, phWorld, position)
  , ichiTextureManager()
 {

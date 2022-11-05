@@ -31,8 +31,8 @@ class CharacterBase : public SceneNode , public Subject
     public:
         // TODO: implement rule of 5 !
         // (morph one character into another ^^)
-        CharacterBase(std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position);
-        CharacterBase(ECharacterState startState,  std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position);
+        CharacterBase(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position);
+        CharacterBase(ECharacterState startState,  std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position);
         ~CharacterBase();
         
         float getCharacterSpeed() {return mCharacterSpeed;}
@@ -59,10 +59,10 @@ class CharacterBase : public SceneNode , public Subject
 
         b2Body* getBody(){return mBody;}
         b2Fixture* getFixture(){return mFixture;}
-        void initPhysics(const glm::vec2 &position);
+        void initPhysics(const sf::Vector2f &position);
 
     private:
-        void initPhysics(std::unique_ptr<b2World>& phWorld,  const glm::vec2 &position);
+        void initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position);
 
     protected:
         SpritesheetAnimation mCharacterAnimation;
