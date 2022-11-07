@@ -20,7 +20,7 @@ class CharacterIchi : public CharacterBase
         unsigned int getCategory() const override;
         void update(sf::Time deltaTime) override;
     private:
-    
+        void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
         IchiTextureManager ichiTextureManager;
 };
 

@@ -27,10 +27,11 @@ class SceneNode : public sf::Drawable,
         sf::Vector2f getWorldPosition() const;
         void onCommand(const Command& command, sf::Time dt);
     
+    protected:
+        virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
     
     private:
         void draw(sf::RenderTarget& target, sf::RenderStates states) const /*TODO: for a test : remove comment  !final*/;
-        virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
         void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
         
         virtual void updateCurrent(sf::Time dt);

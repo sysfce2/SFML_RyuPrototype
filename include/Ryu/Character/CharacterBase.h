@@ -32,7 +32,7 @@ class CharacterBase : public SceneNode , public Subject
         // TODO: implement rule of 5 !
         // (morph one character into another ^^)
         CharacterBase(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position);
-        CharacterBase(ECharacterState startState,  std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position);
+        CharacterBase(ECharacterState startState,  std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &positiono);
         ~CharacterBase();
         
         float getCharacterSpeed() {return mCharacterSpeed;}
@@ -47,6 +47,8 @@ class CharacterBase : public SceneNode , public Subject
         void setMovement(sf::Vector2f _movement);
         void setMoveDirection(EMoveDirecton _movementDir);
         EMoveDirecton getMoveDirection() {return mMoveDirection;}
+        void updatePhysics();
+        void updatePhysics(const sf::Vector2f &position);
 
         virtual void handleInput(EInput input);
         virtual void update(sf::Time deltaTime);
@@ -59,12 +61,20 @@ class CharacterBase : public SceneNode , public Subject
 
         b2Body* getBody(){return mBody;}
         b2Fixture* getFixture(){return mFixture;}
-        void initPhysics(const sf::Vector2f &position);
-
-    private:
-        void initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position);
 
     protected:
+        /***
+         * \brief   Initialized physic (body, fixtures for the character).
+         *          its important to call the method in the child class, 
+         *          because just there the animation sprite is set and the size & mass could be calculated 
+         *  
+        ***/
+        void initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position);
+        void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+ 
+        sf::Shape* getShapeFromCharPhysicsBody(b2Body* physicsBody) const;
+
+
         SpritesheetAnimation mCharacterAnimation;
         
         std::unique_ptr<CharacterState> mCharacterState;

@@ -150,7 +150,7 @@ SpritesheetAnimation::update(sf::Time dt)
             mCurrentFrame++;
         }
     }
-    
+    //std::cout << "TextureRect: " << textureRect.width << "," << textureRect.height << "\n"; 
     mSprite.setTextureRect(textureRect); 
 }
 

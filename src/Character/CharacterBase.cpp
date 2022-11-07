@@ -18,9 +18,8 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,movement(0.f,0.f)
     ,mMoveDirection(EMoveDirecton::Right)
     ,phWorldRef(phWorld)
-{
-   //initPhysics(phWorld,position); 
-}
+{}
+
 
 CharacterBase::CharacterBase(ECharacterState startState, 
                             std::unique_ptr<b2World>& phWorld,  
@@ -38,11 +37,17 @@ CharacterBase::CharacterBase(ECharacterState startState,
        default:
         mCharacterState = std::make_unique<CharacterStateIdle>();
    }
-   //initPhysics(phWorld,position); 
 }
 
 void
-CharacterBase::initPhysics(const sf::Vector2f &position)
+CharacterBase::updatePhysics()
+{
+    sf::Vector2f position = mCharacterAnimation.getPosition();
+    initPhysics(phWorldRef,position);
+}
+
+void
+CharacterBase::updatePhysics(const sf::Vector2f &position)
 {
     initPhysics(phWorldRef,position);
 }
@@ -51,7 +56,7 @@ CharacterBase::initPhysics(const sf::Vector2f &position)
 void
 CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position)
 {
-    // nit physics after the charactersprite was created !
+    // init physics after the charactersprite was created !
     // Create the body of the falling Crate
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody; /// TODO: or even kinematic body ?
@@ -90,6 +95,29 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
 
     std::cout << "Init character at position "<< bodyDef.position.x << "," << bodyDef.position.y << "\n";
     //mBody->SetLinearVelocity(b2Vec2(0.0f, -50.0f));
+}
+
+sf::Shape*
+CharacterBase::getShapeFromCharPhysicsBody(b2Body* physicsBody) const
+{
+    b2BodyUserData& data = physicsBody->GetUserData();
+    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
+
+    shape->setPosition(Converter::metersToPixels(physicsBody->GetPosition().x),
+                       Converter::metersToPixels(physicsBody->GetPosition().y));
+    shape->setRotation(Converter::radToDeg<double>(physicsBody->GetAngle()));
+    return shape;
+}
+
+void
+CharacterBase::drawCurrent(sf::RenderTarget& target, sf::RenderStates) const
+{
+    // t.b.c
+      if(mBody)
+    {
+        target.draw(*(getShapeFromCharPhysicsBody(mBody)));
+    }
+    
 }
 
 void
