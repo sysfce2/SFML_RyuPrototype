@@ -47,6 +47,7 @@ class CharacterBase : public SceneNode , public Subject
         void setMovement(sf::Vector2f _movement);
         void setMoveDirection(EMoveDirecton _movementDir);
         EMoveDirecton getMoveDirection() {return mMoveDirection;}
+        void initPhysics();
         void updatePhysics();
         void updatePhysics(const sf::Vector2f &position);
 
@@ -80,6 +81,7 @@ class CharacterBase : public SceneNode , public Subject
         std::unique_ptr<CharacterState> mCharacterState;
         ECharacterState mECharacterState;
         float mCharacterSpeed;
+        bool physicsInitialized;
     
     private:
         EMoveDirecton mMoveDirection;

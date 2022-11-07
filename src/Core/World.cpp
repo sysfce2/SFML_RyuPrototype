@@ -161,7 +161,7 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyTyp
 void
 World::setPhysics()
 {
-    phGroundBody = createPhysicalBox(600,780,1000,20,b2_staticBody);
+    phGroundBody = createPhysicalBox(600,780,1200,20,b2_staticBody);
     
     
     //Test crate, need a Texture

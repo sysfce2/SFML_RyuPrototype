@@ -127,6 +127,8 @@ SpritesheetAnimation::update(sf::Time dt)
     {
         textureRect = sf::IntRect(mStartFrame.x, mStartFrame.y, mFrameSize.x, mFrameSize.y);
     }
+
+    //std::cout << "texRec:" << textureRect.width << "," << textureRect.height << "\n";
     
     while (mElapsedTime >= timePerFrame && (mCurrentFrame <= mNumFrames || mRepeat))
     {

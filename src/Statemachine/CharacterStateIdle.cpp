@@ -65,9 +65,9 @@ CharacterStateIdle::enter(CharacterBase& character)
     sf::FloatRect bounds = character.getSpriteAnimation().getSprite().getLocalBounds();
     character.getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
     //mSprite.setOrigin(120.f, 144.f);
-    character.updatePhysics();
     std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
-    //character.initPhysics(phWorld);
+    character.initPhysics();
+
 }
 
 void

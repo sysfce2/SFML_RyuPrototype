@@ -11,6 +11,10 @@
 
 //namespace ryu {
 
+
+static constexpr std::pair<int,int> INIT_FRAME_SIZE(80,96); 
+
+
 CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,  
                             const sf::Vector2f &position) 
     :mCharacterAnimation()
@@ -25,10 +29,15 @@ CharacterBase::CharacterBase(ECharacterState startState,
                             std::unique_ptr<b2World>& phWorld,  
                             const sf::Vector2f &position)
     :mECharacterState(startState)
+    ,mCharacterState(std::make_unique<CharacterStateIdle>())
     ,mCharacterSpeed(55.0f) // startvalue playerspeed
     ,mMoveDirection(EMoveDirecton::Right)
     ,phWorldRef(phWorld)
 {
+   // 
+   handleInput(EInput::ReleaseLeft);
+
+/*
    switch(mECharacterState)
    {
        case ECharacterState::Idle:
@@ -37,21 +46,34 @@ CharacterBase::CharacterBase(ECharacterState startState,
        default:
         mCharacterState = std::make_unique<CharacterStateIdle>();
    }
+   */
 }
 
 void
 CharacterBase::updatePhysics()
 {
     sf::Vector2f position = mCharacterAnimation.getPosition();
-    initPhysics(phWorldRef,position);
+    
+    //initPhysics(phWorldRef,position);
 }
 
 void
 CharacterBase::updatePhysics(const sf::Vector2f &position)
 {
-    initPhysics(phWorldRef,position);
+    //initPhysics(phWorldRef,position);
 }
 
+// inits the physics at the current character position, used afte the initial state is set 
+void
+CharacterBase::initPhysics()
+{
+    if(not physicsInitialized)
+    {
+        initPhysics(phWorldRef, mCharacterAnimation.getPosition());
+        physicsInitialized = true;
+    }
+    
+}
 
 void
 CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position)
@@ -69,8 +91,8 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
     // polygonShape.SetAsBox(mCharacterAnimation.getTexture()->getSize().x / 20.f, mCharacterAnimation.getTexture()->getSize().y / 20.f ); /* dimension.x/2.f,dimension.y/2.f */
     //polygonShape.SetAsBox(0.5,0.9);
 
-    int size_x = mCharacterAnimation.getSprite().getTextureRect().width;
-    int size_y = mCharacterAnimation.getSprite().getTextureRect().height;
+    int size_x = INIT_FRAME_SIZE.first;// mCharacterAnimation.getSprite().getTextureRect().width;
+    int size_y = INIT_FRAME_SIZE.second;// mCharacterAnimation.getSprite().getTextureRect().height;
 
     polygonShape.SetAsBox(
          Converter::pixelsToMeters<double>(size_x * 0.5f)
@@ -93,7 +115,7 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
     
     mBody->GetUserData().pointer = (uintptr_t)shape;
 
-    std::cout << "Init character at position "<< bodyDef.position.x << "," << bodyDef.position.y << "\n";
+    std::cout << "Init character at position "<< Converter::metersToPixels(bodyDef.position.x) << "," << Converter::metersToPixels(bodyDef.position.y) << "\n";
     //mBody->SetLinearVelocity(b2Vec2(0.0f, -50.0f));
 }
 
@@ -157,6 +179,19 @@ void
 CharacterBase::update(sf::Time deltaTime)
 {
     updateCharacterState(deltaTime);
+
+    // TODO this has to be moved to a new state ! (falling)
+    std::cout << "x(pBody): " << Converter::metersToPixels(mBody->GetPosition().x) 
+              << "y(pBody): " << Converter::metersToPixels(mBody->GetPosition().y) 
+              << " v " << mBody->GetLinearVelocity().x << "," << mBody->GetLinearVelocity().y << " length: " << mBody->GetLinearVelocity().Length()       
+              << "\n";
+    // dummy impl. 
+    if(mBody->GetLinearVelocity().Length() != 0)
+    {
+        // TODO: WHY NO MOVE ????
+        std::cout << "setposi \n";
+        setPosition(sf::Vector2f(Converter::metersToPixels<double>(mBody->GetPosition().x), Converter::metersToPixels<double>(mBody->GetPosition().y)));
+    }
 }
 
 void
