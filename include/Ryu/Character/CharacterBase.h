@@ -9,10 +9,13 @@
 #include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Events/Subject.h>
 #include <Ryu/Events/EventEnums.h>
+#include <Ryu/Core/AssetIdentifiers.h>
 
 #include <Thirdparty/glm/glm.hpp>
 #include <SFML/Graphics.hpp>
 #include <memory.h>
+
+using BaseTextureManager = AssetManager<sf::Texture, Textures::PhysicAssetsID>;
 
 namespace sf{
     class Event;
@@ -84,13 +87,16 @@ class CharacterBase : public SceneNode , public Subject
         bool physicsInitialized;
     
     private:
+        BaseTextureManager baseTextureManager;
         EMoveDirecton mMoveDirection;
         sf::Vector2f movement;
+        bool mCharacterFalling;
 
         // physics
         std::unique_ptr<b2World>& phWorldRef;
         b2Body* mBody;
         b2Fixture* mFixture;
+        bool mDebugDraw=false;
 };
 
 //} /// namespace ryu

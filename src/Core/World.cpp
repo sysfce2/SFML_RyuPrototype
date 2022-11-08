@@ -130,9 +130,9 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyTyp
                         ,Converter::pixelsToMeters<double>(size_y/2.0));
 
         b2FixtureDef fixtureDef;                                                                                                                                                              
-        fixtureDef.density = 1.0;                                                                                                                                                             
-        fixtureDef.friction = 0.1;                                                                                                                                                            
-        fixtureDef.restitution= 0.2;                                                                                                                                                          
+        fixtureDef.density = 2.0;                                                                                                                                                             
+        fixtureDef.friction = 0.98;                                                                                                                                                            
+        fixtureDef.restitution= 0.1;                                                                                                                                                          
         fixtureDef.shape = &b2Shape;                                                                                                                                                          
                                                                                                                                                                                               
         b2Body* res = phWorld->CreateBody(&bodyDef);                                                                                                                                             

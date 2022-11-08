@@ -22,6 +22,7 @@ namespace Textures
 
 	enum class PhysicAssetsID
 	{
+		Empty,
 		Crate,
 	};
 

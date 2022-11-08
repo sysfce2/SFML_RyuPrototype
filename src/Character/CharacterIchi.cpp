@@ -14,7 +14,7 @@ CharacterIchi::CharacterIchi(ECharacterState startState, std::unique_ptr<b2World
 {
     loadTextures();
 
-    mCharacterAnimation.setPosition({100.f,50.f});
+    //mCharacterAnimation.setPosition({100.f,50.f});
     mCharacterState->enter(*this);
       
 }
@@ -73,12 +73,9 @@ void
 CharacterIchi::update(sf::Time deltaTime)
 {
     CharacterBase::update(deltaTime);
-    // call in Baseclass
-    //updateCharacterState(deltaTime);
-
+    
     //b2Vec2 v = getBody()->GetLinearVelocity();
     //g_debugDraw.DrawString(5, m_textLine, "Character Linear Velocity: %f", v.y);
-
 
     //auto posi = getBody()->GetLinearVelocity(); //>GetLinearVelocityFromLocalPoint({getPosition().x,getPosition().y});
     //std::cout << "ichi(y):" << v.y <<"\n";

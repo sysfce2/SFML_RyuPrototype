@@ -5,7 +5,7 @@
 
 //namespace ryu {
 
-typedef AssetManager<sf::Texture, Textures::CharacterID> IchiTextureManager;
+using IchiTextureManager = AssetManager<sf::Texture, Textures::CharacterID>;
 
 class CharacterIchi : public CharacterBase
 {

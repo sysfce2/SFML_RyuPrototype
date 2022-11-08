@@ -121,8 +121,7 @@ PlayerController::initializeBindings()
 PlayerController::PlayerController(CharacterIchi* character)
 : Observer("Playercontroller")
 , playerCharacter(character)
-{
-    
+{    
     initializeBindings();
 }
 

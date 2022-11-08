@@ -8,11 +8,17 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 //namespace ryu {
 
+// this is the framesize for the boundary box of the physics body
+static constexpr std::pair<int,int> INIT_FRAME_SIZE(60,86); 
 
-static constexpr std::pair<int,int> INIT_FRAME_SIZE(80,96); 
+template <typename T>
+    bool IsInBounds(const T& value, const T& low, const T& high) {
+    return !(value < low) && !(high < value);
+}
 
 
 CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,  
@@ -22,7 +28,11 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,movement(0.f,0.f)
     ,mMoveDirection(EMoveDirecton::Right)
     ,phWorldRef(phWorld)
-{}
+    ,mCharacterFalling(false)
+    ,baseTextureManager()
+{
+    loadTextures();
+}
 
 
 CharacterBase::CharacterBase(ECharacterState startState, 
@@ -33,11 +43,14 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,mCharacterSpeed(55.0f) // startvalue playerspeed
     ,mMoveDirection(EMoveDirecton::Right)
     ,phWorldRef(phWorld)
+    ,mCharacterFalling(false)
+    ,baseTextureManager()
 {
-   // 
+   // needable ? 
    handleInput(EInput::ReleaseLeft);
+  
+   loadTextures();
 
-/*
    switch(mECharacterState)
    {
        case ECharacterState::Idle:
@@ -46,7 +59,6 @@ CharacterBase::CharacterBase(ECharacterState startState,
        default:
         mCharacterState = std::make_unique<CharacterStateIdle>();
    }
-   */
 }
 
 void
@@ -71,8 +83,13 @@ CharacterBase::initPhysics()
     {
         initPhysics(phWorldRef, mCharacterAnimation.getPosition());
         physicsInitialized = true;
-    }
-    
+    }   
+}
+
+void
+CharacterBase::loadTextures()
+{
+    baseTextureManager.load(Textures::PhysicAssetsID::Empty,"assets/scenes/99_dummy/box_empty.png");
 }
 
 void
@@ -101,17 +118,26 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
     // Create a fixture
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &polygonShape;
-    fixtureDef.density = 1.f; /// for dynamic objects density needs to be > 0
-    fixtureDef.friction = 0.3f; /// recommended by b2d docu 
-    fixtureDef.restitution = 0.2;
+    fixtureDef.density = 5.f; /// for dynamic objects density needs to be > 0
+    fixtureDef.friction = 0.2f; /// recommended by b2d docu 
+    fixtureDef.restitution = 0.1;
     
     mBody = phWorld->CreateBody(&bodyDef);
     mFixture = mBody->CreateFixture(&fixtureDef);
     
     sf::Shape* shape = new sf::RectangleShape(sf::Vector2f(size_x,size_y));
     shape->setOrigin(size_x/2.0f,size_y/2.0f);                                                                                                                                              
-    shape->setPosition(sf::Vector2f(position.x,position.y));    
-    shape->setFillColor(sf::Color::Magenta);
+    shape->setPosition(sf::Vector2f(position.x,position.y));
+    // TODO make bitsize style like category selection !!!
+    if(mDebugDraw)
+    {
+        shape->setFillColor(sf::Color::Magenta);
+    }
+    else
+    {
+        shape->setTexture(&baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));    
+    
+    }
     
     mBody->GetUserData().pointer = (uintptr_t)shape;
 
@@ -141,11 +167,6 @@ CharacterBase::drawCurrent(sf::RenderTarget& target, sf::RenderStates) const
     }
     
 }
-
-void
-CharacterBase::loadTextures()
-{}
-
 
 CharacterBase::~CharacterBase() {}
 
@@ -178,20 +199,26 @@ CharacterBase::handleInput(EInput input)
 void
 CharacterBase::update(sf::Time deltaTime)
 {
+    std::cout //<< " x(pBody): " << Converter::metersToPixels(mBody->GetPosition().x)
+              //<< " y(pBody): " << Converter::metersToPixels(mBody->GetPosition().y) << "\n"
+              << " v " << mBody->GetLinearVelocity().x << " | " << mBody->GetLinearVelocity().y << "\n length: " << mBody->GetLinearVelocity().Length() << "\n";
+    // TODO this has to be moved to a new state ! (falling)
+    // dummy impl. / without falling animation
+    if(mBody->GetLinearVelocity().y > 0 )
+    {   mCharacterFalling = true;     
+        mCharacterAnimation.setPosition(
+            Converter::metersToPixels<double>(mBody->GetPosition().x),
+            Converter::metersToPixels<double>(mBody->GetPosition().y)
+        );
+    }
+
+    if(IsInBounds(mBody->GetLinearVelocity().y,0.f, 0.02f))
+    {   
+        mCharacterFalling = false;     
+    }
+
     updateCharacterState(deltaTime);
 
-    // TODO this has to be moved to a new state ! (falling)
-    std::cout << "x(pBody): " << Converter::metersToPixels(mBody->GetPosition().x) 
-              << "y(pBody): " << Converter::metersToPixels(mBody->GetPosition().y) 
-              << " v " << mBody->GetLinearVelocity().x << "," << mBody->GetLinearVelocity().y << " length: " << mBody->GetLinearVelocity().Length()       
-              << "\n";
-    // dummy impl. 
-    if(mBody->GetLinearVelocity().Length() != 0)
-    {
-        // TODO: WHY NO MOVE ????
-        std::cout << "setposi \n";
-        setPosition(sf::Vector2f(Converter::metersToPixels<double>(mBody->GetPosition().x), Converter::metersToPixels<double>(mBody->GetPosition().y)));
-    }
 }
 
 void
@@ -199,7 +226,12 @@ CharacterBase::updateCharacterState(sf::Time deltaTime)
 {
     mCharacterAnimation.update(deltaTime);
     mCharacterAnimation.move(movement * deltaTime.asSeconds());
-   
+    if(not mCharacterFalling)
+    {
+        mBody->SetLinearVelocity( {Converter::pixelsToMeters<float>(movement.x),
+                              Converter::pixelsToMeters<float>(movement.y)});
+    }
+    
     mCharacterState->update(*this);
 }
 
@@ -219,7 +251,6 @@ void
 CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)
 {
     mCharacterAnimation.setTexture(textureManager.getResource(id));
-   
 }
 
 void
