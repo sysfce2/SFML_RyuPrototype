@@ -16,6 +16,7 @@ namespace Textures
 		BoxHeavy,
 		Ladder,
 		Ground,
+		Grass,
 		BGMountain,
 		Unknown
 	};

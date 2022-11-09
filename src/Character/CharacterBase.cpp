@@ -14,7 +14,7 @@
 
 // this is the framesize for the boundary box of the physics body
 static constexpr std::pair<int,int> INIT_FRAME_SIZE(60,86); 
-
+ 
 template <typename T>
     bool IsInBounds(const T& value, const T& low, const T& high) {
     return !(value < low) && !(high < value);
@@ -30,7 +30,10 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,phWorldRef(phWorld)
     ,mCharacterFalling(false)
     ,baseTextureManager()
+    ,mCharSettings()
+    ,mDebugDraw(false)
 {
+    mDebugDraw = mCharSettings.DebugDraw;
     loadTextures();
 }
 
@@ -45,10 +48,13 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,phWorldRef(phWorld)
     ,mCharacterFalling(false)
     ,baseTextureManager()
+    ,mCharSettings()
+    ,mDebugDraw(false)
 {
    // needable ? 
    handleInput(EInput::ReleaseLeft);
   
+   mDebugDraw = mCharSettings.DebugDraw;
    loadTextures();
 
    switch(mECharacterState)
@@ -101,7 +107,9 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
     bodyDef.type = b2_dynamicBody; /// TODO: or even kinematic body ?
     bodyDef.position.Set(Converter::pixelsToMeters<double>(position.x),
                          Converter::pixelsToMeters<double>(position.y));
-    
+    bodyDef.fixedRotation = true;                     
+    bodyDef.gravityScale = 4.8f;
+
     // Create a shape
     b2PolygonShape polygonShape;
     // TODO write convert functions Pixels<->meter (box2d) and reset polygonshape wenn aniation changes
@@ -119,9 +127,9 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &polygonShape;
     fixtureDef.density = 5.f; /// for dynamic objects density needs to be > 0
-    fixtureDef.friction = 0.2f; /// recommended by b2d docu 
+    fixtureDef.friction = 0.1f; /// recommended by b2d docu 
     fixtureDef.restitution = 0.1;
-    
+
     mBody = phWorld->CreateBody(&bodyDef);
     mFixture = mBody->CreateFixture(&fixtureDef);
     
@@ -228,8 +236,8 @@ CharacterBase::updateCharacterState(sf::Time deltaTime)
     mCharacterAnimation.move(movement * deltaTime.asSeconds());
     if(not mCharacterFalling)
     {
-        mBody->SetLinearVelocity( {Converter::pixelsToMeters<float>(movement.x),
-                              Converter::pixelsToMeters<float>(movement.y)});
+        mBody->SetLinearVelocity( {mCharSettings.MoveMultiplierX * Converter::pixelsToMeters<float>(movement.x),
+                                   mCharSettings.MoveMultiplierY * Converter::pixelsToMeters<float>(movement.y)});
     }
     
     mCharacterState->update(*this);

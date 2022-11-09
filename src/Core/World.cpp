@@ -33,7 +33,7 @@ World::World(sf::RenderWindow& window)
     (mWorldBounds.height - mWorldView.getSize().y))
 , mPushBox(nullptr)
 , mPlayer(nullptr)
-, phGroundBody(nullptr)
+, phGroundBodies()
 , phDebugPhysics(true)
 , phTimeStep(1.f/60.f)
 {
@@ -57,7 +57,10 @@ World::~World()
 {
     mPlayer = nullptr;
     mPushBox = nullptr;
-    phWorld->DestroyBody(phGroundBody);
+    for(const auto& body : phGroundBodies)
+    {
+        phWorld->DestroyBody(body);
+    }
 }
 
 CharacterIchi*
@@ -78,6 +81,7 @@ World::loadTextures()
     // TODO: cant find in debug mode !
     mSceneTextures.load(Textures::SceneID::BoxPushable, "assets/scenes/99_dummy/box_wood.png");
     mSceneTextures.load(Textures::SceneID::BGMountain, "assets/backgrounds/99_dummy/722756.png");
+    mSceneTextures.load(Textures::SceneID::Grass, "assets/scenes/99_dummy/tile_grass_1.png");
     
     //mSceneTextures.load(Textures::SceneID::Ground, "assets/scenes/99_dummy/box_wood.png");
 }
@@ -115,10 +119,12 @@ World::buildScene()
     mPlayer = ichi.get();
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(box));
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(ichi));
+
 }
 
 b2Body*
-World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type = b2_dynamicBody)
+World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
+                         b2BodyType type = b2_dynamicBody, Textures::SceneID texture = Textures::SceneID::Unknown)
 {
         b2BodyDef bodyDef;
         bodyDef.position.Set(Converter::pixelsToMeters<double>(pos_x)
@@ -142,12 +148,12 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyTyp
         shape->setOrigin(size_x/2.0,size_y/2.0);                                                                                                                                              
         shape->setPosition(sf::Vector2f(pos_x,pos_y));                                                                                                                                        
                                                                                                                                                                                               
-        if(type == b2_dynamicBody)
+        if(texture != Textures::SceneID::Unknown)
         {
             //shape->setFillColor(sf::Color::Red);
             //shape->setOutlineColor(sf::Color::Red);                                                                                                                                             
             //shape->setOutlineThickness(2.0f);
-            shape->setTexture(&mSceneTextures.getResource(Textures::SceneID::BoxPushable));
+            shape->setTexture(&mSceneTextures.getResource(texture));
         }                                                                                                                                                            
         else                                                                                                                                                                                  
             shape->setFillColor(sf::Color::Green);                                                                                                                                            
@@ -161,18 +167,19 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyTyp
 void
 World::setPhysics()
 {
-    phGroundBody = createPhysicalBox(600,780,1200,20,b2_staticBody);
-    
-    
-    //Test crate, need a Texture
-    //Crate newCrate;
-    //newCrate.init(phWorld.get(),glm::vec2(0.0f,14.0f),glm::vec2(15.f,15.f));
-    pBoxTest = createPhysicalBox(300,100,64,64);
+
+    // grounds
+    phGroundBodies.emplace_back(createPhysicalBox(600,780,1200,20,b2_staticBody));
+    phGroundBodies.emplace_back(createPhysicalBox(70,150,150,32,b2_staticBody,Textures::SceneID::Grass));
+    phGroundBodies.emplace_back(createPhysicalBox(240,280,200,32,b2_staticBody,Textures::SceneID::Grass));
+    phGroundBodies.emplace_back(createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass));
+    phGroundBodies.emplace_back(createPhysicalBox(500,500,120,32,b2_staticBody,Textures::SceneID::Grass));
+
+    pBoxTest = createPhysicalBox(300,100,64,64,b2_dynamicBody,Textures::SceneID::BoxPushable);
     //sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
     //newCrate.init(std::move(box),std::move(boxShape));
 
-    //mCrates.push_back(std::move(&newCrate));
-    
+    //mCrates.push_back(std::move(&newCrate));    
 }
 
 sf::Shape*
@@ -197,9 +204,12 @@ World::draw()
     //phWorld->DebugDraw();
 
     // TODO: add the ground and stuff to the scenegraph !
-    if(phGroundBody)
+    if(phGroundBodies.size() > 0)
     {
-        mWindow.draw(*(getShapeFromPhysicsBody(phGroundBody)));
+        for(const auto& body : phGroundBodies)
+        {
+            mWindow.draw(*(getShapeFromPhysicsBody(body)));
+        }
     }
     
     if(pBoxTest)

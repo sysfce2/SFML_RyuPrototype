@@ -17,6 +17,7 @@
 
 using BaseTextureManager = AssetManager<sf::Texture, Textures::PhysicAssetsID>;
 
+
 namespace sf{
     class Event;
 }
@@ -27,6 +28,16 @@ class b2Body;
 class b2Fixture;
 
 //namespace ryu{
+
+struct CharacterSetting
+{
+    bool DebugDraw = false;
+    // due increase of gravityscale (falling is then more gamey) the physicbody
+    // needs some adustments for movement so its not behind the movement of
+    // the characteranimation
+    float MoveMultiplierX = 1.05f;
+    float MoveMultiplierY = 1.47f;
+};
 
 class CharacterBase : public SceneNode , public Subject
 {
@@ -96,7 +107,8 @@ class CharacterBase : public SceneNode , public Subject
         std::unique_ptr<b2World>& phWorldRef;
         b2Body* mBody;
         b2Fixture* mFixture;
-        bool mDebugDraw=false;
+        bool mDebugDraw;
+        CharacterSetting mCharSettings;
 };
 
 //} /// namespace ryu
