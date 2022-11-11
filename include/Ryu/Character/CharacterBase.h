@@ -69,10 +69,12 @@ class CharacterBase : public SceneNode , public Subject
         virtual void update(sf::Time deltaTime);
         void updateCharacterState(sf::Time deltaTime);
         virtual void loadTextures();
+        void changeState(std::unique_ptr<CharacterState> toState);
                 
         void changeColor(sf::Color color);
 
         void notifyObservers(Event event);
+        bool isFalling() {return mCharacterFalling;}
 
         b2Body* getBody(){return mBody;}
         b2Fixture* getFixture(){return mFixture;}

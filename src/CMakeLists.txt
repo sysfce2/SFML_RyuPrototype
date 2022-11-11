@@ -17,6 +17,7 @@ set (SRC
 	Physics/DebugDraw.cpp
 	Statemachine/CharacterStateIdle.cpp
 	Statemachine/CharacterStateRun.cpp
+	Statemachine/CharacterStateFalling.cpp
 )
 
 build_chapter(RyuPt SOURCES ${SRC})

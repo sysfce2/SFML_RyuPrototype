@@ -33,6 +33,7 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
            return std::move(std::make_unique<CharacterStateIdle>());    
        }
        break;
+
      
     default:
         break;
@@ -43,7 +44,12 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
      
 void 
 CharacterStateRun::update(CharacterBase& character)
-{}
+{
+    if(character.isFalling())
+    {
+
+    }
+}
 
 void
 CharacterStateRun::enter(CharacterBase& character)

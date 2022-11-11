@@ -87,6 +87,7 @@ World::loadTextures()
 }
 
 
+// TODO: parametrize this for more level!
 void
 World::buildScene()
 {
@@ -120,6 +121,7 @@ World::buildScene()
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(box));
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(ichi));
 
+    //texts.emplace_back(createText("TEST"));
 }
 
 b2Body*
@@ -217,6 +219,19 @@ World::draw()
         mWindow.draw(*(getShapeFromPhysicsBody(pBoxTest)));
     }
     
+
+    /* TODO: how to create texts ? not seem to work here
+    for(const auto& text : texts)
+    {
+        mWindow.draw(text);   
+    }
+
+    sf::Text text;
+
+    createText("BLUB", text);
+    mWindow.draw(text);
+    */   
+
     /*
     for(const auto& crate : mCrates)
     {
@@ -229,6 +244,28 @@ CommandQueue&
 World::getActiveCommands()
 {
     return mActiveCommands;
+}
+
+void 
+World::createText(const sf::String text, sf::Text& textToShow)
+{
+    sf::Font font;
+    if (!font.loadFromFile("assets/fonts/droid_sans.ttf"))
+    {
+        std::cout << "Font Error: font-file not found.\n";
+    }
+    
+
+    textToShow.setString(text);
+
+    textToShow.setCharacterSize(24); // in pixels, not points!
+
+    textToShow.setFillColor(sf::Color::Red);
+
+    textToShow.setPosition(sf::Vector2f{100,100});
+
+    textToShow.setStyle(sf::Text::Bold | sf::Text::Underlined);
+
 }
 
 void
@@ -249,7 +286,6 @@ World::update(sf::Time dt)
         std::cout << crate.getBody()->GetPosition().x << crate.getBody()->GetPosition().y << "\n"; 
     }
     */
-   
 }
 
 //} /// namespace ryu

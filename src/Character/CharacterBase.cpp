@@ -1,5 +1,6 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
+#include <Ryu/Statemachine/CharacterStateFalling.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/Utilities.h>
 
@@ -207,13 +208,21 @@ CharacterBase::handleInput(EInput input)
 void
 CharacterBase::update(sf::Time deltaTime)
 {
-    std::cout //<< " x(pBody): " << Converter::metersToPixels(mBody->GetPosition().x)
+    //std::cout //<< " x(pBody): " << Converter::metersToPixels(mBody->GetPosition().x)
               //<< " y(pBody): " << Converter::metersToPixels(mBody->GetPosition().y) << "\n"
-              << " v " << mBody->GetLinearVelocity().x << " | " << mBody->GetLinearVelocity().y << "\n length: " << mBody->GetLinearVelocity().Length() << "\n";
+    //          << " v " << mBody->GetLinearVelocity().x << " | " << mBody->GetLinearVelocity().y << "\n length: " << mBody->GetLinearVelocity().Length() << "\n";
     // TODO this has to be moved to a new state ! (falling)
     // dummy impl. / without falling animation
     if(mBody->GetLinearVelocity().y > 0 )
-    {   mCharacterFalling = true;     
+    {   
+        if(not mCharacterFalling)
+        {
+            std::unique_ptr<CharacterStateFalling> state = std::make_unique<CharacterStateFalling>();
+            mCharacterState->exit(*this);
+            mCharacterState = std::move(state);
+            mCharacterState->enter(*this);
+        }
+        mCharacterFalling = true;
         mCharacterAnimation.setPosition(
             Converter::metersToPixels<double>(mBody->GetPosition().x),
             Converter::metersToPixels<double>(mBody->GetPosition().y)
@@ -227,6 +236,14 @@ CharacterBase::update(sf::Time deltaTime)
 
     updateCharacterState(deltaTime);
 
+}
+
+void 
+CharacterBase::changeState(std::unique_ptr<CharacterState> toState)
+{
+    mCharacterState->exit(*this);
+    mCharacterState = std::move(toState);
+    mCharacterState->enter(*this);
 }
 
 void

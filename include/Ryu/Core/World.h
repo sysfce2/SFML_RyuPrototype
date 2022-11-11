@@ -43,6 +43,7 @@ class World : private sf::NonCopyable
             LayerCount
         };
 
+        void createText(const sf::String text, sf::Text& textToShow);
         void loadTextures();
         void buildScene();
         void setPhysics();
@@ -65,6 +66,7 @@ class World : private sf::NonCopyable
         // box2d physics
         std::unique_ptr<b2World> phWorld;
         std::vector<b2Body*> phGroundBodies;
+        std::vector<sf::Text> texts;
         b2Body* pBoxTest;
         bool phDebugPhysics;
         float phTimeStep;

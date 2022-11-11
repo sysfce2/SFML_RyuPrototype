@@ -32,6 +32,7 @@ namespace Textures
         IchiIdleRun,
 		IchiJump,
 		IchiKatanaWalk,
+		IchiFallingLow,
 		// ... Spritesheets
     };
 }
