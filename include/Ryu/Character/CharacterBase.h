@@ -39,6 +39,17 @@ struct CharacterSetting
     float MoveMultiplierY = 1.47f;
 };
 
+struct AnimationConfiguration
+{
+    sf::Vector2i frameSize;
+    sf::Vector2i startFrame;
+    std::size_t numFrames;
+    sf::Time duration;
+    bool repeat;
+    Textures::CharacterID textureId;
+};
+
+
 class CharacterBase : public SceneNode , public Subject
 {
 
@@ -70,7 +81,9 @@ class CharacterBase : public SceneNode , public Subject
         void updateCharacterState(sf::Time deltaTime);
         virtual void loadTextures();
         void changeState(std::unique_ptr<CharacterState> toState);
-                
+        void setupAnimation(AnimationConfiguration config);
+
+
         void changeColor(sf::Color color);
 
         void notifyObservers(Event event);

@@ -54,25 +54,17 @@ CharacterStateRun::update(CharacterBase& character)
 void
 CharacterStateRun::enter(CharacterBase& character)
 {
-    //character.setTextureOnCharacter(Textures::CharacterID::IchiKatanaWalk);
-    character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
+    character.setupAnimation({
+                .frameSize={80,96}
+               ,.startFrame={1,0}
+               ,.numFrames=8
+               ,.duration = sf::seconds(1)
+               ,.repeat = true
+               ,.textureId = Textures::CharacterID::IchiIdleRun});
 
     mLastCharacterSpeed = character.getCharacterSpeed();
     character.setCharacterSpeed(mRunCharacterSpeed);
     character.notifyObservers(Event::CharacterSpeedChanged);
-
-    // TODO: animation spec tospecial class / manager ?
-    character.getSpriteAnimation().setFrameSize(sf::Vector2i(80,96));
-    character.getSpriteAnimation().setStartFrame({80,0});
-    character.getSpriteAnimation().setNumFrames(8);
-    character.getSpriteAnimation().setDuration(sf::seconds(1));
-    character.getSpriteAnimation().setRepeating(true);
-
-    sf::FloatRect bounds = character.getSpriteAnimation().getSprite().getLocalBounds();
-    character.getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-    //mSprite.setOrigin(120.f, 144.f);
-    std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
-    //character.initPhysics(phWorld);
 }
 
 void

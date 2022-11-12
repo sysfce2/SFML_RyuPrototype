@@ -50,24 +50,13 @@ CharacterStateIdle::update(CharacterBase& character)
 void
 CharacterStateIdle::enter(CharacterBase& character)
 {
-    std::cout << "state idle enter " << std::endl;
-    //std::cout << decltype(character) << '\n';
-    std::cout << "chartype: " << typeid(character).name() << std::endl;
-    
-    // TODO: animation spec tospecial class / manager ?
-    character.getSpriteAnimation().setFrameSize(sf::Vector2i(80,96));
-    character.getSpriteAnimation().setStartFrame({0,0});
-    character.getSpriteAnimation().setNumFrames(1);
-    character.getSpriteAnimation().setDuration(sf::seconds(1));
-    character.getSpriteAnimation().setRepeating(true);
-    character.setTextureOnCharacter(Textures::CharacterID::IchiIdleRun);
-    // set origin of texture to center
-    sf::FloatRect bounds = character.getSpriteAnimation().getSprite().getLocalBounds();
-    character.getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-    //mSprite.setOrigin(120.f, 144.f);
-    std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
-    character.initPhysics();
-
+    character.setupAnimation({
+                .frameSize={80,96}
+               ,.startFrame={0,0}
+               ,.numFrames=1
+               ,.duration = sf::seconds(1)
+               ,.repeat = true
+               ,.textureId = Textures::CharacterID::IchiIdleRun});
 }
 
 void

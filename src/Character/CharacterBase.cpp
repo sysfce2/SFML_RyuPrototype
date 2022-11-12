@@ -86,11 +86,9 @@ CharacterBase::updatePhysics(const sf::Vector2f &position)
 void
 CharacterBase::initPhysics()
 {
-    if(not physicsInitialized)
-    {
-        initPhysics(phWorldRef, mCharacterAnimation.getPosition());
-        physicsInitialized = true;
-    }   
+    initPhysics(phWorldRef, mCharacterAnimation.getPosition());
+    physicsInitialized = true;
+  
 }
 
 void
@@ -245,6 +243,30 @@ CharacterBase::changeState(std::unique_ptr<CharacterState> toState)
     mCharacterState = std::move(toState);
     mCharacterState->enter(*this);
 }
+
+void
+CharacterBase::setupAnimation(AnimationConfiguration config)
+{
+    getSpriteAnimation().setFrameSize(config.frameSize);
+    getSpriteAnimation().setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
+    getSpriteAnimation().setNumFrames(config.numFrames);
+    getSpriteAnimation().setDuration(config.duration);
+    getSpriteAnimation().setRepeating(config.repeat);
+    setTextureOnCharacter(config.textureId);
+
+    // set origin of texture to center
+    sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
+    getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+
+    std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
+    
+    // the first time we need to init physics-body etc
+    if(not physicsInitialized)
+    {
+        initPhysics();
+    }
+}
+    
 
 void
 CharacterBase::updateCharacterState(sf::Time deltaTime)
