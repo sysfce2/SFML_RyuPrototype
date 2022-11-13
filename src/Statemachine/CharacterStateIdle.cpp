@@ -56,7 +56,7 @@ CharacterStateIdle::enter(CharacterBase& character)
                ,.numFrames=1
                ,.duration = sf::seconds(1)
                ,.repeat = true
-               ,.textureId = Textures::CharacterID::IchiIdleRun});
+               ,.animationId = Textures::CharacterID::IchiIdleRun});
 }
 
 void

@@ -49,11 +49,11 @@ CharacterStateFalling::enter(CharacterBase& character)
 {
     character.setupAnimation({
             .frameSize={80,96}
-           ,.startFrame={4,0}
+           ,.startFrame={3,2}
            ,.numFrames=4
            ,.duration = sf::seconds(1)
            ,.repeat = true
-           ,.textureId = Textures::CharacterID::IchiFallingLow});
+           ,.animationId = Textures::CharacterID::IchiFallingLow});
 }
 
 void

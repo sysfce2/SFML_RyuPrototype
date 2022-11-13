@@ -33,6 +33,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,baseTextureManager()
     ,mCharSettings()
     ,mDebugDraw(false)
+    ,mCurrentLevel(Textures::LevelID::Level1)
 {
     mDebugDraw = mCharSettings.DebugDraw;
     loadTextures();
@@ -51,6 +52,7 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,baseTextureManager()
     ,mCharSettings()
     ,mDebugDraw(false)
+    ,mCurrentLevel(Textures::LevelID::Level1)
 {
    // needable ? 
    handleInput(EInput::ReleaseLeft);
@@ -252,7 +254,7 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     getSpriteAnimation().setNumFrames(config.numFrames);
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);
-    setTextureOnCharacter(config.textureId);
+    setTextureOnCharacter(mCurrentLevel);
 
     // set origin of texture to center
     sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
@@ -295,13 +297,13 @@ CharacterBase::updateCharacterState(sf::Time deltaTime)
  }
 
 void 
-CharacterBase::setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id)
+CharacterBase::setTexture(AssetManager<sf::Texture, Textures::LevelID> &textureManager, Textures::LevelID id)
 {
     mCharacterAnimation.setTexture(textureManager.getResource(id));
 }
 
 void
-CharacterBase::setTextureOnCharacter(Textures::CharacterID textureId)
+CharacterBase::setTextureOnCharacter(Textures::LevelID textureId)
 {
     // TODO implement st here ?
     

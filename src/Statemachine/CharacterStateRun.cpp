@@ -60,7 +60,7 @@ CharacterStateRun::enter(CharacterBase& character)
                ,.numFrames=8
                ,.duration = sf::seconds(1)
                ,.repeat = true
-               ,.textureId = Textures::CharacterID::IchiIdleRun});
+               ,.animationId = Textures::CharacterID::IchiIdleRun});
 
     mLastCharacterSpeed = character.getCharacterSpeed();
     character.setCharacterSpeed(mRunCharacterSpeed);

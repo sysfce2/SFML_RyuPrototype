@@ -102,7 +102,6 @@ void Game::render()
 	mWorld.draw();
 
 	mWindow.setView(mWindow.getDefaultView());
-	mWindow.draw(mWorld.getPlayerSprite());
 	//TODO: statistics fps text ....
 	mWindow.display();
 }

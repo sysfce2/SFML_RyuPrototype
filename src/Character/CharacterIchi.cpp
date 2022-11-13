@@ -20,7 +20,7 @@ CharacterIchi::CharacterIchi(ECharacterState startState, std::unique_ptr<b2World
 }
 
 void
-CharacterIchi::setTextureOnCharacter(Textures::CharacterID textureId)
+CharacterIchi::setTextureOnCharacter(Textures::LevelID textureId)
 {
     setTexture(ichiTextureManager, textureId);
 }
@@ -28,11 +28,17 @@ CharacterIchi::setTextureOnCharacter(Textures::CharacterID textureId)
 void
 CharacterIchi::loadTextures()
 {
-    // Outfit normal
+    // At the moment we should not switch textures often on an object so we put every animatzion/level in one big spritesheet
+    // and load it at the startup of the level
+    // we should check what happens when we change outfits etc...
+    // case level 1:
+    ichiTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
+    /*
     ichiTextureManager.load(Textures::CharacterID::IchiIdleRun,"assets/spritesheets/ichi/01_sheet_ichi_run.png");
     ichiTextureManager.load(Textures::CharacterID::IchiFallingLow,"assets/spritesheets/ichi/03_sheet_ichi_fall_low.png");
+    */
     // Outfit combat
-    ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
+    //ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
 }
 
 unsigned int 
@@ -68,6 +74,8 @@ CharacterIchi::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) co
 {
     // t.b.c
     CharacterBase::drawCurrent(target,states);
+    // draw PlayerSprite
+    target.draw(mCharacterAnimation);
 }
 
 void 

@@ -46,7 +46,7 @@ struct AnimationConfiguration
     std::size_t numFrames;
     sf::Time duration;
     bool repeat;
-    Textures::CharacterID textureId;
+    Textures::CharacterID animationId;
 };
 
 
@@ -65,8 +65,8 @@ class CharacterBase : public SceneNode , public Subject
         
         std::unique_ptr<CharacterState>& getCurrentCharacterState();
 
-        virtual void setTextureOnCharacter(Textures::CharacterID textureId);
-        virtual void setTexture(AssetManager<sf::Texture, Textures::CharacterID> &textureManager, Textures::CharacterID id);
+        virtual void setTextureOnCharacter(Textures::LevelID textureId);
+        virtual void setTexture(AssetManager<sf::Texture, Textures::LevelID> &textureManager, Textures::LevelID id);
         SpritesheetAnimation& getSpriteAnimation() { return mCharacterAnimation;}
 
         void setMovement(sf::Vector2f _movement);
@@ -124,6 +124,7 @@ class CharacterBase : public SceneNode , public Subject
         b2Fixture* mFixture;
         bool mDebugDraw;
         CharacterSetting mCharSettings;
+        Textures::LevelID mCurrentLevel;
 };
 
 //} /// namespace ryu

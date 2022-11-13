@@ -27,6 +27,12 @@ namespace Textures
 		Crate,
 	};
 
+	enum class LevelID {
+		Unknown,
+		Level1,
+		Level2,
+	};
+
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
     enum class CharacterID {
         IchiIdleRun,
