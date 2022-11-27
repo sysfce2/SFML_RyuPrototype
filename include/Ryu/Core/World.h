@@ -33,6 +33,7 @@ class World : private sf::NonCopyable
         std::unique_ptr<b2World>& getPhysicsWorld(){return phWorld;};
         sf::Shape* getShapeFromPhysicsBody(b2Body* physicsBody);
 
+        void setDebugDrawer(sf::RenderTarget& target);
 
     private:
         enum class Layer
@@ -72,6 +73,9 @@ class World : private sf::NonCopyable
         float phTimeStep;
         
         std::vector<Crate*> mCrates;
+
+        // Clock for calculating delta time (for physics simulation)
+        sf::Clock clock;
 
 };
 //} /// namespace ryu

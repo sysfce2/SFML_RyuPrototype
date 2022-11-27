@@ -41,6 +41,9 @@ void Game::run()
 	// uses fixed tick steps (use same delta every time)
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	
+	// TODO: why no debugdrawing ?????
+	mWorld.setDebugDrawer(mWindow);
+
 	while (mWindow.isOpen())
 	{
 		processEvents();

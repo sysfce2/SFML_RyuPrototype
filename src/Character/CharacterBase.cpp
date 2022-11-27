@@ -27,7 +27,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     :mCharacterAnimation()
     ,mCharacterState(std::make_unique<CharacterStateIdle>())
     ,movement(0.f,0.f)
-    ,mMoveDirection(EMoveDirecton::Right)
+    ,mMoveDirection(EMoveDirection::Right)
     ,phWorldRef(phWorld)
     ,mCharacterFalling(false)
     ,baseTextureManager()
@@ -46,7 +46,7 @@ CharacterBase::CharacterBase(ECharacterState startState,
     :mECharacterState(startState)
     ,mCharacterState(std::make_unique<CharacterStateIdle>())
     ,mCharacterSpeed(55.0f) // startvalue playerspeed
-    ,mMoveDirection(EMoveDirecton::Right)
+    ,mMoveDirection(EMoveDirection::Right)
     ,phWorldRef(phWorld)
     ,mCharacterFalling(false)
     ,baseTextureManager()
@@ -260,7 +260,7 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
     getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 
-    std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
+    // std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
     
     // the first time we need to init physics-body etc
     if(not physicsInitialized)
@@ -291,7 +291,7 @@ CharacterBase::updateCharacterState(sf::Time deltaTime)
  }
 
  void 
- CharacterBase::setMoveDirection(EMoveDirecton _movementDir)
+ CharacterBase::setMoveDirection(EMoveDirection _movementDir)
  {
      mMoveDirection = _movementDir;
  }

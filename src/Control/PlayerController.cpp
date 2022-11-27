@@ -145,6 +145,7 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             {
                 playerCharacter->handleInput(EInput::PressRight);
                 playerCharacter->getSpriteAnimation().flipAnimationRight();
+                playerCharacter->setMoveDirection(EMoveDirection::Right);
                 break;
             }
 
@@ -153,6 +154,7 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             {
                 playerCharacter->handleInput(EInput::PressLeft);
                 playerCharacter->getSpriteAnimation().flipAnimationLeft();
+                playerCharacter->setMoveDirection(EMoveDirection::Left);
                 break;
             }
 

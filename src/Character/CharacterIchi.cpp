@@ -1,10 +1,17 @@
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Core/Category.h>
+#include <Ryu/Core/Utilities.h>
+#include <Ryu/Physics/Raycast.h>
+#include <Ryu/Control/CharacterEnums.h>
 
+#include <SFML/System/Vector2.hpp>
+#include <box2d/b2_common.h>
+#include <box2d/b2_math.h>
 #include <box2d/box2d.h>
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
+#include <math.h>
 #include <string>
 //namespace ryu {
 
@@ -66,7 +73,7 @@ CharacterIchi::moveCharacter(sf::Vector2f velocity)
     {
         setMovement(velocity);
     }
-    //std::cout << "move: " << (int)getMoveDirection() << "\n";
+    std::cout << "move: " << (int)getMoveDirection() << "\n";
 }
 
 void
@@ -82,6 +89,32 @@ void
 CharacterIchi::update(sf::Time deltaTime)
 {
     CharacterBase::update(deltaTime);
+
+    // TODO: encapsulate it at least in a function
+    // creating a raycast from the characters position downwards
+    // 0° right / 90° up / 180° left / 270° down
+    float raycastAngle = b2_pi * 0.f / 180.0f;
+    float length = Converter::pixelsToMeters<double>(50.0f);
+    b2Vec2 d(length * cosf(raycastAngle),length * sinf(raycastAngle));
+    b2Vec2 point1(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
+                  Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().y));
+    // direction acc lookdir of character
+    int8 dir = (getMoveDirection() == EMoveDirection::Right ? 1 : -1);
+    b2Vec2 point2 = point1 + (dir * d); 
+
+
+    std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
+        " P1: " << point1.x << "," << point1.y << " P2: " << point2.x << "," << point2.y << "\n";
+    
+    // create the callback for raycast
+    RayCastClosest callback;
+    getPhysicsWorldRef().get()->RayCast(&callback, point1,point2);
+
+    if(callback.m_Hit)
+    {
+        std::cout << "Ground\n";
+    } 
+     
     
     //b2Vec2 v = getBody()->GetLinearVelocity();
     //g_debugDraw.DrawString(5, m_textLine, "Character Linear Velocity: %f", v.y);

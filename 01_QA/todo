@@ -1,3 +1,9 @@
+28/11/22
+- !!! debugdraw right no tirdparty, include it directly and either with SFML or opengl !!! very important for box2d debugging
+- remove thirdparty debug stuff from cmakelists
+- make cmakelists easier
+
+
 4/11/22:
 - docu, what we can do already etc ... docu code !
 - physics boxes destructable

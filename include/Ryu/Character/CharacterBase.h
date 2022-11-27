@@ -70,8 +70,8 @@ class CharacterBase : public SceneNode , public Subject
         SpritesheetAnimation& getSpriteAnimation() { return mCharacterAnimation;}
 
         void setMovement(sf::Vector2f _movement);
-        void setMoveDirection(EMoveDirecton _movementDir);
-        EMoveDirecton getMoveDirection() {return mMoveDirection;}
+        void setMoveDirection(EMoveDirection _movementDir);
+        EMoveDirection getMoveDirection() {return mMoveDirection;}
         void initPhysics();
         void updatePhysics();
         void updatePhysics(const sf::Vector2f &position);
@@ -83,7 +83,7 @@ class CharacterBase : public SceneNode , public Subject
         void changeState(std::unique_ptr<CharacterState> toState);
         void setupAnimation(AnimationConfiguration config);
 
-
+        std::unique_ptr<b2World>& getPhysicsWorldRef() {return phWorldRef;}
         void changeColor(sf::Color color);
 
         void notifyObservers(Event event);
@@ -114,7 +114,7 @@ class CharacterBase : public SceneNode , public Subject
     
     private:
         BaseTextureManager baseTextureManager;
-        EMoveDirecton mMoveDirection;
+        EMoveDirection mMoveDirection;
         sf::Vector2f movement;
         bool mCharacterFalling;
 

@@ -21,9 +21,9 @@ enum class ECharacterState{
     //...
 };
 
-enum class EMoveDirecton
+enum class EMoveDirection
 {
-    None,
+    None=0,
     Up,
     Down,
     Left,

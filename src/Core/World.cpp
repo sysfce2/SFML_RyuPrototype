@@ -4,7 +4,10 @@
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Physics/DebugDraw.h>
+#include <Ryu/Physics/Raycast.h>
 #include <Ryu/Scene/Crate.h>
+
+#include <Thirdparty/b2DrawSFML/b2DrawSFML.hpp>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -36,6 +39,7 @@ World::World(sf::RenderWindow& window)
 , phGroundBodies()
 , phDebugPhysics(true)
 , phTimeStep(1.f/60.f)
+, clock()
 {
     loadTextures();
 
@@ -181,7 +185,31 @@ World::setPhysics()
     //sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
     //newCrate.init(std::move(box),std::move(boxShape));
 
-    //mCrates.push_back(std::move(&newCrate));    
+    //mCrates.push_back(std::move(&newCrate));
+
+}
+
+void
+World::setDebugDrawer(sf::RenderTarget& target)
+{
+        // DebugDrawing 
+      // Create debug drawer for window with 10x scale
+    // You can set any sf::RenderTarget as drawing target
+    b2DrawSFML drawer{ target, 10.0f };
+
+    // Set flags for things that should be drawn
+    // ALWAYS remember to set at least one flag,
+    // otherwise nothing will be drawn
+    drawer.SetFlags(
+        b2Draw::e_shapeBit |
+        b2Draw::e_jointBit |
+        b2Draw::e_aabbBit |
+        b2Draw::e_pairBit |
+        b2Draw::e_centerOfMassBit
+    );
+    std::cout << "SetDebugDrawer" << "\n";
+    // Set our drawer as world's drawer
+    phWorld.get()->SetDebugDraw(&drawer);
 }
 
 sf::Shape*
@@ -218,7 +246,13 @@ World::draw()
     {
         mWindow.draw(*(getShapeFromPhysicsBody(pBoxTest)));
     }
-    
+
+    // Clear window
+//    mWindow.clear();
+
+    // Draw debug shapes of all physics objects
+    phWorld.get()->DebugDraw();
+
 
     /* TODO: how to create texts ? not seem to work here
     for(const auto& text : texts)
