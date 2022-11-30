@@ -7,7 +7,7 @@
 #include <Ryu/Physics/Raycast.h>
 #include <Ryu/Scene/Crate.h>
 
-#include <Thirdparty/b2DrawSFML/b2DrawSFML.hpp>
+#include <Ryu/Debug/b2DrawSFML.hpp>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -184,7 +184,6 @@ World::setPhysics()
     pBoxTest = createPhysicalBox(300,100,64,64,b2_dynamicBody,Textures::SceneID::BoxPushable);
     //sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
     //newCrate.init(std::move(box),std::move(boxShape));
-
     //mCrates.push_back(std::move(&newCrate));
 
 }
@@ -207,6 +206,8 @@ World::setDebugDrawer(sf::RenderTarget& target)
         b2Draw::e_pairBit |
         b2Draw::e_centerOfMassBit
     );
+    drawer.SetAllFlags();
+    
     std::cout << "SetDebugDrawer" << "\n";
     // Set our drawer as world's drawer
     phWorld.get()->SetDebugDraw(&drawer);

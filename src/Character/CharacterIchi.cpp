@@ -73,7 +73,7 @@ CharacterIchi::moveCharacter(sf::Vector2f velocity)
     {
         setMovement(velocity);
     }
-    std::cout << "move: " << (int)getMoveDirection() << "\n";
+    // std::cout << "move: " << (int)getMoveDirection() << "\n";
 }
 
 void
@@ -103,8 +103,8 @@ CharacterIchi::update(sf::Time deltaTime)
     b2Vec2 point2 = point1 + (dir * d); 
 
 
-    std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
-        " P1: " << point1.x << "," << point1.y << " P2: " << point2.x << "," << point2.y << "\n";
+    // std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
+    //     " P1: " << point1.x << "," << point1.y << " P2: " << point2.x << "," << point2.y << "\n";
     
     // create the callback for raycast
     RayCastClosest callback;

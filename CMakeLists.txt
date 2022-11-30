@@ -132,7 +132,7 @@ macro(build_chapter CHAPTER_NAME)
 	if(SFML_VERSION_MINOR LESS 2)
         set(SFML_DEPENDENCIES "")
 	endif()
-	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d b2DebugDraw)
+	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d)# b2DebugDraw)
 	
 	install(TARGETS ${PROJECT_NAME}	RUNTIME DESTINATION ${CHAPTER_NAME})
 
@@ -145,7 +145,7 @@ endmacro()
 # Must appear after macros, otherwise they are not visible in subdirectories
 add_subdirectory(src)
 add_subdirectory(TestBed)
-add_subdirectory(src/Thirdparty)
+#add_subdirectory(src/Thirdparty)
 
 
 #add_subdirectory(03_World/Source)

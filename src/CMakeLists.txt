@@ -1,6 +1,7 @@
 
 set (SRC
 	Animation/SpritesheetAnimation.cpp
+	Debug/b2DrawSFML.cpp
 	Scene/Box.cpp
 	Scene/Entity.cpp
 	Scene/SceneNode.cpp
