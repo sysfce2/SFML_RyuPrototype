@@ -176,14 +176,14 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             // Debug Area
             case sf::Keyboard::P:
             {
-                std::cout << "P pressed " << std::endl;
                 Command output;
                 output.category = static_cast<unsigned>(Category::Type::Player);
                 output.action = [](SceneNode& s,sf::Time)
                 {
                     std::cout << s.getPosition().x << "," << s.getPosition().y << "\n";
                 };
-                commands.push(output);
+                //notifyObservers(Event::DebugToggle);
+                notify(*playerCharacter,Event::DebugToggle);
                 break;
             }
             case sf::Keyboard::O:

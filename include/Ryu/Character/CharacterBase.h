@@ -13,7 +13,9 @@
 
 #include <Thirdparty/glm/glm.hpp>
 #include <SFML/Graphics.hpp>
+#include <box2d/b2_math.h>
 #include <memory.h>
+#include <iostream>
 
 using BaseTextureManager = AssetManager<sf::Texture, Textures::PhysicAssetsID>;
 
@@ -31,7 +33,6 @@ class b2Fixture;
 
 struct CharacterSetting
 {
-    bool DebugDraw = false;
     // due increase of gravityscale (falling is then more gamey) the physicbody
     // needs some adustments for movement so its not behind the movement of
     // the characteranimation
@@ -111,6 +112,10 @@ class CharacterBase : public SceneNode , public Subject
         ECharacterState mECharacterState;
         float mCharacterSpeed;
         bool physicsInitialized;
+    // just simple data for the raycast, its not part of box2D standard debug draw so we need to call it explicitly
+    public:
+        b2Vec2 rcPoint1;
+        b2Vec2 rcPoint2;
     
     private:
         BaseTextureManager baseTextureManager;
@@ -122,7 +127,6 @@ class CharacterBase : public SceneNode , public Subject
         std::unique_ptr<b2World>& phWorldRef;
         b2Body* mBody;
         b2Fixture* mFixture;
-        bool mDebugDraw;
         CharacterSetting mCharSettings;
         Textures::LevelID mCurrentLevel;
 };

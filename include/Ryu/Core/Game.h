@@ -17,6 +17,7 @@ class Game
   public:
 	Game();
 	void run();
+  World& getWorld() {return mWorld;}
   private:
 	void processEvents();
 	void update(sf::Time deltaTime);

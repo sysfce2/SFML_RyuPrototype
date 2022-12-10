@@ -5,10 +5,13 @@
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/CommandQueue.h>
 #include <Ryu/Debug/b2DrawSFML.hpp>
+#include <Ryu/Events/Observer.h>
+#include <Ryu/Events/EventEnums.h>
 #include <Ryu/Scene/Box.h>
 #include <Ryu/Scene/Crate.h>
 
 #include <array>
+#include <box2d/b2_math.h>
 #include <vector>
 
 typedef AssetManager<sf::Texture, Textures::SceneID> SceneTextureHolder;
@@ -17,9 +20,10 @@ class CharacterIchi;
 class b2World;
 class b2Body;
 
+static b2DrawSFML debugDrawer;
 
 //namespace ryu {
-class World : private sf::NonCopyable
+class World : private sf::NonCopyable, public Observer
 {
 
     public: 
@@ -33,8 +37,19 @@ class World : private sf::NonCopyable
         // TODO: make this static ? -> access from everywhere
         std::unique_ptr<b2World>& getPhysicsWorld(){return phWorld;};
         sf::Shape* getShapeFromPhysicsBody(b2Body* physicsBody);
-
+        void debugDrawSegment(b2Vec2 const& p1, b2Vec2 const& p2, b2Color const& color)
+        {
+            if(phDebugPhysics)
+            {
+                debugDrawer.DrawSegment(p1,p2,color);
+            }
+        };
+        void toggleDrawDebug() 
+        {
+            phDebugPhysics = not phDebugPhysics;    
+        }
         void setDebugDrawer(sf::RenderTarget& target);
+        void onNotify(const SceneNode& entity, Event event) override;
 
     private:
         enum class Layer
@@ -72,7 +87,7 @@ class World : private sf::NonCopyable
         b2Body* pBoxTest;
         bool phDebugPhysics;
         float phTimeStep;
-        b2DrawSFML debugDrawer;
+        //b2DrawSFML debugDrawer;
         
         std::vector<Crate*> mCrates;
 

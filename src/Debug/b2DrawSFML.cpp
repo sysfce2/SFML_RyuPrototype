@@ -141,6 +141,7 @@ void b2DrawSFML::DrawSegment(b2Vec2 const& p1, b2Vec2 const& p2, b2Color const& 
     m_renderTarget->draw(line, 2u, sf::Lines);
 }
 
+
 void b2DrawSFML::DrawTransform(b2Transform const& xf) noexcept
 {
     auto const axisScale = 0.4f;

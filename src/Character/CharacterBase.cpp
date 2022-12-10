@@ -32,10 +32,8 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,mCharacterFalling(false)
     ,baseTextureManager()
     ,mCharSettings()
-    ,mDebugDraw(false)
     ,mCurrentLevel(Textures::LevelID::Level1)
 {
-    mDebugDraw = mCharSettings.DebugDraw;
     loadTextures();
 }
 
@@ -51,13 +49,11 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,mCharacterFalling(false)
     ,baseTextureManager()
     ,mCharSettings()
-    ,mDebugDraw(false)
     ,mCurrentLevel(Textures::LevelID::Level1)
 {
    // needable ? 
    handleInput(EInput::ReleaseLeft);
   
-   mDebugDraw = mCharSettings.DebugDraw;
    loadTextures();
 
    switch(mECharacterState)
@@ -137,16 +133,7 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
     sf::Shape* shape = new sf::RectangleShape(sf::Vector2f(size_x,size_y));
     shape->setOrigin(size_x/2.0f,size_y/2.0f);                                                                                                                                              
     shape->setPosition(sf::Vector2f(position.x,position.y));
-    // TODO make bitsize style like category selection !!!
-    if(mDebugDraw)
-    {
-        shape->setFillColor(sf::Color::Magenta);
-    }
-    else
-    {
-        shape->setTexture(&baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));    
-    
-    }
+    shape->setTexture(&baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));    
     
     mBody->GetUserData().pointer = (uintptr_t)shape;
 

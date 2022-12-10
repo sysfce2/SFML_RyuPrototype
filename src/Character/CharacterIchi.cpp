@@ -3,6 +3,8 @@
 #include <Ryu/Core/Utilities.h>
 #include <Ryu/Physics/Raycast.h>
 #include <Ryu/Control/CharacterEnums.h>
+// test
+#include <Ryu/Core/World.h>
 
 #include <SFML/System/Vector2.hpp>
 #include <box2d/b2_common.h>
@@ -91,11 +93,11 @@ CharacterIchi::update(sf::Time deltaTime)
 {
     CharacterBase::update(deltaTime);
 
-    // TODO: encapsulate it at least in a function
+    // TODO: encapsulate it at least in a function, maybe to basecharacter
     // creating a raycast from the characters position downwards
     // 0° right / 90° up / 180° left / 270° down
     float raycastAngle = b2_pi * 0.f / 180.0f;
-    float length = Converter::pixelsToMeters<double>(50.0f);
+    float length = Converter::pixelsToMeters<double>(40.0f);
     b2Vec2 d(length * cosf(raycastAngle),length * sinf(raycastAngle));
     b2Vec2 point1(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
                   Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().y));
@@ -109,21 +111,17 @@ CharacterIchi::update(sf::Time deltaTime)
     
     // create the callback for raycast
     RayCastClosest callback;
+    
     getPhysicsWorldRef().get()->RayCast(&callback, point1,point2);
 
-    if(callback.m_Hit)
+        if(callback.m_Hit)
     {
         std::cout << "Ground\n";
-    } 
-     
-    
-    //b2Vec2 v = getBody()->GetLinearVelocity();
-    //g_debugDraw.DrawString(5, m_textLine, "Character Linear Velocity: %f", v.y);
+    }
 
-    //auto posi = getBody()->GetLinearVelocity(); //>GetLinearVelocityFromLocalPoint({getPosition().x,getPosition().y});
-    //std::cout << "ichi(y):" << v.y <<"\n";
-    //mCharacterAnimation.setPosition({posi.x*50,posi.y*50});
-
+    // save points for debugdrawing or st. else 
+    rcPoint1 = point1;
+    rcPoint2 = point2;
     
 }
 

@@ -21,7 +21,8 @@
 
 //namespace ryu{
 World::World(sf::RenderWindow& window)
-: mWindow(window)
+: Observer("World")
+, mWindow(window)
 , mWorldView(window.getDefaultView())
 , mSceneTextures()
 , mSceneGraph()
@@ -29,7 +30,7 @@ World::World(sf::RenderWindow& window)
 , mWorldBounds( // TODO: check what it is about bounds
     0.f,                    // left X position
     0.f,                    // top Y position
-    mWorldView.getSize().x, // width
+    mWorldView.getSize().x, // widthb2Color(0.9f, 0.9f, 0.4f)
     1200)//mWorldView.getSize().y)                  // height
 , mSpawnPosition(
     mWorldView.getSize().x / 2.f,
@@ -38,7 +39,7 @@ World::World(sf::RenderWindow& window)
 , mPlayer(nullptr)
 , phWorld(std::make_unique<b2World>(b2Vec2{0.0f,10.0f})) /// set gravity to 10 & create physics world
 , phGroundBodies()
-, phDebugPhysics(true)
+, phDebugPhysics(false)
 , phTimeStep(1.f/60.f)
 , clock()
 {
@@ -86,6 +87,21 @@ World::loadTextures()
     //mSceneTextures.load(Textures::SceneID::Ground, "assets/scenes/99_dummy/box_wood.png");
 }
 
+void
+World::onNotify(const SceneNode& entity, Event event)
+{
+    switch(event)
+    {
+        case Event::DebugToggle:
+        {
+            toggleDrawDebug();    
+            break;       
+        }
+        default:
+            break;
+    }
+}
+
 
 // TODO: parametrize this for more level!
 void
@@ -109,7 +125,7 @@ World::buildScene()
         mWorldBounds.left,
         mWorldBounds.top
     );
-    //mSceneLayers[static_cast<unsigned>(Layer::Ground1)]->attachChild(std::move(backgroundSprite));
+    mSceneLayers[static_cast<unsigned>(Layer::Ground1)]->attachChild(std::move(backgroundSprite));
 
     // pushable Box
     std::unique_ptr<Box> box = std::make_unique<Box>(Box::Type::Pushable, mSceneTextures);
@@ -231,6 +247,8 @@ World::draw()
     if(phDebugPhysics)
     {
         phWorld->DebugDraw();
+        debugDrawer.DrawSegment(mPlayer->rcPoint1,mPlayer->rcPoint2,b2Color(0.9f,0.0f,0.0f));
+
     }
 
     // TODO: add the ground and stuff to the scenegraph !

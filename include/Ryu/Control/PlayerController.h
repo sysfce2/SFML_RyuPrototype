@@ -5,6 +5,8 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Events/Observer.h>
+#include <Ryu/Events/Subject.h>
+#include <Ryu/Events/EventEnums.h>
 
 class CommandQueue;
 class Command;
@@ -14,7 +16,7 @@ namespace sf{
     class Event;
 }
 
-class PlayerController : public Observer
+class PlayerController : public Observer, public Subject /// notifier and observer at the same time
 {
     public:
 
