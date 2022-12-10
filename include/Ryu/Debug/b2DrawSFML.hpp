@@ -19,8 +19,12 @@ public:
     ///
     explicit b2DrawSFML(sf::RenderTarget& renderTarget, float scale = 1.0f) noexcept;
 
+    ~b2DrawSFML();
+
     ///
     void SetAllFlags() noexcept;
+
+    void SetTarget(sf::RenderTarget& renderTarget);
 
     ///
     void SetRenderTarget(sf::RenderTarget& renderTarget) noexcept;

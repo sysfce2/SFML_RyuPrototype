@@ -1,5 +1,7 @@
 build/
 .vscode/
+src/Thirdparty
+include/Thirdparty
 
 # Prerequisites
 *.d

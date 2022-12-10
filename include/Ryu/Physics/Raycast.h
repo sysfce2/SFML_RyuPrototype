@@ -20,7 +20,7 @@ class RayCastClosest : public b2RayCastCallback
     {
       // TODO: check if fixture with index 1 needs to be ignored like in the testbed test, see fr details [b2d_testbed]tests/ray_cast.cpp
 
-      std::cout << "RayCast\n";
+      std::cout << "RayCast at " << point.x << "," << point.y << "\n";
       m_Hit = true;
       m_Point = point;
       m_Normal = normal;

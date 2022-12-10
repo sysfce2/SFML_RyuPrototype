@@ -74,6 +74,7 @@ CharacterIchi::moveCharacter(sf::Vector2f velocity)
         setMovement(velocity);
     }
     // std::cout << "move: " << (int)getMoveDirection() << "\n";
+
 }
 
 void

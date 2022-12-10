@@ -235,7 +235,7 @@ CharacterBase::update(sf::Time deltaTime)
     }
 
     updateCharacterState(deltaTime);
-
+    
 }
 
 void 

@@ -7,7 +7,7 @@ b2DrawSFML::b2DrawSFML(float scale) noexcept
     , m_circleShape {}
     , m_scale { scale }
 {
-    std::cout << "debugDraw instantiated " << "\n";
+    std::cout << "debugDraw instantiated target null" << "\n";
 }
 
 b2DrawSFML::b2DrawSFML(sf::RenderTarget& renderTarget, float scale) noexcept
@@ -17,6 +17,16 @@ b2DrawSFML::b2DrawSFML(sf::RenderTarget& renderTarget, float scale) noexcept
     , m_scale { scale }
 {
     std::cout << "debugDraw instantiated " << "\n";
+}
+
+b2DrawSFML::~b2DrawSFML()
+{
+    std::cout << "Destructor DebugDraw\n";
+}
+
+void b2DrawSFML::SetTarget(sf::RenderTarget& renderTarget)
+{
+    m_renderTarget = &renderTarget;
 }
 
 void b2DrawSFML::SetAllFlags() noexcept
@@ -52,7 +62,7 @@ float b2DrawSFML::GetScale() noexcept
 
 void b2DrawSFML::DrawPolygon(b2Vec2 const* vertices, int32 vertexCount, b2Color const& color) noexcept
 {
-    std::cout << "DrawSolidPolygon" << "\n";
+    //std::cout << "DrawPolygon" << "\n";
     auto const count = static_cast<size_t>(vertexCount);
 
     m_convexShape.setPointCount(count);
@@ -62,16 +72,22 @@ void b2DrawSFML::DrawPolygon(b2Vec2 const* vertices, int32 vertexCount, b2Color 
         m_convexShape.setPoint(i, M_ToPixels(vertices[i]));
     }
 
+    m_convexShape.setFillColor(sf::Color::Blue);
+    m_convexShape.setOutlineColor(M_ConvertColor(color));
+    m_convexShape.setOutlineThickness(1.0f);
+
+/*
     m_convexShape.setFillColor(sf::Color::Transparent);
     m_convexShape.setOutlineColor(M_ConvertColor(color));
     m_convexShape.setOutlineThickness(-1.0f);
+*/
 
     m_renderTarget->draw(m_convexShape);
 }
 
 void b2DrawSFML::DrawSolidPolygon(b2Vec2 const* vertices, int32 vertexCount, b2Color const& color) noexcept
 {
-    std::cout << "DrawSolidPolygon" << "\n";
+    //std::cout << "DrawSolidPolygon" << "\n";
     auto const count = static_cast<size_t>(vertexCount);
 
     m_convexShape.setPointCount(count);
@@ -81,9 +97,10 @@ void b2DrawSFML::DrawSolidPolygon(b2Vec2 const* vertices, int32 vertexCount, b2C
         m_convexShape.setPoint(i, M_ToPixels(vertices[i]));
     }
 
-    m_convexShape.setFillColor(M_ConvertColor(color, 0.8f));
-    m_convexShape.setOutlineColor(sf::Color::Transparent);
-    m_convexShape.setOutlineThickness(0.0f);
+    m_convexShape.setFillColor(M_ConvertColor(color, 0.25f));/// 2nd param: alpha
+    //m_convexShape.setOutlineColor(sf::Color::Transparent);
+    m_convexShape.setOutlineColor(sf::Color::Green);
+    m_convexShape.setOutlineThickness(2.0f);
 
     m_renderTarget->draw(m_convexShape);
 }

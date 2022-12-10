@@ -3,7 +3,7 @@
 */
 namespace Converter
 {
-    constexpr double PIXELS_PER_METERS= 32.0;
+    constexpr double PIXELS_PER_METERS = 32.0;
     constexpr double PI = 3.14159265358979323846;
 
     template<typename T>

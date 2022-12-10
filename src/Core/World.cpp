@@ -36,6 +36,7 @@ World::World(sf::RenderWindow& window)
     (mWorldBounds.height - mWorldView.getSize().y))
 , mPushBox(nullptr)
 , mPlayer(nullptr)
+, phWorld(std::make_unique<b2World>(b2Vec2{0.0f,10.0f})) /// set gravity to 10 & create physics world
 , phGroundBodies()
 , phDebugPhysics(true)
 , phTimeStep(1.f/60.f)
@@ -43,11 +44,6 @@ World::World(sf::RenderWindow& window)
 {
     loadTextures();
 
-    // TODO: refine/think where to put physics
-    // is this the correct place ?
-    // box2D physics-world
-    b2Vec2 gravity(0.0f, 10.0f);
-    phWorld = std::make_unique<b2World>(gravity);
     // build pyhsics    
     setPhysics();
 
@@ -113,7 +109,7 @@ World::buildScene()
         mWorldBounds.left,
         mWorldBounds.top
     );
-    mSceneLayers[static_cast<unsigned>(Layer::Ground1)]->attachChild(std::move(backgroundSprite));
+    //mSceneLayers[static_cast<unsigned>(Layer::Ground1)]->attachChild(std::move(backgroundSprite));
 
     // pushable Box
     std::unique_ptr<Box> box = std::make_unique<Box>(Box::Type::Pushable, mSceneTextures);
@@ -126,6 +122,7 @@ World::buildScene()
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(ichi));
 
     //texts.emplace_back(createText("TEST"));
+    setDebugDrawer(mWindow);
 }
 
 b2Body*
@@ -191,26 +188,25 @@ World::setPhysics()
 void
 World::setDebugDrawer(sf::RenderTarget& target)
 {
-        // DebugDrawing 
-      // Create debug drawer for window with 10x scale
+    // DebugDrawing 
+    // Create debug drawer for window with 10x scale
     // You can set any sf::RenderTarget as drawing target
-    b2DrawSFML drawer{ target, 10.0f };
+    debugDrawer.SetTarget(target);
+    debugDrawer.SetScale(Converter::PIXELS_PER_METERS);
+
+    // Set our drawer as world's drawer
+    phWorld->SetDebugDraw(&debugDrawer);
 
     // Set flags for things that should be drawn
     // ALWAYS remember to set at least one flag,
     // otherwise nothing will be drawn
-    drawer.SetFlags(
-        b2Draw::e_shapeBit |
-        b2Draw::e_jointBit |
-        b2Draw::e_aabbBit |
-        b2Draw::e_pairBit |
-        b2Draw::e_centerOfMassBit
+    debugDrawer.SetFlags(
+        b2Draw::e_shapeBit | b2Draw::e_pairBit
     );
-    drawer.SetAllFlags();
+
     
     std::cout << "SetDebugDrawer" << "\n";
-    // Set our drawer as world's drawer
-    phWorld.get()->SetDebugDraw(&drawer);
+    
 }
 
 sf::Shape*
@@ -232,7 +228,10 @@ World::draw()
     // delegate work to the scenegraph
     mWindow.draw(mSceneGraph);
     // draw physics
-    //phWorld->DebugDraw();
+    if(phDebugPhysics)
+    {
+        phWorld->DebugDraw();
+    }
 
     // TODO: add the ground and stuff to the scenegraph !
     if(phGroundBodies.size() > 0)
@@ -250,10 +249,6 @@ World::draw()
 
     // Clear window
 //    mWindow.clear();
-
-    // Draw debug shapes of all physics objects
-    phWorld.get()->DebugDraw();
-
 
     /* TODO: how to create texts ? not seem to work here
     for(const auto& text : texts)
@@ -311,6 +306,8 @@ World::update(sf::Time dt)
         mSceneGraph.onCommand(mActiveCommands.pop(),dt);
     }
     phWorld->Step(phTimeStep,8,3);
+       // Draw debug shapes of all physics objects
+
     //needable or already in scenegraph ?
     mPlayer->update(dt);
     mSceneGraph.update(dt);

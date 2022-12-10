@@ -4,6 +4,7 @@
 #include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/CommandQueue.h>
+#include <Ryu/Debug/b2DrawSFML.hpp>
 #include <Ryu/Scene/Box.h>
 #include <Ryu/Scene/Crate.h>
 
@@ -71,6 +72,7 @@ class World : private sf::NonCopyable
         b2Body* pBoxTest;
         bool phDebugPhysics;
         float phTimeStep;
+        b2DrawSFML debugDrawer;
         
         std::vector<Crate*> mCrates;
 
