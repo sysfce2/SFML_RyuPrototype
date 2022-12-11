@@ -33,3 +33,10 @@ enum class EMoveDirection
     DownLeft,
     DownRight
 };
+
+enum class EClimbHeight{
+    None=0,
+    Low,
+    Mid,
+    High,  
+};

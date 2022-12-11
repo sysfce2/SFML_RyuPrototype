@@ -16,6 +16,7 @@ set (SRC
 	Character/CharacterBase.cpp
 	Events/Subject.cpp
 	Physics/DebugDraw.cpp
+	Statemachine/CharacterStateClimb.cpp
 	Statemachine/CharacterStateIdle.cpp
 	Statemachine/CharacterStateRun.cpp
 	Statemachine/CharacterStateFalling.cpp
