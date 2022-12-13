@@ -88,6 +88,8 @@ CharacterIchi::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) co
     target.draw(mCharacterAnimation);
 }
 
+constexpr double raycastOffset = 25.0f;
+
 void 
 CharacterIchi::update(sf::Time deltaTime)
 {
@@ -99,29 +101,57 @@ CharacterIchi::update(sf::Time deltaTime)
     float raycastAngle = b2_pi * 0.f / 180.0f;
     float length = Converter::pixelsToMeters<double>(40.0f);
     b2Vec2 d(length * cosf(raycastAngle),length * sinf(raycastAngle));
-    b2Vec2 point1(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
-                  Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().y));
+    
     // direction acc lookdir of character
     int8 dir = (getMoveDirection() == EMoveDirection::Right ? 1 : -1);
+    
+    b2Vec2 point1(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
+                  Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().y));
     b2Vec2 point2 = point1 + (dir * d); 
 
+    b2Vec2 point3(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
+                  Converter::pixelsToMeters<double>((mCharacterAnimation.getPosition().y) - raycastOffset));
+    b2Vec2 point4 = point3 + (dir * d); 
 
-    // std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
-    //     " P1: " << point1.x << "," << point1.y << " P2: " << point2.x << "," << point2.y << "\n";
+    b2Vec2 point5(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
+                  Converter::pixelsToMeters<double>((mCharacterAnimation.getPosition().y) + raycastOffset));
+    b2Vec2 point6 = point5 + (dir * d); 
+     // std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
+     //     " P1: " << point1.x << "," << point1.y << " P2: " << point2.x << "," << point2.y << "\n";
     
+     // std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
+     //     " P3: " << point3.x << "," << point3.y << " P4: " << point4.x << "," << point4.y << "\n";
     // create the callback for raycast
-    RayCastClosest callback;
-    
-    getPhysicsWorldRef().get()->RayCast(&callback, point1,point2);
+    RayCastClosest callbackMid;
+    RayCastClosest callbackUp;
+    RayCastClosest callbackDown;
+        
+    getPhysicsWorldRef().get()->RayCast(&callbackMid, point1,point2);
+    getPhysicsWorldRef().get()->RayCast(&callbackUp, point3,point4);
+    getPhysicsWorldRef().get()->RayCast(&callbackDown, point5,point6);
 
-        if(callback.m_Hit)
+    if(callbackMid.m_Hit)
     {
-        std::cout << "Ground\n";
+        std::cout << "MiddleHit\n";
+    }
+    
+    if(callbackUp.m_Hit)
+    {
+        std::cout << "UpHit\n";
+    }
+    
+    if(callbackDown.m_Hit)
+    {
+        std::cout << "DownHit\n";
     }
 
-    // save points for debugdrawing or st. else 
+    //TODO save points for debugdrawing or st. else , maeh how to make this better
     rcPoint1 = point1;
     rcPoint2 = point2;
+    rcPoint3 = point3;
+    rcPoint4 = point4;
+    rcPoint5 = point5;
+    rcPoint6 = point6;
     
 }
 

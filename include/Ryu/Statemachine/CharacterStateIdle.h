@@ -3,7 +3,6 @@
 #include "CharacterState.h"
 #include <memory>
 
-
 class CharacterStateIdle : public CharacterState
 {
     public:
@@ -14,5 +13,5 @@ class CharacterStateIdle : public CharacterState
 
         void enter(CharacterBase& character) override;
         void exit(CharacterBase& character) override;
-    
+
 };

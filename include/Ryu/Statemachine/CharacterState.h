@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
 #include <Ryu/Control/CharacterEnums.h>
+
+#include <memory>
 
 //namespace ryu{
 

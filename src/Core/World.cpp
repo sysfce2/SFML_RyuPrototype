@@ -248,6 +248,8 @@ World::draw()
     {
         phWorld->DebugDraw();
         debugDrawer.DrawSegment(mPlayer->rcPoint1,mPlayer->rcPoint2,b2Color(0.9f,0.0f,0.0f));
+        debugDrawer.DrawSegment(mPlayer->rcPoint3,mPlayer->rcPoint4,b2Color(0.9f,0.0f,0.0f));
+        debugDrawer.DrawSegment(mPlayer->rcPoint5,mPlayer->rcPoint6,b2Color(0.9f,0.0f,0.0f));
 
     }
 
