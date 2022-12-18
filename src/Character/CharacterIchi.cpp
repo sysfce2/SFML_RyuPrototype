@@ -90,69 +90,43 @@ CharacterIchi::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) co
 
 constexpr double raycastOffset = 25.0f;
 
+/* how to use a lambda as a free function / capture ichi?
+auto addRayCast = [](std::pair<double,double> points){
+};
+*/
+
+void
+CharacterIchi::createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length)
+{
+    // creating a raycast from the characters position downwards
+    // 0° right / 90° up / 180° left / 270° down
+    float raycastAngle = b2_pi * angle / 180.0f;
+    float lengthMeter = Converter::pixelsToMeters<double>(length);
+    b2Vec2 d(lengthMeter * cosf(raycastAngle),lengthMeter * sinf(raycastAngle));
+    
+    // direction according lookdir of character
+    int8 dir = (getMoveDirection() == EMoveDirection::Right ? 1 : -1);
+
+    b2Vec2 p1(Converter::pixelsToMeters<double>(startPoint.first),
+              Converter::pixelsToMeters<double>(startPoint.second));
+
+    b2Vec2 p2 = p1 + (dir * d); 
+    
+    rayCastPoints.insert(std::make_pair(type,std::make_pair(p1,p2)));
+    std::cout << "RCElements:" << rayCastPoints.size() << "\n";
+    
+    RayCastClosest callback;
+    getPhysicsWorldRef().get()->RayCast(&callback, p1,p2);
+}
+
 void 
 CharacterIchi::update(sf::Time deltaTime)
 {
     CharacterBase::update(deltaTime);
-
-    // TODO: encapsulate it at least in a function, maybe to basecharacter
-    // creating a raycast from the characters position downwards
-    // 0° right / 90° up / 180° left / 270° down
-    float raycastAngle = b2_pi * 0.f / 180.0f;
-    float length = Converter::pixelsToMeters<double>(40.0f);
-    b2Vec2 d(length * cosf(raycastAngle),length * sinf(raycastAngle));
-    
-    // direction acc lookdir of character
-    int8 dir = (getMoveDirection() == EMoveDirection::Right ? 1 : -1);
-    
-    b2Vec2 point1(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
-                  Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().y));
-    b2Vec2 point2 = point1 + (dir * d); 
-
-    b2Vec2 point3(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
-                  Converter::pixelsToMeters<double>((mCharacterAnimation.getPosition().y) - raycastOffset));
-    b2Vec2 point4 = point3 + (dir * d); 
-
-    b2Vec2 point5(Converter::pixelsToMeters<double>(mCharacterAnimation.getPosition().x),
-                  Converter::pixelsToMeters<double>((mCharacterAnimation.getPosition().y) + raycastOffset));
-    b2Vec2 point6 = point5 + (dir * d); 
-     // std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
-     //     " P1: " << point1.x << "," << point1.y << " P2: " << point2.x << "," << point2.y << "\n";
-    
-     // std::cout << "Posi: " << mCharacterAnimation.getPosition().x << "," << mCharacterAnimation.getPosition().y <<
-     //     " P3: " << point3.x << "," << point3.y << " P4: " << point4.x << "," << point4.y << "\n";
-    // create the callback for raycast
-    RayCastClosest callbackMid;
-    RayCastClosest callbackUp;
-    RayCastClosest callbackDown;
-        
-    getPhysicsWorldRef().get()->RayCast(&callbackMid, point1,point2);
-    getPhysicsWorldRef().get()->RayCast(&callbackUp, point3,point4);
-    getPhysicsWorldRef().get()->RayCast(&callbackDown, point5,point6);
-
-    if(callbackMid.m_Hit)
-    {
-        std::cout << "MiddleHit\n";
-    }
-    
-    if(callbackUp.m_Hit)
-    {
-        std::cout << "UpHit\n";
-    }
-    
-    if(callbackDown.m_Hit)
-    {
-        std::cout << "DownHit\n";
-    }
-
-    //TODO save points for debugdrawing or st. else , maeh how to make this better
-    rcPoint1 = point1;
-    rcPoint2 = point2;
-    rcPoint3 = point3;
-    rcPoint4 = point4;
-    rcPoint5 = point5;
-    rcPoint6 = point6;
-    
+// TODO: visualize the debugoutput correctly, debugpoints aree not updated ...dsee world::draw)
+    createRaycast("up",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y-raycastOffset),0,40.0f);
+    createRaycast("mid",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y),0,40.0f);
+    createRaycast("down",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+raycastOffset),0,40.0f);
 }
 
 //} /// namespace ryu

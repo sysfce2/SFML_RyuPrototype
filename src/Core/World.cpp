@@ -190,11 +190,11 @@ World::setPhysics()
     // grounds
     phGroundBodies.emplace_back(createPhysicalBox(600,780,1200,20,b2_staticBody));
     phGroundBodies.emplace_back(createPhysicalBox(70,150,150,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(240,280,200,32,b2_staticBody,Textures::SceneID::Grass));
+    phGroundBodies.emplace_back(createPhysicalBox(240,280,140,32,b2_staticBody,Textures::SceneID::Grass));
     phGroundBodies.emplace_back(createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass));
     phGroundBodies.emplace_back(createPhysicalBox(500,500,120,32,b2_staticBody,Textures::SceneID::Grass));
 
-    pBoxTest = createPhysicalBox(300,100,64,64,b2_dynamicBody,Textures::SceneID::BoxPushable);
+    pBoxTest = createPhysicalBox(300,100,50,50,b2_dynamicBody,Textures::SceneID::BoxPushable);
     //sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
     //newCrate.init(std::move(box),std::move(boxShape));
     //mCrates.push_back(std::move(&newCrate));
@@ -246,11 +246,12 @@ World::draw()
     // draw physics
     if(phDebugPhysics)
     {
+        // draw raycasts
         phWorld->DebugDraw();
-        debugDrawer.DrawSegment(mPlayer->rcPoint1,mPlayer->rcPoint2,b2Color(0.9f,0.0f,0.0f));
-        debugDrawer.DrawSegment(mPlayer->rcPoint3,mPlayer->rcPoint4,b2Color(0.9f,0.0f,0.0f));
-        debugDrawer.DrawSegment(mPlayer->rcPoint5,mPlayer->rcPoint6,b2Color(0.9f,0.0f,0.0f));
-
+        for(auto rc : mPlayer->rayCastPoints)
+        {
+            debugDrawer.DrawSegment(rc.second.first,rc.second.second,b2Color(0.9f,0.0f,0.0f));
+        }
     }
 
     // TODO: add the ground and stuff to the scenegraph !

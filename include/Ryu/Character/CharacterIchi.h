@@ -3,6 +3,8 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 
+#include <box2d/b2_math.h>
+
 //namespace ryu {
 
 using IchiTextureManager = AssetManager<sf::Texture, Textures::LevelID>;
@@ -21,7 +23,11 @@ class CharacterIchi : public CharacterBase
         void update(sf::Time deltaTime) override;
     private:
         void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void createRaycast(std::string type,std::pair<double,double> startPoint, float angle, float length);
+    
         IchiTextureManager ichiTextureManager;
+    public:
+        std::map<std::string, std::pair<b2Vec2,b2Vec2> > rayCastPoints;
 };
 
 //} /// namespace ryu
