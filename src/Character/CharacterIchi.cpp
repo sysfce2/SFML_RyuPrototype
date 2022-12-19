@@ -90,11 +90,6 @@ CharacterIchi::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) co
 
 constexpr double raycastOffset = 25.0f;
 
-/* how to use a lambda as a free function / capture ichi?
-auto addRayCast = [](std::pair<double,double> points){
-};
-*/
-
 void
 CharacterIchi::createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length)
 {
@@ -111,9 +106,17 @@ CharacterIchi::createRaycast(std::string type, std::pair<double,double> startPoi
               Converter::pixelsToMeters<double>(startPoint.second));
 
     b2Vec2 p2 = p1 + (dir * d); 
+    auto rc = rayCastPoints.find(type);
     
-    rayCastPoints.insert(std::make_pair(type,std::make_pair(p1,p2)));
-    std::cout << "RCElements:" << rayCastPoints.size() << "\n";
+    if(rc != rayCastPoints.end())
+    {
+        rc->second.first = p1;
+        rc->second.second = p2; 
+    }
+    else
+    {
+        rayCastPoints.insert(std::make_pair(type,std::make_pair(p1,p2)));
+    }
     
     RayCastClosest callback;
     getPhysicsWorldRef().get()->RayCast(&callback, p1,p2);
@@ -123,7 +126,6 @@ void
 CharacterIchi::update(sf::Time deltaTime)
 {
     CharacterBase::update(deltaTime);
-// TODO: visualize the debugoutput correctly, debugpoints aree not updated ...dsee world::draw)
     createRaycast("up",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y-raycastOffset),0,40.0f);
     createRaycast("mid",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y),0,40.0f);
     createRaycast("down",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+raycastOffset),0,40.0f);
