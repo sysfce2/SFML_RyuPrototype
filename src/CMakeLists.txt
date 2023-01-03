@@ -11,6 +11,7 @@ set (SRC
 	Core/CommandQueue.cpp
 	Core/Game.cpp
 	Core/SpriteNode.cpp
+  Core/Utilities.cpp
 	Core/World.cpp
 	Character/CharacterIchi.cpp
 	Character/CharacterBase.cpp

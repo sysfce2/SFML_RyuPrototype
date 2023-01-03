@@ -1,18 +1,26 @@
 #pragma once
 
+#include <Ryu/Events/Subject.h>
+
 #include <box2d/b2_world_callbacks.h>
 #include <box2d/b2_math.h>
 
 #include <iostream>
+#include <memory>
 
+
+class SceneNode;
 
 /*
 *  This callback finds the closest hit.
 */
-class RayCastClosest : public b2RayCastCallback
+class RayCastClosest : public b2RayCastCallback, Subject
 {
   public:
-    RayCastClosest() : m_Hit(false) {
+    RayCastClosest() : 
+      m_Hit(false),
+      owner(nullptr)
+  {
    
   }
 
@@ -25,11 +33,23 @@ class RayCastClosest : public b2RayCastCallback
       m_Point = point;
       m_Normal = normal;
 
+      if(owner != nullptr)
+      {
+        std::cout << "owner\n";
+      }
+
       // By returning the current fraction, we instruct the calling code to clip the ray and
   		// continue the ray-cast to the next fixture. WARNING: do not assume that fixtures
   		// are reported in order. However, by clipping, we can always get the closest fixture.
 	  	return fraction;
     }
+
+    void setOwner(std::unique_ptr<SceneNode> raycastOwner)
+    {
+      owner = std::move(raycastOwner);
+    }
+
+    std::unique_ptr<SceneNode> owner;
 
     bool m_Hit;
     b2Vec2 m_Point;

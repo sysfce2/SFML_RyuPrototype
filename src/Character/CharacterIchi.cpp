@@ -90,45 +90,14 @@ CharacterIchi::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) co
 
 constexpr double raycastOffset = 25.0f;
 
-void
-CharacterIchi::createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length)
-{
-    // creating a raycast from the characters position downwards
-    // 0° right / 90° up / 180° left / 270° down
-    float raycastAngle = b2_pi * angle / 180.0f;
-    float lengthMeter = Converter::pixelsToMeters<double>(length);
-    b2Vec2 d(lengthMeter * cosf(raycastAngle),lengthMeter * sinf(raycastAngle));
-    
-    // direction according lookdir of character
-    int8 dir = (getMoveDirection() == EMoveDirection::Right ? 1 : -1);
-
-    b2Vec2 p1(Converter::pixelsToMeters<double>(startPoint.first),
-              Converter::pixelsToMeters<double>(startPoint.second));
-
-    b2Vec2 p2 = p1 + (dir * d); 
-    auto rc = rayCastPoints.find(type);
-    
-    if(rc != rayCastPoints.end())
-    {
-        rc->second.first = p1;
-        rc->second.second = p2; 
-    }
-    else
-    {
-        rayCastPoints.insert(std::make_pair(type,std::make_pair(p1,p2)));
-    }
-    
-    RayCastClosest callback;
-    getPhysicsWorldRef().get()->RayCast(&callback, p1,p2);
-}
-
 void 
 CharacterIchi::update(sf::Time deltaTime)
 {
     CharacterBase::update(deltaTime);
-    createRaycast("up",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y-raycastOffset),0,40.0f);
-    createRaycast("mid",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y),0,40.0f);
-    createRaycast("down",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+raycastOffset),0,40.0f);
+    RyuPhysics::createRaycast("up",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y-raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
+    RyuPhysics::createRaycast("mid",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
+    RyuPhysics::createRaycast("down",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
+    RyuPhysics::createRaycast("below",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+raycastOffset),90,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
 }
 
 //} /// namespace ryu
