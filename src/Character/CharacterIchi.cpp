@@ -88,16 +88,14 @@ CharacterIchi::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) co
     target.draw(mCharacterAnimation);
 }
 
-constexpr double raycastOffset = 25.0f;
 
 void 
 CharacterIchi::update(sf::Time deltaTime)
 {
     CharacterBase::update(deltaTime);
-    RyuPhysics::createRaycast("up",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y-raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
+    RyuPhysics::createRaycast("up",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y-RyuPhysics::raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
     RyuPhysics::createRaycast("mid",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
-    RyuPhysics::createRaycast("down",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
-    RyuPhysics::createRaycast("below",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+raycastOffset),90,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
+    RyuPhysics::createRaycast("down",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
 }
 
 //} /// namespace ryu

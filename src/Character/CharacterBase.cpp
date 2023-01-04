@@ -33,6 +33,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,baseTextureManager()
     ,mCharSettings()
     ,mCurrentLevel(Textures::LevelID::Level1)
+    ,rayCastPoints()
 {
     loadTextures();
 }

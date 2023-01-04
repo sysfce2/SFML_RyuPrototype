@@ -35,6 +35,8 @@ using RaycastPoints=std::map<std::string, std::pair<b2Vec2,b2Vec2> >;
 
 namespace RyuPhysics
 {
+
+  constexpr double raycastOffset = 25.0f;
   void createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
   
 }

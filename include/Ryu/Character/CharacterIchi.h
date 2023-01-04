@@ -26,8 +26,6 @@ class CharacterIchi : public CharacterBase
         //void createRaycast(std::string type,std::pair<double,double> startPoint, float angle, float length);
     
         IchiTextureManager ichiTextureManager;
-    public:
-        std::map<std::string, std::pair<b2Vec2,b2Vec2> > rayCastPoints;
 };
 
 //} /// namespace ryu

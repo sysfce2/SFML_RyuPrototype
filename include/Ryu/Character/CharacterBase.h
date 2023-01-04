@@ -112,18 +112,7 @@ class CharacterBase : public SceneNode , public Subject
         ECharacterState mECharacterState;
         float mCharacterSpeed;
         bool physicsInitialized;
-    // just simple data for the raycast, its not part of box2D standard debug draw so we need to call it explicitly
-    public:
-    // TODO: make it better to debug more raycasts
-        b2Vec2 rcPoint1;
-        b2Vec2 rcPoint2;
-        
-        b2Vec2 rcPoint3;
-        b2Vec2 rcPoint4;
-    
-        b2Vec2 rcPoint5;
-        b2Vec2 rcPoint6;
-    
+
     private:
         BaseTextureManager baseTextureManager;
         EMoveDirection mMoveDirection;
@@ -136,6 +125,9 @@ class CharacterBase : public SceneNode , public Subject
         b2Fixture* mFixture;
         CharacterSetting mCharSettings;
         Textures::LevelID mCurrentLevel;
+
+    public:
+        std::map<std::string, std::pair<b2Vec2,b2Vec2> > rayCastPoints;
 };
 
 //} /// namespace ryu

@@ -2,6 +2,7 @@
 #include <Ryu/Statemachine/CharacterStateFalling.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Statemachine/CharacterState.h>
+#include <Ryu/Core/Utilities.h>
 
 #include <iostream>
 #include <memory>
@@ -11,9 +12,13 @@
 
 //namespace ryu{
 
-CharacterStateFalling::CharacterStateFalling(){}
+CharacterStateFalling::CharacterStateFalling(){
+    std::cout << "Falling-cdor\n";
+}
 
-CharacterStateFalling::~CharacterStateFalling(){}
+CharacterStateFalling::~CharacterStateFalling(){
+    std::cout << "Falling-dtor\n";
+}
 
 std::unique_ptr<CharacterState>
 CharacterStateFalling::handleInput(CharacterBase& character,EInput input)
@@ -41,6 +46,8 @@ CharacterStateFalling::update(CharacterBase& character)
         std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
         character.changeState(std::move(state));
     }
+
+    RyuPhysics::createRaycast("below",std::make_pair(character.getSpriteAnimation().getPosition().x,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset),90,40.0f,character.getMoveDirection(),character.getPhysicsWorldRef(),character.rayCastPoints);
 }
 
 
@@ -54,12 +61,14 @@ CharacterStateFalling::enter(CharacterBase& character)
            ,.duration = sf::seconds(1)
            ,.repeat = true
            ,.animationId = Textures::CharacterID::IchiFallingLow});
+
 }
 
 void
 CharacterStateFalling::exit(CharacterBase& character)
 {
-
+    std::cout << "delete below\n";
+    character.rayCastPoints.erase("below");
 }
 
 //} /// namespace ryu

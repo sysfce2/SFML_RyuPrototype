@@ -14,15 +14,13 @@ class SceneNode;
 /*
 *  This callback finds the closest hit.
 */
-class RayCastClosest : public b2RayCastCallback, Subject
+class RayCastClosest : public b2RayCastCallback
 {
   public:
     RayCastClosest() : 
       m_Hit(false),
       owner(nullptr)
-  {
-   
-  }
+    {}
 
     float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override
     {

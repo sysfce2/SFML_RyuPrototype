@@ -10,7 +10,8 @@
 
 namespace RyuPhysics
 {
-  void createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints)
+  
+ void createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints)
   {
     // creating a raycast from the characters position downwards
     // 0° right / 90° up / 180° left / 270° down
