@@ -19,7 +19,8 @@ class RayCastClosest : public b2RayCastCallback
   public:
     RayCastClosest() : 
       m_Hit(false),
-      owner(nullptr)
+      owner(nullptr),
+      m_fraction(0)
     {}
 
     float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override
@@ -39,8 +40,11 @@ class RayCastClosest : public b2RayCastCallback
       // By returning the current fraction, we instruct the calling code to clip the ray and
   		// continue the ray-cast to the next fixture. WARNING: do not assume that fixtures
   		// are reported in order. However, by clipping, we can always get the closest fixture.
-	  	return fraction;
+	  	m_fraction = fraction;
+      return fraction;
     }
+
+    float getFraction() {return m_fraction;}
 
     void setOwner(std::unique_ptr<SceneNode> raycastOwner)
     {
@@ -52,6 +56,7 @@ class RayCastClosest : public b2RayCastCallback
     bool m_Hit;
     b2Vec2 m_Point;
     b2Vec2 m_Normal;
+    float m_fraction;
 };
 
 // see ray_cast.cpp : ln. 375 flwd. creates raycast ....

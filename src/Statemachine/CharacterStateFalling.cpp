@@ -12,7 +12,10 @@
 
 //namespace ryu{
 
-CharacterStateFalling::CharacterStateFalling(){
+CharacterStateFalling::CharacterStateFalling()
+    :  touchedFloor(false)
+     , timerTimeInMs(0.0f)
+{
     std::cout << "Falling-cdor\n";
 }
 
@@ -41,13 +44,43 @@ CharacterStateFalling::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateFalling::update(CharacterBase& character)
 {
-    if(not character.isFalling())
+    auto elTime = timer.getElapsedTime().asMilliseconds();
+    std::cout << elTime << std::endl;
+    if(not character.isFalling() && (elTime > timerTimeInMs ))// TODO:test mit neuem eigenem CharState
     {
         std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
         character.changeState(std::move(state));
     }
 
-    RyuPhysics::createRaycast("below",std::make_pair(character.getSpriteAnimation().getPosition().x,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset),90,40.0f,character.getMoveDirection(),character.getPhysicsWorldRef(),character.rayCastPoints);
+    if(elTime == 0)
+    {
+      auto rc = RyuPhysics::createRaycast("below",std::make_pair(character.getSpriteAnimation().getPosition().x,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset),90,60.0f,character.getMoveDirection(),character.getPhysicsWorldRef(),character.rayCastPoints);
+      
+      if(rc.m_Hit)
+      {
+        std::cout << "Boom\n";
+        touchFloor(character); 
+      }
+    }
+}
+
+void
+CharacterStateFalling::touchFloor(CharacterBase& character)
+{
+    if(not touchedFloor)
+    {
+        touchedFloor = true;
+        timer.restart();
+        std::cout << "touched floor\n";
+        character.setupAnimation({
+            .frameSize={80,96}
+           ,.startFrame={0,4}
+           ,.numFrames=11
+           ,.duration = sf::milliseconds(1500)
+           ,.repeat = true
+           ,.animationId = Textures::CharacterID::IchiEndFallingLow});
+        timerTimeInMs = 2000;
+    }
 }
 
 

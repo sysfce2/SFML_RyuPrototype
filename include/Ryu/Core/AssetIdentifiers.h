@@ -36,9 +36,10 @@ namespace Textures
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
     enum class CharacterID {
         IchiIdleRun,
-		IchiJump,
-		IchiKatanaWalk,
-		IchiFallingLow,
+				IchiJump,
+				IchiKatanaWalk,
+				IchiFallingLow,
+				IchiEndFallingLow,
 		// ... Spritesheets
     };
 }

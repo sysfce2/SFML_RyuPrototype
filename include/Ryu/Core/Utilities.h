@@ -37,6 +37,6 @@ namespace RyuPhysics
 {
 
   constexpr double raycastOffset = 25.0f;
-  void createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
+  RayCastClosest createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
   
 }

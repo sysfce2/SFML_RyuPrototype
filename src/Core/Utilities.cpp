@@ -10,8 +10,9 @@
 
 namespace RyuPhysics
 {
-  
- void createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints)
+
+ //TODO: imo this returns a copy of the raycast propably this is unefficient
+ RayCastClosest createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints)
   {
     // creating a raycast from the characters position downwards
     // 0° right / 90° up / 180° left / 270° down
@@ -41,7 +42,8 @@ namespace RyuPhysics
     
     RayCastClosest callback;
     physWorld.get()->RayCast(&callback, p1,p2);
-    
+
+    return callback;
     //TODO:  how to inform state ? 
     // callback.addObserver(this);
     //callback.setOwner(std::make_unique<CharacterIchi>(*this));
