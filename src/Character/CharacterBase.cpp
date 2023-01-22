@@ -203,14 +203,15 @@ CharacterBase::update(sf::Time deltaTime)
     // dummy impl. / without falling animation
     if(mBody->GetLinearVelocity().y > 0 )
     {   
-        if(not mCharacterFalling)
+        std::cout << mBody->GetLinearVelocity().y << "\n";
+        if(not mCharacterFalling && mBody->GetLinearVelocity().y > 0.5)
         {
+            mCharacterFalling = true;
             std::unique_ptr<CharacterStateFalling> state = std::make_unique<CharacterStateFalling>();
             mCharacterState->exit(*this);
             mCharacterState = std::move(state);
             mCharacterState->enter(*this);
         }
-        mCharacterFalling = true;
         mCharacterAnimation.setPosition(
             Converter::metersToPixels<double>(mBody->GetPosition().x),
             Converter::metersToPixels<double>(mBody->GetPosition().y)

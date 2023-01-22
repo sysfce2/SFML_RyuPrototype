@@ -45,14 +45,14 @@ void
 CharacterStateFalling::update(CharacterBase& character)
 {
     auto elTime = timer.getElapsedTime().asMilliseconds();
-    std::cout << elTime << std::endl;
+    // std::cout << elTime << std::endl;
     if(not character.isFalling() && (elTime > timerTimeInMs ))// TODO:test mit neuem eigenem CharState
     {
         std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
         character.changeState(std::move(state));
     }
 
-    if(elTime == 0)
+    if(not touchedFloor)
     {
       auto rc = RyuPhysics::createRaycast("below",std::make_pair(character.getSpriteAnimation().getPosition().x,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset),90,60.0f,character.getMoveDirection(),character.getPhysicsWorldRef(),character.rayCastPoints);
       
@@ -69,6 +69,7 @@ CharacterStateFalling::touchFloor(CharacterBase& character)
 {
     if(not touchedFloor)
     {
+        character.rayCastPoints.erase("below");
         touchedFloor = true;
         timer.restart();
         std::cout << "touched floor\n";
@@ -77,7 +78,7 @@ CharacterStateFalling::touchFloor(CharacterBase& character)
            ,.startFrame={0,4}
            ,.numFrames=11
            ,.duration = sf::milliseconds(1500)
-           ,.repeat = true
+           ,.repeat = false
            ,.animationId = Textures::CharacterID::IchiEndFallingLow});
         timerTimeInMs = 2000;
     }
