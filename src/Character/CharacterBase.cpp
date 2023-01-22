@@ -201,10 +201,10 @@ CharacterBase::update(sf::Time deltaTime)
     //          << " v " << mBody->GetLinearVelocity().x << " | " << mBody->GetLinearVelocity().y << "\n length: " << mBody->GetLinearVelocity().Length() << "\n";
     // TODO this has to be moved to a new state ! (falling)
     // dummy impl. / without falling animation
-    if(mBody->GetLinearVelocity().y > 0 )
+    if(mBody->GetLinearVelocity().y > 0.5f )
     {   
-        std::cout << mBody->GetLinearVelocity().y << "\n";
-        if(not mCharacterFalling && mBody->GetLinearVelocity().y > 0.5)
+        std::cout << "V(y): " << mBody->GetLinearVelocity().y << "\n";
+        if(not mCharacterFalling && mECharacterState != ECharacterState::Falling  )
         {
             mCharacterFalling = true;
             std::unique_ptr<CharacterStateFalling> state = std::make_unique<CharacterStateFalling>();

@@ -93,6 +93,7 @@ class CharacterBase : public SceneNode , public Subject
         b2Body* getBody(){return mBody;}
         b2Fixture* getFixture(){return mFixture;}
 
+        void setCharacterStateEnum(ECharacterState stateValue){mECharacterState = stateValue;}
     protected:
         /***
          * \brief   Initialized physic (body, fixtures for the character).
@@ -115,6 +116,8 @@ class CharacterBase : public SceneNode , public Subject
 
     private:
         BaseTextureManager baseTextureManager;
+
+    protected:
         EMoveDirection mMoveDirection;
         sf::Vector2f movement;
         bool mCharacterFalling;

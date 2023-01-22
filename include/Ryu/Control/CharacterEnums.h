@@ -18,6 +18,7 @@ enum class ECharacterState{
     Idle,
     Walk,
     Run,
+    Falling,
     //...
 };
 

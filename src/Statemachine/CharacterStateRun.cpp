@@ -65,6 +65,7 @@ CharacterStateRun::enter(CharacterBase& character)
     mLastCharacterSpeed = character.getCharacterSpeed();
     character.setCharacterSpeed(mRunCharacterSpeed);
     character.notifyObservers(Event::CharacterSpeedChanged);
+    character.setCharacterStateEnum(ECharacterState::Run);
 }
 
 void
