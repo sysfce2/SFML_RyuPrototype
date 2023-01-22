@@ -1,5 +1,6 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateFalling.h>
+#include <Ryu/Statemachine/CharacterStateFallingEnd.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/Utilities.h>
@@ -14,7 +15,6 @@
 
 CharacterStateFalling::CharacterStateFalling()
     :  touchedFloor(false)
-     , timerTimeInMs(0.0f)
 {
     std::cout << "Falling-cdor\n";
 }
@@ -44,14 +44,6 @@ CharacterStateFalling::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateFalling::update(CharacterBase& character)
 {
-    auto elTime = timer.getElapsedTime().asMilliseconds();
-    // std::cout << elTime << std::endl;
-    if(not character.isFalling() && (elTime > timerTimeInMs ))// TODO:test mit neuem eigenem CharState
-    {
-        std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
-        character.changeState(std::move(state));
-    }
-
     if(not touchedFloor)
     {
       auto rc = RyuPhysics::createRaycast("below",std::make_pair(character.getSpriteAnimation().getPosition().x,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset),90,60.0f,character.getMoveDirection(),character.getPhysicsWorldRef(),character.rayCastPoints);
@@ -59,31 +51,13 @@ CharacterStateFalling::update(CharacterBase& character)
       if(rc.m_Hit)
       {
         std::cout << "Boom\n";
-        touchFloor(character); 
+        touchedFloor = true;
+        character.rayCastPoints.erase("below");
+        std::unique_ptr<CharacterStateFallingEnd> state = std::make_unique<CharacterStateFallingEnd>();
+        character.changeState(std::move(state));
       }
     }
 }
-
-void
-CharacterStateFalling::touchFloor(CharacterBase& character)
-{
-    if(not touchedFloor)
-    {
-        character.rayCastPoints.erase("below");
-        touchedFloor = true;
-        timer.restart();
-        std::cout << "touched floor\n";
-        character.setupAnimation({
-            .frameSize={80,96}
-           ,.startFrame={0,4}
-           ,.numFrames=11
-           ,.duration = sf::milliseconds(1500)
-           ,.repeat = false
-           ,.animationId = Textures::CharacterID::IchiEndFallingLow});
-        timerTimeInMs = 2000;
-    }
-}
-
 
 void
 CharacterStateFalling::enter(CharacterBase& character)
@@ -95,7 +69,7 @@ CharacterStateFalling::enter(CharacterBase& character)
            ,.duration = sf::seconds(1)
            ,.repeat = true
            ,.animationId = Textures::CharacterID::IchiFallingLow});
-
+    character.setCharacterStateEnum(ECharacterState::Falling);
 }
 
 void

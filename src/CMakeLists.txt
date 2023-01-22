@@ -21,6 +21,7 @@ set (SRC
 	Statemachine/CharacterStateIdle.cpp
 	Statemachine/CharacterStateRun.cpp
 	Statemachine/CharacterStateFalling.cpp
+	Statemachine/CharacterStateFallingEnd.cpp
 )
 
 build_chapter(RyuPt SOURCES ${SRC})

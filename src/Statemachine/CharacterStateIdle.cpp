@@ -57,6 +57,8 @@ CharacterStateIdle::enter(CharacterBase& character)
                ,.duration = sf::seconds(1)
                ,.repeat = true
                ,.animationId = Textures::CharacterID::IchiIdleRun});
+
+    character.setCharacterStateEnum(ECharacterState::Idle);
 }
 
 void

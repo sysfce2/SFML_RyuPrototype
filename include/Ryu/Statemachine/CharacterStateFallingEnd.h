@@ -2,14 +2,15 @@
 
 #include "CharacterState.h"
 
+#include <SFML/System/Clock.hpp>
 #include <memory>
 
 
-class CharacterStateFalling : public CharacterState
+class CharacterStateFallingEnd : public CharacterState
 {
     public:
-        CharacterStateFalling();
-        ~CharacterStateFalling();
+        CharacterStateFallingEnd();
+        ~CharacterStateFallingEnd();
         std::unique_ptr<CharacterState> handleInput(CharacterBase& character,EInput input) override;
         void update(CharacterBase& character) override;
     
@@ -17,5 +18,7 @@ class CharacterStateFalling : public CharacterState
         void exit(CharacterBase& character) override;
     private:
         bool touchedFloor;
+        sf::Clock timer;
+        float timerTimeInMs;
     
 };

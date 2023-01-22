@@ -38,7 +38,6 @@ Animation::update(double elapsed)
             target.setTextureRect(frames[i].rect);  
             break; // we found our frame
         }
-
-        
     }
+    std::cout << "AnimationFinished\n";
 }

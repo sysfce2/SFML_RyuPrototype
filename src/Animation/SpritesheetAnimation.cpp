@@ -53,9 +53,17 @@ sf::Vector2i SpritesheetAnimation::getFrameSize() const
 	return mFrameSize;
 }
 
-void SpritesheetAnimation::setNumFrames(std::size_t numFrames)
+void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standardDuration*/ )
 {
 	mNumFrames = numFrames;
+
+	/*
+	for(int i=0;i<numFrames;++i)
+	{
+		Frame
+		mFrames.push_back()	
+	}
+	*/
 }
 
 std::size_t SpritesheetAnimation::getNumFrames() const
@@ -115,6 +123,8 @@ SpritesheetAnimation::update(sf::Time dt)
 {
     /* Tasks:
     * X1. start ani with specific frame on spritesheet
+		* 1b send signal when animation is finished
+		* 1c. make Frame a struct
     * 2. Time per frame
     * 3. get movedirection / mirrow spritesheet IF sprite is morrowable
     */
@@ -181,5 +191,5 @@ SpritesheetAnimation::flipAnimationRight()
 void SpritesheetAnimation::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
   	states.transform *= getTransform();
-	target.draw(mSprite, states);
+		target.draw(mSprite, states);
 }
