@@ -9,6 +9,7 @@
 
 class CharacterIchi;
 class PlayerController;
+class CommandQueue;
 
 //namespace ryu{
 
@@ -19,7 +20,7 @@ class Game
 	void run();
   World& getWorld() {return mWorld;}
   private:
-	void processEvents();
+	void processEvents(sf::Event& event, CommandQueue& commands);
 	void update(sf::Time deltaTime);
 	void render();
 	void handleUserInput(sf::Keyboard::Key key, bool keyPressed);

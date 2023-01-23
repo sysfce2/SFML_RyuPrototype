@@ -24,7 +24,13 @@ project(Ryu)
 
 find_package(box2d CONFIG REQUIRED)
 
+find_package(ImGui-SFML REQUIRED)
 
+if(ImGui-SFML_FOUND)
+	message("\n-> ImGui-SFML directory found.")
+else()
+	message("\n-> ImGui-SFML directory not found.")
+endif()
 
 # Configuration options
 set(SFML_STATIC_LIBRARIES FALSE CACHE BOOL "Use static SFML librares")
@@ -132,7 +138,13 @@ macro(build_chapter CHAPTER_NAME)
 	if(SFML_VERSION_MINOR LESS 2)
         set(SFML_DEPENDENCIES "")
 	endif()
-	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d)# b2DebugDraw)
+	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d ImGui-SFML::ImGui-SFML)# b2DebugDraw)
+	#if(${CHAPTER_NAME} EQUAL RyuPt)
+	#	message("->Linking ImGui-SFML")
+  #	target_link_libraries(RyuPt PRIVATE ImGui-SFML::ImGui-SFML)# b2DebugDraw)
+	#endif()
+	
+	#target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
 	
 	install(TARGETS ${PROJECT_NAME}	RUNTIME DESTINATION ${CHAPTER_NAME})
 
@@ -140,6 +152,7 @@ macro(build_chapter CHAPTER_NAME)
 			DESTINATION ${PROJECT_NAME}
 			PATTERN "CMakeLists.txt" EXCLUDE)
 endmacro()
+
 
 # C++ source code, list of all subdirectories
 # Must appear after macros, otherwise they are not visible in subdirectories
