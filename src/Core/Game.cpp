@@ -6,9 +6,9 @@
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Control/CharacterEnums.h>
+#include <Ryu/Debug/imGuiDebug.h>
 
-#include <imgui.h>
-//#include <imgui_demo.h>
+// #include <imgui.h>
 #include <imgui-SFML.h>
 
 #include <SFML/Graphics.hpp>
@@ -20,7 +20,8 @@
 const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 Game::Game()
-: mWindow(sf::VideoMode(1200, 800), "SFML Application")
+:Observer("Game")
+,mWindow(sf::VideoMode(1200, 800), "SFML Application")
 ,mWorld(mWindow)
 ,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
 ,mIsPaused(false)
@@ -31,11 +32,31 @@ Game::Game()
 }
 
 void
+Game::onNotify(const SceneNode& entity, Event event)
+{
+	switch(event)
+	{
+		case Event::DebugToggle:
+		{
+				RyuDebug::activateRyuDebug == false ? RyuDebug::activateRyuDebug = true : RyuDebug::activateRyuDebug = false;
+				break;
+		}
+		case Event::ImGuiDemoToggle:
+		{
+				RyuDebug::showImGuiDemoWindow == false ? RyuDebug::showImGuiDemoWindow = true : RyuDebug::showImGuiDemoWindow = false;
+				break;
+		}
+		default: break;
+	}
+}
+
+void
 Game::addObservers()
 {
 	auto player = mWorld.getPlayer();
 	player->addObserver(mPlayerController.get());
 	mPlayerController->addObserver(&mWorld);
+	mPlayerController->addObserver(this);
 }
 
 void Game::run()
@@ -45,7 +66,6 @@ void Game::run()
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	ImGui::SFML::Init(mWindow);
 	
-	bool showImGuiDemoWindow = true;
 	while (mWindow.isOpen())
 	{
 		timeSinceLastUpdate += clock.restart();
@@ -66,13 +86,8 @@ void Game::run()
 			
 			if (!mIsPaused)
 			{
-				//ImGui::NewFrame();
 				update(TimePerFrame);
-				ImGui::ShowDemoWindow(&showImGuiDemoWindow);
-				//std::cout << "ImGui-Version: " << IMGUI_CHECKVERSION() <<"\n";
-        ImGui::Begin("Hello, world!");
-        ImGui::Button("Look at this pretty button");
-        ImGui::End();
+				RyuDebug::CreateDebugGui();
 			}
 		  render();
 		}	

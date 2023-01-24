@@ -8,7 +8,6 @@
 #include <Ryu/Scene/Crate.h>
 
 #include <Ryu/Debug/b2DrawSFML.hpp>
-
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <box2d/b2_world.h>
@@ -18,6 +17,7 @@
 #include <iostream>
 #include <memory>
 #include <array>
+
 
 //namespace ryu{
 World::World(sf::RenderWindow& window)
@@ -94,7 +94,7 @@ World::onNotify(const SceneNode& entity, Event event)
     {
         case Event::DebugToggle:
         {
-            toggleDrawDebug();    
+            toggleDrawDebug();
             break;       
         }
         default:

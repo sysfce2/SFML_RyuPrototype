@@ -182,10 +182,15 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 {
                     std::cout << s.getPosition().x << "," << s.getPosition().y << "\n";
                 };
-                //notifyObservers(Event::DebugToggle);
                 notify(*playerCharacter,Event::DebugToggle);
                 break;
             }
+            case sf::Keyboard::Hyphen:
+            {
+                notify(*playerCharacter,Event::ImGuiDemoToggle);
+                break;
+            }
+
             case sf::Keyboard::O:
             {
                 std::cout << "Scale(" << playerCharacter->getSpriteAnimation().getSprite().getScale().x << "," 
