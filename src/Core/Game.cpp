@@ -8,6 +8,7 @@
 #include <Ryu/Control/CharacterEnums.h>
 
 #include <imgui.h>
+//#include <imgui_demo.h>
 #include <imgui-SFML.h>
 
 #include <SFML/Graphics.hpp>
@@ -44,41 +45,37 @@ void Game::run()
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	ImGui::SFML::Init(mWindow);
 	
-	// TODO: why no debugdrawing ?????
-	//mWorld.setDebugDrawer(mWindow);
-
+	bool showImGuiDemoWindow = true;
 	while (mWindow.isOpen())
 	{
-		//processEvents();
 		timeSinceLastUpdate += clock.restart();
 		while (timeSinceLastUpdate > TimePerFrame)
 		{
 			timeSinceLastUpdate -= TimePerFrame;
 			CommandQueue& commands = mWorld.getActiveCommands();
 			sf::Event event;
+			
 			while (mWindow.pollEvent(event))
 			{
     		ImGui::SFML::ProcessEvent(mWindow, event);
 				processEvents(event, commands);
 			}
 			
-      ImGui::SFML::Update(mWindow, timeSinceLastUpdate);//clock.restart());
+      ImGui::SFML::Update(mWindow, timeSinceLastUpdate);
 			mPlayerController->handleRealtimeInput(commands);
 			
 			if (!mIsPaused)
 			{
 				//ImGui::NewFrame();
 				update(TimePerFrame);
-				// ImGui::ShowDemoWindow();
-
+				ImGui::ShowDemoWindow(&showImGuiDemoWindow);
+				//std::cout << "ImGui-Version: " << IMGUI_CHECKVERSION() <<"\n";
         ImGui::Begin("Hello, world!");
         ImGui::Button("Look at this pretty button");
         ImGui::End();
 			}
-	  	ImGui::SFML::Render(mWindow);
+		  render();
 		}	
-		
-		render();
 	}
 	ImGui::SFML::Shutdown();
 }
@@ -120,6 +117,7 @@ void Game::render()
 
 	mWindow.setView(mWindow.getDefaultView());
 	//TODO: statistics fps text ....
+ 	ImGui::SFML::Render(mWindow); /// needs to be called BEFORE display()
 	mWindow.display();
 }
 //} /// namespace ryu
