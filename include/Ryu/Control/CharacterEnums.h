@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Thirdparty/betterEnum/enum.h>
+
 enum class EInput 
 {
     None,
@@ -13,6 +15,9 @@ enum class EInput
     ReleaseLeft,
 };
 
+BETTER_ENUM(ECharacterState, char,None=0,Idle,Walk,Run,Falling);
+
+/*
 enum class ECharacterState{
     None,
     Idle,
@@ -20,7 +25,7 @@ enum class ECharacterState{
     Run,
     Falling,
     //...
-};
+};*/
 
 enum class EMoveDirection
 {

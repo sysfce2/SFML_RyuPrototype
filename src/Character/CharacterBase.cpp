@@ -34,6 +34,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,mCharSettings()
     ,mCurrentLevel(Textures::LevelID::Level1)
     ,rayCastPoints()
+    ,mECharacterState(ECharacterState::None)
 {
     loadTextures();
 }
@@ -204,7 +205,7 @@ CharacterBase::update(sf::Time deltaTime)
     if(mBody->GetLinearVelocity().y > 0.5f )
     {   
         std::cout << "V(y): " << mBody->GetLinearVelocity().y << "\n";
-        if(not mCharacterFalling && mECharacterState != ECharacterState::Falling  )
+        if(not mCharacterFalling && mECharacterState._value != ECharacterState::Falling  )
         {
             mCharacterFalling = true;
             std::unique_ptr<CharacterStateFalling> state = std::make_unique<CharacterStateFalling>();

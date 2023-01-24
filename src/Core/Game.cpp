@@ -120,9 +120,19 @@ void Game::processEvents(sf::Event& event, CommandQueue& commands)
 		}
 }
 
+
+void
+Game::setDebugValues()
+{
+	auto ryustate = (mWorld.getPlayer()->getCharacterStateEnum())._to_string();
+	RyuDebug::characterState = ryustate;
+	// RyuDebug::characterState = ryustate;
+}
+
 void Game::update(sf::Time deltaTime)
 {
 	mWorld.update(deltaTime);
+	setDebugValues();
 }
 
 void Game::render()

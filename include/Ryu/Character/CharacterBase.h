@@ -92,7 +92,7 @@ class CharacterBase : public SceneNode , public Subject
 
         b2Body* getBody(){return mBody;}
         b2Fixture* getFixture(){return mFixture;}
-
+        ECharacterState getCharacterStateEnum() {return mECharacterState;}
         void setCharacterStateEnum(ECharacterState stateValue){mECharacterState = stateValue;}
     protected:
         /***

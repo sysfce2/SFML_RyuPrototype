@@ -27,6 +27,7 @@ class Game : public Observer
 	  void render();
 	  void handleUserInput(sf::Keyboard::Key key, bool keyPressed);
 	  void addObservers();
+    void setDebugValues();
   private:
 	  sf::RenderWindow mWindow;
 	  World mWorld;
