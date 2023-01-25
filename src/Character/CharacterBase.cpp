@@ -234,8 +234,7 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);
     
-    //
-    //setTextureOnCharacter(mCurrentLevel);
+    setTextureOnCharacter(mCurrentLevel);
 
     // set origin of texture to center
     sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
@@ -246,7 +245,6 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     // the first time we need to init physics-body etc
     if(not physicsInitialized)
     {
-        setTextureOnCharacter(mCurrentLevel); // TODO: check if only needed once / level
         initPhysics();
     }
 }
@@ -256,9 +254,9 @@ void
 CharacterBase::updateCharacterState(sf::Time deltaTime)
 {
     mCharacterAnimation.update(deltaTime);
-    mCharacterAnimation.move(movement * deltaTime.asSeconds());
-    if(not mCharacterFalling)
+    if(mECharacterState._value != ECharacterState::FallingEnd && not mCharacterFalling)
     {
+        mCharacterAnimation.move(movement * deltaTime.asSeconds());
         mBody->SetLinearVelocity( {mCharSettings.MoveMultiplierX * Converter::pixelsToMeters<float>(movement.x),
                                    mCharSettings.MoveMultiplierY * Converter::pixelsToMeters<float>(movement.y)});
     }
