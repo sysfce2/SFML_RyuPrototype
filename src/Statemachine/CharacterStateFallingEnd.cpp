@@ -51,14 +51,28 @@ CharacterStateFallingEnd::update(CharacterBase& character)
 void
 CharacterStateFallingEnd::enter(CharacterBase& character)
 {
-
-    character.setupAnimation({
+    if(character.getActionHeight() == EActionHeight::Low)
+    {
+        character.setupAnimation({
             .frameSize={80,96}
            ,.startFrame={4,1}
            ,.numFrames=14
            ,.duration = sf::milliseconds(1350)
            ,.repeat = false
            ,.animationId = Textures::CharacterID::IchiEndFallingLow});
+    }
+    
+    if(character.getActionHeight() == EActionHeight::High)
+    {
+        character.setupAnimation({
+            .frameSize={80,96}
+           ,.startFrame={5,2}
+           ,.numFrames=14
+           ,.duration = sf::milliseconds(1550)
+           ,.repeat = false
+           ,.animationId = Textures::CharacterID::IchiEndFallingHigh});
+    }
+    
     character.setCharacterStateEnum(ECharacterState::FallingEnd);
 }
 

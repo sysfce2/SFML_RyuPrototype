@@ -15,6 +15,6 @@ class CharacterStateClimb : public CharacterState
         void enter(CharacterBase& character) override;
         void exit(CharacterBase& character) override;
     private:
-				EClimbHeight mClimbHeight;
+				EActionHeight mClimbHeight;
 		
 };

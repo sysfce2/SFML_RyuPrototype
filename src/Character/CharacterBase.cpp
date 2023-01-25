@@ -4,8 +4,9 @@
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/Utilities.h>
 
-#include <box2d/box2d.h>
 #include <Thirdparty/glm/glm.hpp>
+
+#include <box2d/box2d.h>
 
 #include <iostream>
 #include <memory>

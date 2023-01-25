@@ -83,6 +83,14 @@ CharacterStateFalling::enter(CharacterBase& character)
 void
 CharacterStateFalling::exit(CharacterBase& character)
 {
+    if(character.getLinearVelocity().y < 20.0f)
+    {
+        character.setActionHeight(EActionHeight::Low);
+    }
+    else
+    {
+        character.setActionHeight(EActionHeight::High);
+    }
     std::cout << "delete below\n";
     character.rayCastPoints.erase("below");
     character.getSpriteAnimation().restart();

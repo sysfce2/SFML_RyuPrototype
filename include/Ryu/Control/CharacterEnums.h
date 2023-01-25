@@ -15,17 +15,7 @@ enum class EInput
     ReleaseLeft,
 };
 
-BETTER_ENUM(ECharacterState, char,None=0,Idle,Walk,Run,Falling, FallingEnd);
-
-/*
-enum class ECharacterState{
-    None,
-    Idle,
-    Walk,
-    Run,
-    Falling,
-    //...
-};*/
+BETTER_ENUM(ECharacterState, char,None=0,Idle,Walk,Run,Falling,FallingEnd);
 
 enum class EMoveDirection
 {
@@ -40,7 +30,7 @@ enum class EMoveDirection
     DownRight
 };
 
-enum class EClimbHeight{
+enum class EActionHeight{
     None=0,
     Low,
     Mid,

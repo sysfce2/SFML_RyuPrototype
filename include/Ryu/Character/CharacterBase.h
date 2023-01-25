@@ -14,6 +14,7 @@
 #include <Thirdparty/glm/glm.hpp>
 #include <SFML/Graphics.hpp>
 #include <box2d/b2_math.h>
+#include <box2d/box2d.h>
 #include <memory.h>
 #include <iostream>
 
@@ -93,7 +94,10 @@ class CharacterBase : public SceneNode , public Subject
         b2Body* getBody(){return mBody;}
         b2Fixture* getFixture(){return mFixture;}
         ECharacterState getCharacterStateEnum() {return mECharacterState;}
+        EActionHeight getActionHeight() {return mActionHeight;}
         void setCharacterStateEnum(ECharacterState stateValue){mECharacterState = stateValue;}
+        void setActionHeight(EActionHeight heightValue){mActionHeight = heightValue;}
+        b2Vec2 getLinearVelocity() {return mBody->GetLinearVelocity(); }
     protected:
         /***
          * \brief   Initialized physic (body, fixtures for the character).
@@ -119,6 +123,8 @@ class CharacterBase : public SceneNode , public Subject
 
     protected:
         EMoveDirection mMoveDirection;
+        EActionHeight mActionHeight;
+    
         sf::Vector2f movement;
         bool mCharacterFalling;
 

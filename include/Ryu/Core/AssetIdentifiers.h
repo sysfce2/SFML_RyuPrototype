@@ -40,6 +40,16 @@ namespace Textures
 				IchiKatanaWalk,
 				IchiFallingLow,
 				IchiEndFallingLow,
+				IchiEndFallingHigh,
+				IchiDuckIdle,
+				IchiDuckWalk,
+				IchiLadderIdle,
+				IchiLadderClimb,
+				IchiJumpUp,
+				IchiJumpForward,
+				IchiSword1Idle,
+				IchiSword1Walk,
+				IchiWalk,
 		// ... Spritesheets
     };
 }
