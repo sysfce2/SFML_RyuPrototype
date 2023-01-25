@@ -12,7 +12,6 @@
 
 CharacterStateFallingEnd::CharacterStateFallingEnd()
     :  touchedFloor(false)
-     , timerTimeInMs(0.0f)
 {
     std::cout << "FallingEnd-cdor\n";
 }
@@ -44,8 +43,8 @@ CharacterStateFallingEnd::update(CharacterBase& character)
 {
     if(character.getSpriteAnimation().isFinished())
     {
-        std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
-        character.changeState(std::move(state));
+       std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
+       character.changeState(std::move(state));
     }
 }
 
@@ -53,19 +52,20 @@ void
 CharacterStateFallingEnd::enter(CharacterBase& character)
 {
 
-        character.setupAnimation({
+    character.setupAnimation({
             .frameSize={80,96}
-           ,.startFrame={0,4}
+           ,.startFrame={1,4}
            ,.numFrames=11
-           ,.duration = sf::milliseconds(1500)
+           ,.duration = sf::milliseconds(1350)
            ,.repeat = false
            ,.animationId = Textures::CharacterID::IchiEndFallingLow});
+    character.setCharacterStateEnum(ECharacterState::FallingEnd);
 }
 
 void
 CharacterStateFallingEnd::exit(CharacterBase& character)
 {
-    std::cout << "Exit: FallingEnd \n";
+    character.getSpriteAnimation().restart();
 }
 
 //} /// namespace ryu

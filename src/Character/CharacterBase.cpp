@@ -53,19 +53,8 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,mCharSettings()
     ,mCurrentLevel(Textures::LevelID::Level1)
 {
-   // needable ? 
-   handleInput(EInput::ReleaseLeft);
-  
+    // TODO: check if its needable&possible to start character from a certain state
    loadTextures();
-
-   switch(mECharacterState)
-   {
-       case ECharacterState::Idle:
-        mCharacterState = std::make_unique<CharacterStateIdle>();
-        break;
-       default:
-        mCharacterState = std::make_unique<CharacterStateIdle>();
-   }
 }
 
 void
@@ -219,7 +208,7 @@ CharacterBase::update(sf::Time deltaTime)
         );
     }
 
-    if(IsInBounds(mBody->GetLinearVelocity().y,0.f, 0.02f))
+    if(IsInBounds(mBody->GetLinearVelocity().y,0.f, 0.01f))
     {   
         mCharacterFalling = false;     
     }
@@ -244,7 +233,9 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     getSpriteAnimation().setNumFrames(config.numFrames);
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);
-    setTextureOnCharacter(mCurrentLevel);
+    
+    //
+    //setTextureOnCharacter(mCurrentLevel);
 
     // set origin of texture to center
     sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
@@ -255,6 +246,7 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     // the first time we need to init physics-body etc
     if(not physicsInitialized)
     {
+        setTextureOnCharacter(mCurrentLevel); // TODO: check if only needed once / level
         initPhysics();
     }
 }

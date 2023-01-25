@@ -124,9 +124,8 @@ void Game::processEvents(sf::Event& event, CommandQueue& commands)
 void
 Game::setDebugValues()
 {
-	auto ryustate = (mWorld.getPlayer()->getCharacterStateEnum())._to_string();
-	RyuDebug::characterState = ryustate;
-	// RyuDebug::characterState = ryustate;
+	RyuDebug::characterState = (mWorld.getPlayer()->getCharacterStateEnum())._to_string();
+	RyuDebug::characterIsFalling = mWorld.getPlayer()->isFalling();
 }
 
 void Game::update(sf::Time deltaTime)

@@ -64,7 +64,7 @@ CharacterStateIdle::enter(CharacterBase& character)
 void
 CharacterStateIdle::exit(CharacterBase& character)
 {
-
+    character.getSpriteAnimation().restart();
 }
 
 //} /// namespace ryu

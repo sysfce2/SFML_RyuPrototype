@@ -23,6 +23,11 @@ CharacterStateRun::~CharacterStateRun()
 std::unique_ptr<CharacterState> 
 CharacterStateRun::handleInput(CharacterBase& character,EInput input)
 {
+    if(character.isFalling())
+    {
+        return nullptr;
+    }
+    
     switch (input)
     {
        case EInput::ReleaseLeft:

@@ -46,7 +46,15 @@ CharacterStateFalling::update(CharacterBase& character)
 {
     if(not touchedFloor)
     {
-      auto rc = RyuPhysics::createRaycast("below",std::make_pair(character.getSpriteAnimation().getPosition().x,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset),90,60.0f,character.getMoveDirection(),character.getPhysicsWorldRef(),character.rayCastPoints);
+      auto rc = RyuPhysics::createRaycast(
+            "below"
+            ,std::make_pair(character.getSpriteAnimation().getPosition().x
+            ,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset)
+            ,90,55.0f /// angle, length 
+            ,character.getMoveDirection()
+            ,character.getPhysicsWorldRef()
+            ,character.rayCastPoints
+            );
       
       if(rc.m_Hit)
       {
@@ -66,7 +74,7 @@ CharacterStateFalling::enter(CharacterBase& character)
             .frameSize={80,96}
            ,.startFrame={3,2}
            ,.numFrames=4
-           ,.duration = sf::seconds(1)
+           ,.duration = sf::milliseconds(1000)
            ,.repeat = true
            ,.animationId = Textures::CharacterID::IchiFallingLow});
     character.setCharacterStateEnum(ECharacterState::Falling);
@@ -77,6 +85,7 @@ CharacterStateFalling::exit(CharacterBase& character)
 {
     std::cout << "delete below\n";
     character.rayCastPoints.erase("below");
+    character.getSpriteAnimation().restart();
 }
 
 //} /// namespace ryu

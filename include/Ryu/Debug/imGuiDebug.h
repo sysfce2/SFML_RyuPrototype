@@ -6,9 +6,35 @@
 
 namespace RyuDebug{
 
+	// TODO: add the "states" to a heederfile (these are the only which are set somewhere else and used here
 	bool showImGuiDemoWindow;
   bool activateRyuDebug;
 	const char* characterState;
+	bool characterIsFalling;
+
+  void ShowWidgets()
+  {
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::Text("Ryu Debug Viewer\n" "(right-click to change position)");
+    ImGui::Separator();
+    if(ImGui::CollapsingHeader("Basic"))
+    {
+        if (ImGui::IsMousePosValid())
+             ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
+        else
+             ImGui::Text("Mouse Position: <invalid>");
+    }
+    ImGui::Separator();
+    if(ImGui::CollapsingHeader("Charactrer"))
+    {
+				// ImGui::Text("CharacterState: %s ",characterState);	
+				ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f),"State: %s",characterState);	
+				ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f),"CharacterFalling: %s",characterIsFalling ? "true" : "false");	
+        ImGui::Separator();
+    }
+    ImGui::Separator();
+  	ImGui::Text("For ImGui-Demo-Window press '-' ");	
+  }
 
   static void CreateDebugGui()
   {
@@ -18,7 +44,6 @@ namespace RyuDebug{
 		{
 
 		static int location = -1;
-    ImGuiIO& io = ImGui::GetIO();
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
     if (location >= 0)
     {
@@ -41,20 +66,9 @@ namespace RyuDebug{
         window_flags |= ImGuiWindowFlags_NoMove;
     }
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-
-		if (ImGui::Begin("Example: Simple overlay", &activateRyuDebug, window_flags))
+		if (ImGui::Begin("RyuDebugOverlay", &activateRyuDebug, window_flags))
     {
-        ImGui::Text("Ryu Debug Viewer\n" "(right-click to change position)");
-        ImGui::Separator();
-        if (ImGui::IsMousePosValid())
-            ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
-        else
-            ImGui::Text("Mouse Position: <invalid>");
-    
-				// ImGui::Text("CharacterState: %s ",characterState);	
-				ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f),"State: %s",characterState);	
-        ImGui::Separator();
-				ImGui::Text("For ImGui-Demo-Window press '-' ");	
+        ShowWidgets();
 		    if (ImGui::BeginPopupContextWindow())
         {
             if (ImGui::MenuItem("Custom",       NULL, location == -1)) location = -1;

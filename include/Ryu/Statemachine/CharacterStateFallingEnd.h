@@ -18,7 +18,5 @@ class CharacterStateFallingEnd : public CharacterState
         void exit(CharacterBase& character) override;
     private:
         bool touchedFloor;
-        sf::Clock timer;
-        float timerTimeInMs;
     
 };

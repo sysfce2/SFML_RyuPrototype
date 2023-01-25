@@ -15,7 +15,7 @@ enum class EInput
     ReleaseLeft,
 };
 
-BETTER_ENUM(ECharacterState, char,None=0,Idle,Walk,Run,Falling);
+BETTER_ENUM(ECharacterState, char,None=0,Idle,Walk,Run,Falling, FallingEnd);
 
 /*
 enum class ECharacterState{
