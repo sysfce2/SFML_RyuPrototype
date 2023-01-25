@@ -17,5 +17,6 @@ class CharacterStateFalling : public CharacterState
         void exit(CharacterBase& character) override;
     private:
         bool touchedFloor;
+        const float fallingTreshhold = 20.0f;
     
 };
