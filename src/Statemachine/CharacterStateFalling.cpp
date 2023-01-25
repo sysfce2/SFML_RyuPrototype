@@ -72,7 +72,7 @@ CharacterStateFalling::enter(CharacterBase& character)
 {
     character.setupAnimation({
             .frameSize={80,96}
-           ,.startFrame={3,2}
+           ,.startFrame={0,1}
            ,.numFrames=4
            ,.duration = sf::milliseconds(1000)
            ,.repeat = true

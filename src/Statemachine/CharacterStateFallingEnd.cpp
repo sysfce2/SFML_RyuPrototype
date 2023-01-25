@@ -54,8 +54,8 @@ CharacterStateFallingEnd::enter(CharacterBase& character)
 
     character.setupAnimation({
             .frameSize={80,96}
-           ,.startFrame={1,4}
-           ,.numFrames=11
+           ,.startFrame={4,1}
+           ,.numFrames=14
            ,.duration = sf::milliseconds(1350)
            ,.repeat = false
            ,.animationId = Textures::CharacterID::IchiEndFallingLow});
