@@ -57,6 +57,20 @@ CharacterIchi::getCategory() const
 }
 
 void
+CharacterIchi::allowedMovement(bool& xMove, bool& yMove)
+{
+  
+    if((mECharacterState._value == ECharacterState::DuckIdle
+        || mECharacterState._value == ECharacterState::DuckEnter
+        || mECharacterState._value == ECharacterState::DuckEnd
+        || mECharacterState._value == ECharacterState::DuckWalk)
+        || mECharacterMovement !=  ECharacterMovement::CanClimb)
+    {
+        yMove = false;
+    }
+}
+
+void
 CharacterIchi::moveCharacter(sf::Vector2f velocity)
 {
     //std::cout << "MOVE CHAR " << velocity.x << "," << velocity.y << "\n";
@@ -64,6 +78,8 @@ CharacterIchi::moveCharacter(sf::Vector2f velocity)
 
     bool xMove = true;
     bool yMove = true;
+
+    allowedMovement(xMove, yMove);
    
     if(velocity.x == 0.f && velocity.y == 0.f)
     {

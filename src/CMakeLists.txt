@@ -19,6 +19,9 @@ set (SRC
 	Physics/DebugDraw.cpp
 	Statemachine/CharacterStateClimb.cpp
 	Statemachine/CharacterStateIdle.cpp
+	Statemachine/CharacterStateDuckEnter.cpp
+	Statemachine/CharacterStateDuckIdle.cpp
+	Statemachine/CharacterStateDuckWalk.cpp
 	Statemachine/CharacterStateRun.cpp
 	Statemachine/CharacterStateFalling.cpp
 	Statemachine/CharacterStateFallingEnd.cpp

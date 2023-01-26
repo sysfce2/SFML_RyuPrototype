@@ -75,6 +75,7 @@ class CharacterBase : public SceneNode , public Subject
         void setMoveDirection(EMoveDirection _movementDir);
         EMoveDirection getMoveDirection() {return mMoveDirection;}
         void initPhysics();
+        void destroyPhysics();
         void updatePhysics();
         void updatePhysics(const sf::Vector2f &position);
 
@@ -134,6 +135,8 @@ class CharacterBase : public SceneNode , public Subject
         b2Fixture* mFixture;
         CharacterSetting mCharSettings;
         Textures::LevelID mCurrentLevel;
+
+        ECharacterMovement mECharacterMovement;
 
     public:
         std::map<std::string, std::pair<b2Vec2,b2Vec2> > rayCastPoints;

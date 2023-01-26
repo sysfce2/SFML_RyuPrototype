@@ -24,7 +24,7 @@ class CharacterIchi : public CharacterBase
     private:
         void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
         //void createRaycast(std::string type,std::pair<double,double> startPoint, float angle, float length);
-    
+        void allowedMovement(bool& xMove, bool& yMove);
         IchiTextureManager ichiTextureManager;
 };
 

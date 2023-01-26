@@ -15,7 +15,25 @@ enum class EInput
     ReleaseLeft,
 };
 
-BETTER_ENUM(ECharacterState, char,None=0,Idle,Walk,Run,Falling,FallingEnd);
+BETTER_ENUM(ECharacterState, char
+    ,None=0
+    ,Idle
+    ,Walk
+    ,Run
+    ,FallingEnter
+    ,Falling
+    ,FallingEnd
+    ,DuckEnter
+    ,DuckIdle
+    ,DuckWalk
+    ,DuckEnd
+    ,LadderIdle
+    ,LadderClimb
+    ,JumpUp
+    ,JumpForward
+    ,Sword1Idle
+    ,Sword1Walk
+    );
 
 enum class EMoveDirection
 {

@@ -25,7 +25,7 @@ namespace RyuDebug{
              ImGui::Text("Mouse Position: <invalid>");
     }
     ImGui::Separator();
-    if(ImGui::CollapsingHeader("Charactrer"))
+    if(ImGui::CollapsingHeader("Character"))
     {
 				// ImGui::Text("CharacterState: %s ",characterState);	
 				ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f),"State: %s",characterState);	

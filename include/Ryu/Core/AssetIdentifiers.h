@@ -41,6 +41,7 @@ namespace Textures
 				IchiFallingLow,
 				IchiEndFallingLow,
 				IchiEndFallingHigh,
+				IchiDuckEnter,
 				IchiDuckIdle,
 				IchiDuckWalk,
 				IchiLadderIdle,

@@ -16,6 +16,7 @@
 
 // this is the framesize for the boundary box of the physics body
 static constexpr std::pair<int,int> INIT_FRAME_SIZE(60,86); 
+static constexpr std::pair<int,int> DUCK_FRAME_SIZE(60,45); 
  
 template <typename T>
     bool IsInBounds(const T& value, const T& low, const T& high) {
@@ -88,8 +89,15 @@ CharacterBase::loadTextures()
 }
 
 void
+CharacterBase::destroyPhysics()
+{
+    phWorldRef->DestroyBody(mBody);
+}
+
+void
 CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position)
 {
+    //TODO: make it adjustable ? or remove and add new ? -> e.g. duck state -> halfPhysics box
     // init physics after the charactersprite was created !
     // Create the body of the falling Crate
     b2BodyDef bodyDef;
@@ -105,9 +113,22 @@ CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2
     // polygonShape.SetAsBox(mCharacterAnimation.getTexture()->getSize().x / 20.f, mCharacterAnimation.getTexture()->getSize().y / 20.f ); /* dimension.x/2.f,dimension.y/2.f */
     //polygonShape.SetAsBox(0.5,0.9);
 
-    int size_x = INIT_FRAME_SIZE.first;// mCharacterAnimation.getSprite().getTextureRect().width;
-    int size_y = INIT_FRAME_SIZE.second;// mCharacterAnimation.getSprite().getTextureRect().height;
-
+    int size_x;// mCharacterAnimation.getSprite().getTextureRect().width;
+    int size_y;
+    
+    if(mECharacterState._value == ECharacterState::DuckIdle
+      || mECharacterState._value == ECharacterState::DuckWalk
+      || mECharacterState._value == ECharacterState::DuckEnter)
+    {
+     size_x = DUCK_FRAME_SIZE.first;// mCharacterAnimation.getSprite().getTextureRect().width;
+     size_y = DUCK_FRAME_SIZE.second;// mCharacterAnimation.getSprite().getTextureRect().height;
+    }
+    else
+    {
+     size_x = INIT_FRAME_SIZE.first;// mCharacterAnimation.getSprite().getTextureRect().width;
+     size_y = INIT_FRAME_SIZE.second;// mCharacterAnimation.getSprite().getTextureRect().height;
+    }
+        
     polygonShape.SetAsBox(
          Converter::pixelsToMeters<double>(size_x * 0.5f)
         ,Converter::pixelsToMeters<double>(size_y * 0.5f));
@@ -256,7 +277,7 @@ CharacterBase::updateCharacterState(sf::Time deltaTime)
 {
     mCharacterAnimation.update(deltaTime);
     if(mECharacterState._value != ECharacterState::FallingEnd && not mCharacterFalling)
-    {
+    { 
         mCharacterAnimation.move(movement * deltaTime.asSeconds());
         mBody->SetLinearVelocity( {mCharSettings.MoveMultiplierX * Converter::pixelsToMeters<float>(movement.x),
                                    mCharSettings.MoveMultiplierY * Converter::pixelsToMeters<float>(movement.y)});

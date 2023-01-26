@@ -1,5 +1,6 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
+#include <Ryu/Statemachine/CharacterStateDuckEnter.h>
 #include <Ryu/Statemachine/CharacterStateRun.h>
 #include <Ryu/Statemachine/CharacterState.h>
 
@@ -27,10 +28,14 @@ CharacterStateIdle::handleInput(CharacterBase& character,EInput input)
        }
 
        case EInput::PressUp:
+       {
+                
+           return nullptr;
+       }
+
        case EInput::PressDown:
        {
-           // JUMP/DUCK
-           //return new CharacterStateRun();    
+           return std::move(std::make_unique<CharacterStateDuckEnter>());    
        }
      
     default:
