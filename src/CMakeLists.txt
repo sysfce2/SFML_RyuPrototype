@@ -23,6 +23,7 @@ set (SRC
 	Statemachine/CharacterStateDuckIdle.cpp
 	Statemachine/CharacterStateDuckWalk.cpp
 	Statemachine/CharacterStateRun.cpp
+	Statemachine/CharacterStateJumpUp.cpp
 	Statemachine/CharacterStateFalling.cpp
 	Statemachine/CharacterStateFallingEnd.cpp
 )
