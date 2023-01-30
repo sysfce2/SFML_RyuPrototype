@@ -68,6 +68,14 @@ CharacterIchi::allowedMovement(bool& xMove, bool& yMove)
     {
         yMove = false;
     }
+
+/*
+    if(mECharacterState._value == ECharacterState::JumpUp)
+    {
+        yMove = true;
+    }
+*/
+    
 }
 
 void

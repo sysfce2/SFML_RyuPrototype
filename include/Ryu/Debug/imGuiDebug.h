@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include <box2d/b2_math.h>
+
 #include <iostream>
 
 namespace RyuDebug{
@@ -10,7 +12,10 @@ namespace RyuDebug{
 	bool showImGuiDemoWindow;
   bool activateRyuDebug;
 	const char* characterState;
+	b2Vec2  charJumpForce;
 	bool characterIsFalling;
+  size_t numFrames;
+  size_t numFramesVector;
 
   void ShowWidgets()
   {
@@ -28,8 +33,11 @@ namespace RyuDebug{
     if(ImGui::CollapsingHeader("Character"))
     {
 				// ImGui::Text("CharacterState: %s ",characterState);	
+				ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f),"CharacterFalling: %s",characterIsFalling ? "true" : "false");
 				ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f),"State: %s",characterState);	
-				ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f),"CharacterFalling: %s",characterIsFalling ? "true" : "false");	
+        ImGui::Text("AniFrames: %i ",numFrames);       	
+        ImGui::Text("AniFrames in Vector: %i ",numFramesVector);       	
+        ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f),"JumpForce: {%f,%f}",charJumpForce.x,charJumpForce.y);	
         ImGui::Separator();
     }
     ImGui::Separator();

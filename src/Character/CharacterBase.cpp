@@ -95,6 +95,14 @@ CharacterBase::destroyPhysics()
 }
 
 void
+CharacterBase::jumpUp()
+{
+    float impulse = mBody->GetMass() * 10000;
+    mBody->ApplyLinearImpulse( b2Vec2(0,impulse), mBody->GetWorldCenter(), true);
+    // mBody->ApplyLinearImpulseToCenter(mCharSettings.JumpUpForce,true);
+}
+
+void
 CharacterBase::initPhysics(std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position)
 {
     //TODO: make it adjustable ? or remove and add new ? -> e.g. duck state -> halfPhysics box
@@ -204,6 +212,12 @@ CharacterBase::handleInput(EInput input)
         mCharacterState->enter(*this);
     }
 }
+
+bool
+CharacterBase::allowedToFall()
+{
+    return (mECharacterState._value != ECharacterState::JumpUp);
+}
  
 void
 CharacterBase::update(sf::Time deltaTime)
@@ -216,7 +230,7 @@ CharacterBase::update(sf::Time deltaTime)
     if(mBody->GetLinearVelocity().y > 0.5f )
     {   
         std::cout << "V(y): " << mBody->GetLinearVelocity().y << "\n";
-        if(not mCharacterFalling && mECharacterState._value != ECharacterState::Falling  )
+        if( allowedToFall() && not mCharacterFalling && mECharacterState._value != ECharacterState::Falling  )
         {
             mCharacterFalling = true;
             std::unique_ptr<CharacterStateFalling> state = std::make_unique<CharacterStateFalling>();

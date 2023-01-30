@@ -1,13 +1,15 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <Ryu/Control/CharacterEnums.h>
+#include <Ryu/Events/EventEnums.h>
 
+#include <SFML/Graphics.hpp>
 
 struct AnimationFrame
 {
   float duration; // in seconds
   sf::Vector2i frameSize;
+	Event event;
 };
 
 class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
@@ -24,6 +26,7 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
 
 		    void setNumFrames(std::size_t numFrames);
 		    std::size_t getNumFrames() const;
+		    std::size_t getFramesCount() const {return mFrames.size();}
 
 		    void setStartFrame(sf::Vector2i startFrame);
 

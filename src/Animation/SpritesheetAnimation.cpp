@@ -1,9 +1,11 @@
 
-#include <iostream>
 #include <Ryu/Animation/SpritesheetAnimation.h>
+
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
+#include <iostream>
+#include <vector>
 
 SpritesheetAnimation::SpritesheetAnimation()
 : mSprite()
@@ -14,6 +16,7 @@ SpritesheetAnimation::SpritesheetAnimation()
 , mElapsedTime(sf::Time::Zero)
 , mRepeat(false)
 , mStartFrame({0,0})
+, mFrames({})
 {
 }
 
@@ -26,6 +29,7 @@ SpritesheetAnimation::SpritesheetAnimation(const sf::Texture& texture)
 , mElapsedTime(sf::Time::Zero)
 , mRepeat(false)
 , mStartFrame({0,0})
+, mFrames({})
 {    // set origin of texture to center
     sf::FloatRect bounds = mSprite.getLocalBounds();
     mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
@@ -53,17 +57,35 @@ sf::Vector2i SpritesheetAnimation::getFrameSize() const
 	return mFrameSize;
 }
 
+
+
 void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standardDuration*/ )
 {
 	mNumFrames = numFrames;
 
-	/*
-	for(int i=0;i<numFrames;++i)
+  if(numFrames > mFrames.size())
 	{
-		Frame
-		mFrames.push_back()	
+		mFrames.push_back(
+			{
+				.duration= 100,
+				.frameSize = {80,96},
+				.event = Event::None
+			}
+		);
 	}
-	*/
+	else
+	{
+		mFrames.clear();
+	 for(int i=0;i<numFrames;++i)
+	 {
+		AnimationFrame frame{
+			.duration= 100,
+			.frameSize = {80,96},
+			.event = Event::None
+		};
+			mFrames.push_back(frame);	
+	 }
+	}
 }
 
 std::size_t SpritesheetAnimation::getNumFrames() const

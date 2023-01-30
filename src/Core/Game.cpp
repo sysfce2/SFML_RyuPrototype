@@ -126,6 +126,9 @@ Game::setDebugValues()
 {
 	RyuDebug::characterState = (mWorld.getPlayer()->getCharacterStateEnum())._to_string();
 	RyuDebug::characterIsFalling = mWorld.getPlayer()->isFalling();
+	RyuDebug::charJumpForce = mWorld.getPlayer()->mCharSettings.JumpUpForce;
+	RyuDebug::numFrames = mWorld.getPlayer()->getSpriteAnimation().getNumFrames();
+	RyuDebug::numFramesVector = mWorld.getPlayer()->getSpriteAnimation().getFramesCount();
 }
 
 void Game::update(sf::Time deltaTime)

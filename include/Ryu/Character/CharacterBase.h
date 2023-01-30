@@ -28,6 +28,7 @@ namespace sf{
 class CommandQueue;
 class b2World;
 class b2Body;
+class b2Vec2;
 class b2Fixture;
 
 //namespace ryu{
@@ -39,6 +40,7 @@ struct CharacterSetting
     // the characteranimation
     float MoveMultiplierX = 1.05f;
     float MoveMultiplierY = 1.47f;
+    b2Vec2 JumpUpForce{0,50000};
 };
 
 struct AnimationConfiguration
@@ -99,6 +101,9 @@ class CharacterBase : public SceneNode , public Subject
         void setCharacterStateEnum(ECharacterState stateValue){mECharacterState = stateValue;}
         void setActionHeight(EActionHeight heightValue){mActionHeight = heightValue;}
         b2Vec2 getLinearVelocity() {return mBody->GetLinearVelocity(); }
+        bool allowedToFall();
+        void jumpUp();
+    
     protected:
         /***
          * \brief   Initialized physic (body, fixtures for the character).
@@ -133,13 +138,13 @@ class CharacterBase : public SceneNode , public Subject
         std::unique_ptr<b2World>& phWorldRef;
         b2Body* mBody;
         b2Fixture* mFixture;
-        CharacterSetting mCharSettings;
         Textures::LevelID mCurrentLevel;
 
         ECharacterMovement mECharacterMovement;
 
     public:
         std::map<std::string, std::pair<b2Vec2,b2Vec2> > rayCastPoints;
+        CharacterSetting mCharSettings;
 };
 
 //} /// namespace ryu
