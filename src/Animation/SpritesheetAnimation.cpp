@@ -63,7 +63,11 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standar
 {
 	mNumFrames = numFrames;
 
-  if(numFrames > mFrames.size())
+	/* TODO: 	what if we want to extend the animation afterwards, 
+						we dont want to recreate all the timing for every frame...
+	*/
+ /*
+	if(numFrames > mFrames.size())
 	{
 		mFrames.push_back(
 			{
@@ -75,6 +79,7 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standar
 	}
 	else
 	{
+	*/
 		mFrames.clear();
 	 for(int i=0;i<numFrames;++i)
 	 {
@@ -85,7 +90,7 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standar
 		};
 			mFrames.push_back(frame);	
 	 }
-	}
+	//}
 }
 
 std::size_t SpritesheetAnimation::getNumFrames() const
