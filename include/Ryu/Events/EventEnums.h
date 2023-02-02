@@ -5,4 +5,6 @@ enum class Event{
         CharacterSpeedChanged,
         DebugToggle,
         ImGuiDemoToggle,
+        RyuAnimatorToggle,
+        
 };

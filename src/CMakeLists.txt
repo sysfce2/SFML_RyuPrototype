@@ -26,6 +26,7 @@ set (SRC
 	Statemachine/CharacterStateJumpUp.cpp
 	Statemachine/CharacterStateFalling.cpp
 	Statemachine/CharacterStateFallingEnd.cpp
+	RyuSuite/RAnimator.cpp
 )
 
 build_chapter(RyuPt SOURCES ${SRC})

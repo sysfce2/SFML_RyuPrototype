@@ -10,7 +10,7 @@ endforeach()
 
 # Specify default build type if none provided (before project() command)
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+	set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
 
 # For generators with multiple configurations (like VS), only allow Debug and Release
@@ -23,7 +23,7 @@ endif()
 project(Ryu)
 
 find_package(box2d CONFIG REQUIRED)
-
+find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(ImGui-SFML REQUIRED)
 
 if(ImGui-SFML_FOUND)
@@ -138,7 +138,7 @@ macro(build_chapter CHAPTER_NAME)
 	if(SFML_VERSION_MINOR LESS 2)
         set(SFML_DEPENDENCIES "")
 	endif()
-	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d ImGui-SFML::ImGui-SFML)# b2DebugDraw)
+	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d ImGui-SFML::ImGui-SFML nlohmann_json::nlohmann_json)# b2DebugDraw)
 	#if(${CHAPTER_NAME} EQUAL RyuPt)
 	#	message("->Linking ImGui-SFML")
   #	target_link_libraries(RyuPt PRIVATE ImGui-SFML::ImGui-SFML)# b2DebugDraw)

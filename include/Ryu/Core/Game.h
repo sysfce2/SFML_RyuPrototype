@@ -5,6 +5,7 @@
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Core/World.h>
 #include <Ryu/Events/Observer.h>
+#include "../src/RyuSuite/RAnimator.h"
 
 #include <memory>
 
@@ -31,6 +32,7 @@ class Game : public Observer
   private:
 	  sf::RenderWindow mWindow;
 	  World mWorld;
+    RyuAnimator::Editor mAnimator;
 	  bool mIsPaused;
 	  std::unique_ptr<PlayerController> mPlayerController;
 	//ryu::AssetManager<sf::Font,std::string> fontManager;

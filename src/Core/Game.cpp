@@ -7,6 +7,8 @@
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Debug/imGuiDebug.h>
+// TODO: change to relative path
+#include "../RyuSuite/RAnimator.h"
 
 // #include <imgui.h>
 #include <imgui-SFML.h>
@@ -25,6 +27,7 @@ Game::Game()
 ,mWorld(mWindow)
 ,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
 ,mIsPaused(false)
+,mAnimator()
 {
 	// todo: how to load ichis tzextures at  startup ? 
 	//mPlayer->loadTextures();
@@ -45,6 +48,10 @@ Game::onNotify(const SceneNode& entity, Event event)
 		{
 				RyuDebug::showImGuiDemoWindow == false ? RyuDebug::showImGuiDemoWindow = true : RyuDebug::showImGuiDemoWindow = false;
 				break;
+		}
+		case Event::RyuAnimatorToggle:
+		{
+				mAnimator.showAnimationEditor == false ? mAnimator.showAnimationEditor=true : mAnimator.showAnimationEditor=false;		
 		}
 		default: break;
 	}
@@ -88,6 +95,7 @@ void Game::run()
 			{
 				update(TimePerFrame);
 				RyuDebug::CreateDebugGui();
+				mAnimator.createEditorWidgets(&mAnimator.showAnimationEditor);		
 			}
 		  render();
 		}	

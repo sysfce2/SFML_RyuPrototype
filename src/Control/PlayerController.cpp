@@ -190,6 +190,11 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 notify(*playerCharacter,Event::ImGuiDemoToggle);
                 break;
             }
+            case sf::Keyboard::Num1:
+            {
+                 notify(*playerCharacter,Event::RyuAnimatorToggle);
+                 break;
+            }
 
             case sf::Keyboard::O:
             {
