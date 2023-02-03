@@ -11,26 +11,68 @@ namespace RyuAnimator{
 using namespace ImGui;
 using json = nlohmann::json;
 
-Editor::Editor()
+namespace AnimationTags {
+    void from_json(const json& j, TaggedAnimation& ani) {
+        j.at("name").get_to(ani.name);
+        j.at("from").get_to(ani.fromFrame);
+        j.at("to").get_to(ani.toFrame);
+        j.at("direction").get_to(ani.direction);
+    }
+    // to convert to a json one need to implement the method "to_json(...)"
+}
+
+
+Editor::Editor():
+     parsedSpritesheet(false)
+    ,selectedSpritesheet()
 {}
 
 Editor::~Editor()
 {}
 
+
+
 void
 Editor::parseJsonData()
 {
-// ...
-    std::ifstream f("assets/spritesheets/ichi/ichi_spritesheet_level1.json");
+    // TODO: later we select the path / from an openFiledialog / we can load multiple spritesheets
+    std::string spriteSheet("ichi_spritesheet_level1");
+    std::string path("assets/spritesheets/ichi/");
+    std::string format("json");
+    std::ifstream f(path+spriteSheet+"."+format);
     
     std::cout << "Open JSON...\n";
-    if(f)
+    try
     {
         json data = json::parse(f);  
         std::cout << "Parsing JSON...\n";
         std::string jsonString = data.dump();
         std::cout << jsonString << "\n";
+        if (data.contains("meta"))
+        {
+            auto anis = data["meta"]["frameTags"];
+            
+            std::vector<AnimationTags::TaggedAnimation> aniVector;
+            
+            for(const auto& a : anis)
+            {
+                auto taggedAni = a.get<AnimationTags::TaggedAnimation>();
+                aniVector.emplace_back(taggedAni);
+            }
+            
+            animations.emplace(spriteSheet, aniVector);              
+            
+            std::cout << data["meta"]["frameTags"].dump() << "\n";
+            parsedSpritesheet = true;
+            selectedSpritesheet = spriteSheet;
+        }
     }
+    catch(json::exception e)
+    {
+        std::cout << e.id << ": " << e.what() << "\n";
+        std::cout << "Can't parse file, probably filestream-error. Filename correct ?\n";
+    }
+    
 }
 
 
@@ -57,16 +99,43 @@ Editor::createEditorWidgets(bool* p_open)
 
           // Left
           static int selected = 0;
-          ImGui::BeginChild("left_section",ImVec2(100,0),true);
-          for(int i = 0; i < 20; i++)
+          ImGui::BeginChild("left_section",ImVec2(150,0),true, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+          int i = 0;
+                                
+          for(const auto& ani : animations[selectedSpritesheet])
           {
+            i++;
             char label[128];
-            sprintf(label,"Ani_%d", i);
+            sprintf(label,"%d_%s", i,ani.name.c_str());
+
             if(ImGui::Selectable(label, selected == i)) { selected = i;}
           }
       
           ImGui::EndChild();
         }
+
+        ImGui::SameLine();
+
+        ImGui::BeginGroup();
+        if(ImGui::BeginTabBar("SpriteSheets"))
+        {
+            if(ImGui::BeginTabItem("Bla"))
+            {
+                ImGui::Text("jhkhkhsk");
+                ImGui::EndTabItem();
+            }
+            if(ImGui::BeginTabItem("Blub"))
+            {
+                ImGui::Text("hsiggjbkkhkhsk");
+                ImGui::EndTabItem();
+            }
+            ImGui::EndTabBar();
+        }
+
+        ImGui::EndGroup();
+
+        
         ImGui::End();
     }
 }
