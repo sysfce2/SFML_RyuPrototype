@@ -26,7 +26,10 @@ See [License.txt]. in 02_SFML_GD_BOOK.
     - clone from: git@github.com:eliasdaler/imgui-sfml.git
     - cmake <ImGui-SFML repo folder>  -DBUILD_SHARED_LIBS=ON -DIMGUI_SFML_IMGUI_DEMO=ON -DIMGUI_DIR=<path with built SFML>
     - (sudo) cmake --build <ImGui-SFML repo folder>  --target install
-5. - in Ryu project:
+5. nlohmann/json
+    - see git@github.com:nlohmann/json.git
+    - clone, cmake, make, make install
+6. - in Ryu project:
     - (mkdir build && cd build)
     - cmake ..
     - make

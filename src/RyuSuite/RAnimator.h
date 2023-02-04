@@ -10,14 +10,27 @@ namespace RyuAnimator
 {
 
 namespace AnimationTags {
+  struct Frame
+  {
+    int x; /// x-position in spritesheet
+    int y; /// y-position in spritesheet
+    int width;
+    int height;
+    int duration;
+  };
+
   struct TaggedAnimation
   {
     std::string name;
-    int fromFrame;
-    int toFrame;
+    int fromFrame; /// Frame Startposition in spritesheet
+    int toFrame; /// Frame Endposition in spritresheet
     std::string direction;
+    std::vector<Frame> frames;
   };
 } /// namespace AnimationTags
+
+
+using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::TaggedAnimation>>  ; 
 
   class Editor
   {
@@ -31,6 +44,8 @@ namespace AnimationTags {
       void parseJsonData();
 
       bool showAnimationEditor;
+  
+      void createAnimationDetails(int selectedAni,const TaggedSheetAnimation& sheet );
 
       // map with all spritesheets loaded and according animations
       // key: spritesheetname, value: vector of animations

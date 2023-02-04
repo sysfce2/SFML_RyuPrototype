@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 namespace RyuAnimator{
 
@@ -18,6 +19,14 @@ namespace AnimationTags {
         j.at("to").get_to(ani.toFrame);
         j.at("direction").get_to(ani.direction);
     }
+
+    void from_json(const json& j, Frame& frame) {
+        j.at("frame").at("x").get_to(frame.x);
+        j.at("frame").at("y").get_to(frame.y);
+        j.at("frame").at("w").get_to(frame.width);
+        j.at("frame").at("h").get_to(frame.height);
+        j.at("duration").get_to(frame.duration);
+    }
     // to convert to a json one need to implement the method "to_json(...)"
 }
 
@@ -25,6 +34,7 @@ namespace AnimationTags {
 Editor::Editor():
      parsedSpritesheet(false)
     ,selectedSpritesheet()
+    ,showAnimationEditor(true)
 {}
 
 Editor::~Editor()
@@ -48,6 +58,7 @@ Editor::parseJsonData()
         std::cout << "Parsing JSON...\n";
         std::string jsonString = data.dump();
         std::cout << jsonString << "\n";
+        // build-up metadata
         if (data.contains("meta"))
         {
             auto anis = data["meta"]["frameTags"];
@@ -60,12 +71,25 @@ Editor::parseJsonData()
                 aniVector.emplace_back(taggedAni);
             }
             
-            animations.emplace(spriteSheet, aniVector);              
-            
-            std::cout << data["meta"]["frameTags"].dump() << "\n";
-            parsedSpritesheet = true;
-            selectedSpritesheet = spriteSheet;
+            animations.emplace(spriteSheet, aniVector);
+
+            // just for testing the tabs a second spritesheet
+            aniVector.resize(11);              
+            animations.emplace("spritesheet2", aniVector);              
+        }            
+        selectedSpritesheet = spriteSheet;
+        
+        if (data.contains("frames"))
+        {
+            for(const auto& ani : animations[selectedSpritesheet])
+            {
+                
+            }
         }
+        
+        std::cout << data["meta"]["frameTags"].dump() << "\n";
+        parsedSpritesheet = true;
+        
     }
     catch(json::exception e)
     {
@@ -85,7 +109,10 @@ Editor::createEditorWidgets(bool* p_open)
     {
         if(ImGui::Begin("Ryu Animation Editor",p_open, window_flags))
         {
-            if(ImGui::BeginMenuBar())
+
+            static int selected = 0;
+           
+             if(ImGui::BeginMenuBar())
             {
                 if(ImGui::BeginMenu("File"))
                 {
@@ -98,47 +125,58 @@ Editor::createEditorWidgets(bool* p_open)
             }
 
           // Left
-          static int selected = 0;
           ImGui::BeginChild("left_section",ImVec2(150,0),true, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
           int i = 0;
                                 
           for(const auto& ani : animations[selectedSpritesheet])
           {
-            i++;
             char label[128];
             sprintf(label,"%d_%s", i,ani.name.c_str());
-
-            if(ImGui::Selectable(label, selected == i)) { selected = i;}
+            if(ImGui::Selectable(label, selected == i)) 
+            { 
+                  selected = i;
+            }
+            i++;
           }
       
           ImGui::EndChild();
-        }
+        
 
         ImGui::SameLine();
 
+        // Right
         ImGui::BeginGroup();
         if(ImGui::BeginTabBar("SpriteSheets"))
         {
-            if(ImGui::BeginTabItem("Bla"))
+            for (const auto& sheet : animations)
             {
-                ImGui::Text("jhkhkhsk");
-                ImGui::EndTabItem();
-            }
-            if(ImGui::BeginTabItem("Blub"))
-            {
-                ImGui::Text("hsiggjbkkhkhsk");
-                ImGui::EndTabItem();
+                 if(sheet.first == "") continue;
+                 if(ImGui::BeginTabItem(sheet.first.c_str()))
+                 {
+                     selectedSpritesheet=sheet.first;
+                     createAnimationDetails(selected, sheet);   
+                     ImGui::EndTabItem();
+                 }
             }
             ImGui::EndTabBar();
         }
 
         ImGui::EndGroup();
 
-        
-        ImGui::End();
+      }
+      ImGui::End();
     }
 }
 
+void 
+Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& sheet )
+{
+    ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
+    ImGui::Text((std::to_string(sheet.second.at(selectedAni).frames.size()).c_str()));
+    // ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
+    // ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
+    // ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
+}
 
 } /// namespace RyuAnimator 
