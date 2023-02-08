@@ -218,7 +218,8 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::Text("Ani-Duration: %d ms", durationAni);    
 
     ImGui::BeginChild("",ImVec2(100,100),true);
-
+        // loading an image is not so straight forward: see here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+        // ImGui::Image()
     ImGui::EndChild();
 
 }
