@@ -12,11 +12,11 @@ namespace RyuAnimator
 namespace AnimationTags {
   struct Frame
   {
+    int duration;
+    int height;
+    int width;
     int x; /// x-position in spritesheet
     int y; /// y-position in spritesheet
-    int width;
-    int height;
-    int duration;
   };
 
   struct TaggedAnimation

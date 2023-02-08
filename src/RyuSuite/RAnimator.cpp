@@ -1,10 +1,12 @@
 #include "RAnimator.h"
 
+#include <bits/stdint-uintn.h>
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <vector>
 
 namespace RyuAnimator{
@@ -41,10 +43,17 @@ Editor::~Editor()
 {}
 
 
-
+/* \brief: At the moment we can only parse jsons generated with Aseprite, but it could be possible to extend to
+*          other PixelArtTools.
+*          Before exporting please make sure that every Animation has exactly one tag. It will be confusing
+*          if animations occur in the list which according tags only were created to describe parent states.
+*          e.g. "Climbing" as a parent tag, "startClimb", "loopClimb", "endClimb" as childrens.  
+*          We only would be interested in the child animations !
+*/
 void
 Editor::parseJsonData()
 {
+    
     // TODO: later we select the path / from an openFiledialog / we can load multiple spritesheets
     std::string spriteSheet("ichi_spritesheet_level1");
     std::string path("assets/spritesheets/ichi/");
@@ -78,12 +87,23 @@ Editor::parseJsonData()
             animations.emplace("spritesheet2", aniVector);              
         }            
         selectedSpritesheet = spriteSheet;
-        
+        // read framespecific data due aseprite-json spec
         if (data.contains("frames"))
         {
-            for(const auto& ani : animations[selectedSpritesheet])
+            for(auto& ani : animations[selectedSpritesheet])
             {
-                
+                for(int i = ani.fromFrame;i<=ani.toFrame;i++)
+                {
+                    std::string framePosition = selectedSpritesheet+" "+std::to_string(i)+".aseprite";
+                    AnimationTags::Frame frame{
+                        .duration = data["frames"][framePosition]["duration"],
+                        .height = data["frames"][framePosition]["frame"]["h"], 
+                        .width = data["frames"][framePosition]["frame"]["w"],
+                        .x = data["frames"][framePosition]["frame"]["x"],
+                        .y = data["frames"][framePosition]["frame"]["y"]
+                    };
+                    ani.frames.push_back(frame);
+                }
             }
         }
         
@@ -172,11 +192,35 @@ Editor::createEditorWidgets(bool* p_open)
 void 
 Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& sheet )
 {
-    ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
-    ImGui::Text((std::to_string(sheet.second.at(selectedAni).frames.size()).c_str()));
-    // ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
-    // ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
-    // ImGui::Text((std::to_string(selectedAni)+": "+sheet.second.at(selectedAni).name).c_str());
+    auto ani = sheet.second.at(selectedAni);
+    ImGui::Text((std::to_string(selectedAni)+": "+ani.name+", ").c_str());
+    ImGui::SameLine();
+    ImGui::Text("Frames : %s, ", (std::to_string(ani.frames.size()).c_str()));
+    int i = 1;
+    uint16_t durationAni = 0;
+
+    // TODO: details as mouseoverhint / Frame !
+    for (const auto& frame : ani.frames)
+    {
+        durationAni+= frame.duration;   
+        /* MouseOver for the induvidual frames 
+        ImGui::Text("Duration(%d): %s ms",i, (std::to_string(frame.duration).c_str()));
+        ImGui::Text("height(%d): %s",i, (std::to_string(frame.height).c_str()));
+        ImGui::Text("width(%d): %s",i, (std::to_string(frame.width).c_str()));
+        ImGui::Text("x-sheet(%d): %s",i, (std::to_string(frame.x).c_str()));
+        ImGui::Text("y-sheet(%d): %s",i, (std::to_string(frame.y).c_str()));
+        */
+        i++;
+        // ImGui::Separator();
+    }
+    ImGui::SameLine();
+    
+    ImGui::Text("Ani-Duration: %d ms", durationAni);    
+
+    ImGui::BeginChild("",ImVec2(100,100),true);
+
+    ImGui::EndChild();
+
 }
 
 } /// namespace RyuAnimator 
