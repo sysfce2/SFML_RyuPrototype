@@ -53,6 +53,10 @@ namespace Textures
 				IchiWalk,
 		// ... Spritesheets
     };
+
+	enum class GuiID {
+			 bla
+	};
 }
 
 

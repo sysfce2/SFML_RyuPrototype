@@ -1,10 +1,14 @@
 #pragma once
 
+#include <Ryu/Core/AssetManager.h> 
+#include <Ryu/Core/AssetIdentifiers.h>
+
 #include <map>
 #include <vector>
 #include <string>
 
 
+using GuiCharTextureManager = AssetManager<sf::Texture, Textures::LevelID>;
 
 namespace RyuAnimator
 {
@@ -52,5 +56,9 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
       std::map<std::string, std::vector<AnimationTags::TaggedAnimation> > animations;
       bool parsedSpritesheet;
       std::string selectedSpritesheet;
+
+  private:
+      void initTextures();
+      GuiCharTextureManager guiCharTextureManager;
   };
 }

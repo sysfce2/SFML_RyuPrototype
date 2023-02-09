@@ -2,6 +2,7 @@
 
 #include <bits/stdint-uintn.h>
 #include <imgui.h>
+#include <imgui-SFML.h>
 #include <nlohmann/json.hpp>
 
 #include <iostream>
@@ -37,7 +38,10 @@ Editor::Editor():
      parsedSpritesheet(false)
     ,selectedSpritesheet()
     ,showAnimationEditor(true)
-{}
+    ,guiCharTextureManager()
+{
+    initTextures();
+}
 
 Editor::~Editor()
 {}
@@ -117,6 +121,12 @@ Editor::parseJsonData()
         std::cout << "Can't parse file, probably filestream-error. Filename correct ?\n";
     }
     
+}
+
+void
+Editor::initTextures()
+{
+    guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
 }
 
 
@@ -199,6 +209,8 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     int i = 1;
     uint16_t durationAni = 0;
 
+    
+
     // TODO: details as mouseoverhint / Frame !
     for (const auto& frame : ani.frames)
     {
@@ -216,12 +228,21 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::SameLine();
     
     ImGui::Text("Ani-Duration: %d ms", durationAni);    
-
-    ImGui::BeginChild("",ImVec2(100,100),true);
+    uint16_t frameWidth = ani.frames.at(0).width;
+    uint16_t frameHeight = ani.frames.at(0).height;
+    
+    ImGui::BeginChild("Animation",ImVec2(frameWidth,frameHeight),true);
         // loading an image is not so straight forward: see here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
-        // ImGui::Image()
+    ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
+    // ImGui::ShowMetricsWindow();
     ImGui::EndChild();
+    ImGui::SameLine();
 
+    // TODO: adjust values due Spritesheetsize and FrameSize
+    ImGui::BeginChild("SpriteSheet", ImVec2(400,384),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
+
+    ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
+    ImGui::EndChild();
 }
 
 } /// namespace RyuAnimator 
