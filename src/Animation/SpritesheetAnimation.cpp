@@ -80,6 +80,7 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standar
 	else
 	{
 	*/
+	// standardValues for every Frame
 		mFrames.clear();
 	 for(int i=0;i<numFrames;++i)
 	 {

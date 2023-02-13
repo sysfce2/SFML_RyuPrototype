@@ -1,4 +1,5 @@
 #include "RAnimator.h"
+#include <Ryu/Animation/SpritesheetAnimation.h>
 
 #include <bits/stdint-uintn.h>
 #include <imgui.h>
@@ -39,6 +40,8 @@ Editor::Editor():
     ,selectedSpritesheet()
     ,showAnimationEditor(true)
     ,guiCharTextureManager()
+    ,aniIsPlaying(false)
+    ,textureSet(false)
 {
     initTextures();
 }
@@ -46,6 +49,15 @@ Editor::Editor():
 Editor::~Editor()
 {}
 
+
+void
+Editor::update(sf::Time dt)
+{
+    if(aniIsPlaying)
+    {
+        spritesheetAnimation.update(dt);
+    }
+}
 
 /* \brief: At the moment we can only parse jsons generated with Aseprite, but it could be possible to extend to
 *          other PixelArtTools.
@@ -231,9 +243,18 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     uint16_t frameWidth = ani.frames.at(0).width;
     uint16_t frameHeight = ani.frames.at(0).height;
     
-    ImGui::BeginChild("Animation",ImVec2(frameWidth,frameHeight),true);
+    ImGui::BeginChild("Animation",ImVec2(frameWidth,frameHeight),true,ImGuiWindowFlags_NoScrollbar);
         // loading an image is not so straight forward: see here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
-    ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
+
+    // TODO: here dynamic anis due selection from the right side
+    setSpritesheetAnimationDetails({
+                .frameSize={80,96}
+               ,.startFrame={1,0}
+               ,.numFrames=8
+               ,.duration = sf::seconds(1)
+               ,.repeat = true
+               ,.animationId = Textures::CharacterID::IchiIdleRun});
+    ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     // ImGui::ShowMetricsWindow();
     ImGui::EndChild();
     ImGui::SameLine();
@@ -243,6 +264,35 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
 
     ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
     ImGui::EndChild();
+    ImGui::BeginChild("PlayButton");
+    ImGuiComboFlags flags = 0;
+    // TODO us real play/stop etc button .... tmp play button is a arrowbutton
+    if(ImGui::ArrowButton("Play",ImGuiDir_Right)) {aniIsPlaying = ! aniIsPlaying;}
+   
+    ImGui::EndChild();
 }
+
+
+
+
+void
+Editor::setSpritesheetAnimationDetails(const AnimationConfig& config)
+{   
+    
+    spritesheetAnimation.setFrameSize(config.frameSize);
+    spritesheetAnimation.setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
+    spritesheetAnimation.setNumFrames(config.numFrames);
+    spritesheetAnimation.setDuration(config.duration);
+    spritesheetAnimation.setRepeating(config.repeat);
+
+    // TODO: check if texture is set for animation ...
+    spritesheetAnimation.setTexture(guiCharTextureManager.getResource(Textures::LevelID::Level1/*config.spritesheetId*/));
+    textureSet = true;
+    // set origin of texture to center
+    sf::FloatRect bounds = spritesheetAnimation.getSprite().getLocalBounds();
+    spritesheetAnimation.getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+
+}
+
 
 } /// namespace RyuAnimator 

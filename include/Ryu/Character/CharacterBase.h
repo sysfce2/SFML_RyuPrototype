@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Ryu/Animation/Animation.h>
+// #include <Ryu/Animation/Animation.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/AssetManager.h>

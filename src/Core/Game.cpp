@@ -142,6 +142,10 @@ Game::setDebugValues()
 void Game::update(sf::Time deltaTime)
 {
 	mWorld.update(deltaTime);
+	if(mAnimator.parsedSpritesheet && mAnimator.textureSet)
+	{
+		mAnimator.update(deltaTime);
+	}
 	setDebugValues();
 }
 
