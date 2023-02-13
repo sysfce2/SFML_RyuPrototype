@@ -4,6 +4,8 @@
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
 
+#include <bits/stdint-intn.h>
+#include <cstdint>
 #include <map>
 #include <vector>
 #include <string>
@@ -18,19 +20,20 @@ namespace RyuAnimator
 namespace AnimationTags {
   struct Frame
   {
-    int duration;
-    int height;
-    int width;
-    int x; /// x-position in spritesheet
-    int y; /// y-position in spritesheet
+    int16_t duration;
+    int16_t height;
+    int16_t width;
+    int16_t x; /// x-position in spritesheet
+    int16_t y; /// y-position in spritesheet
   };
 
   struct TaggedAnimation
   {
     std::string name;
-    int fromFrame; /// Frame Startposition in spritesheet
-    int toFrame; /// Frame Endposition in spritresheet
+    int16_t fromFrame; /// Frame Startposition in spritesheet
+    int16_t toFrame; /// Frame Endposition in spritresheet
     std::string direction;
+    int16_t duration; /// overall duration
     std::vector<Frame> frames;
   };
 } /// namespace AnimationTags

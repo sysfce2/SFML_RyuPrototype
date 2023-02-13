@@ -1,7 +1,10 @@
 #include "RAnimator.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
 
+#include <SFML/System/Time.hpp>
+#include <bits/stdint-intn.h>
 #include <bits/stdint-uintn.h>
+#include <cstddef>
 #include <imgui.h>
 #include <imgui-SFML.h>
 #include <nlohmann/json.hpp>
@@ -138,6 +141,7 @@ Editor::parseJsonData()
 void
 Editor::initTextures()
 {
+    // TODO: this could also be done when oping the spritesheet through a dialog ... whe the size of the spritesheets become bigger this will be a memory killer
     guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
 }
 
@@ -159,7 +163,11 @@ Editor::createEditorWidgets(bool* p_open)
                 if(ImGui::BeginMenu("File"))
                 {
                     ImGui::MenuItem("Menu",NULL,false,false);
-                    if (ImGui::MenuItem("Read JSON (Aseprite)")) {parseJsonData();}
+                    if (ImGui::MenuItem("Read JSON (Aseprite)")) 
+                    {
+                        // TODO: here later something like open a dialog window
+                        parseJsonData();
+                    }
                     if (ImGui::MenuItem("Close","Strg+W")) {*p_open = false;}
                     ImGui::EndMenu();
                 }
@@ -193,7 +201,7 @@ Editor::createEditorWidgets(bool* p_open)
         {
             for (const auto& sheet : animations)
             {
-                 if(sheet.first == "") continue;
+                 if(sheet.first == "") continue; /// otherwise we create an empty tab
                  if(ImGui::BeginTabItem(sheet.first.c_str()))
                  {
                      selectedSpritesheet=sheet.first;
@@ -218,12 +226,12 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::Text((std::to_string(selectedAni)+": "+ani.name+", ").c_str());
     ImGui::SameLine();
     ImGui::Text("Frames : %s, ", (std::to_string(ani.frames.size()).c_str()));
-    int i = 1;
+    size_t i = 0;
     uint16_t durationAni = 0;
 
     
 
-    // TODO: details as mouseoverhint / Frame !
+    // TODO: details as mouseoverhint / Frame ! 
     for (const auto& frame : ani.frames)
     {
         durationAni+= frame.duration;   
@@ -237,6 +245,7 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
         i++;
         // ImGui::Separator();
     }
+    
     ImGui::SameLine();
     
     ImGui::Text("Ani-Duration: %d ms", durationAni);    
@@ -244,16 +253,19 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     uint16_t frameHeight = ani.frames.at(0).height;
     
     ImGui::BeginChild("Animation",ImVec2(frameWidth,frameHeight),true,ImGuiWindowFlags_NoScrollbar);
-        // loading an image is not so straight forward: see here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+
+    int16_t startX = ani.frames.at(0).x / frameWidth; // for the spritesheetAnimationDetails
+    int16_t startY = ani.frames.at(0).y / frameHeight;// for the spritesheetAnimationDetails
+    
 
     // TODO: here dynamic anis due selection from the right side
     setSpritesheetAnimationDetails({
-                .frameSize={80,96}
-               ,.startFrame={1,0}
-               ,.numFrames=8
-               ,.duration = sf::seconds(1)
-               ,.repeat = true
-               ,.animationId = Textures::CharacterID::IchiIdleRun});
+                .frameSize={frameWidth,frameHeight}
+               ,.startFrame={startX,startY}
+               ,.numFrames=i
+               ,.duration = sf::milliseconds(durationAni)
+               ,.repeat = true ///  TODO from editor ui: entered by user
+               ,.animationId = Textures::CharacterID::IchiIdleRun});///  TODO from editor ui: entered by user    
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     // ImGui::ShowMetricsWindow();
     ImGui::EndChild();
