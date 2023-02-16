@@ -55,7 +55,14 @@ namespace Textures
     };
 
 	enum class GuiID {
-			 bla
+			 None,
+			 ForwardFrame,
+			 BackwardFrame,
+			 Play,
+			 Stop,
+			 EndFrame,
+			 StartFrame,
+			 Frame	
 	};
 }
 

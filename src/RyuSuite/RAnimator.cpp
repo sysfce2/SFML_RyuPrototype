@@ -43,6 +43,7 @@ Editor::Editor():
     ,selectedSpritesheet()
     ,showAnimationEditor(true)
     ,guiCharTextureManager()
+    ,guiTextureManager()
     ,aniIsPlaying(false)
     ,textureSet(false)
 {
@@ -136,13 +137,6 @@ Editor::parseJsonData()
         std::cout << "Can't parse file, probably filestream-error. Filename correct ?\n";
     }
     
-}
-
-void
-Editor::initTextures()
-{
-    // TODO: this could also be done when oping the spritesheet through a dialog ... whe the size of the spritesheets become bigger this will be a memory killer
-    guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
 }
 
 
@@ -272,16 +266,46 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::SameLine();
 
     // TODO: adjust values due Spritesheetsize and FrameSize
-    ImGui::BeginChild("SpriteSheet", ImVec2(400,384),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
+    ImGui::BeginChild("SpriteSheet", ImVec2(800,384),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
 
     ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
     ImGui::EndChild();
     ImGui::BeginChild("PlayButton");
     ImGuiComboFlags flags = 0;
     // TODO us real play/stop etc button .... tmp play button is a arrowbutton
-    if(ImGui::ArrowButton("Play",ImGuiDir_Right)) {aniIsPlaying = ! aniIsPlaying;}
-   
+    
+    //if(ImGui::ArrowButton("Play",ImGuiDir_Right)) {aniIsPlaying = ! aniIsPlaying;}
+    if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::StartFrame)))
+        {}
+    ImGui::SameLine();
+    if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::BackwardFrame)))
+        {}
+    ImGui::SameLine();
+    if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Play)))
+    {
+        aniIsPlaying = ! aniIsPlaying;         
+    }
+    ImGui::SameLine();
+    if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::ForwardFrame)))
+        {}
+    ImGui::SameLine();
+    if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::EndFrame)))
+        {}
     ImGui::EndChild();
+}
+
+void
+Editor::initTextures()
+{
+    // TODO: this could also be done when oping the spritesheet through a dialog ... whe the size of the spritesheets become bigger this will be a memory killer
+    guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
+    guiTextureManager.load(Textures::GuiID::ForwardFrame,"assets/gui/animator/06_nextFrame.jpeg");
+    guiTextureManager.load(Textures::GuiID::BackwardFrame,"assets/gui/animator/03_previousFrame.jpeg");
+    guiTextureManager.load(Textures::GuiID::Play,"assets/gui/animator/04_playAni.jpeg");
+    guiTextureManager.load(Textures::GuiID::Stop,"assets/gui/animator/05_stopAni.jpeg");
+    guiTextureManager.load(Textures::GuiID::StartFrame,"assets/gui/animator/02_startFrame.jpeg");
+    guiTextureManager.load(Textures::GuiID::EndFrame,"assets/gui/animator/07_lastFrame.jpeg");
+    
 }
 
 

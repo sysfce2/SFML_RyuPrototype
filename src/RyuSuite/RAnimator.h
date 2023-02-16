@@ -13,6 +13,7 @@
 class SpritesheetAnimation;
 
 using GuiCharTextureManager = AssetManager<sf::Texture, Textures::LevelID>;
+using GuiTextureManager = AssetManager<sf::Texture, Textures::GuiID>;
 
 namespace RyuAnimator
 {
@@ -33,7 +34,6 @@ namespace AnimationTags {
     int16_t fromFrame; /// Frame Startposition in spritesheet
     int16_t toFrame; /// Frame Endposition in spritresheet
     std::string direction;
-    int16_t duration; /// overall duration
     std::vector<Frame> frames;
   };
 } /// namespace AnimationTags
@@ -80,6 +80,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
   private:
       void initTextures();
       GuiCharTextureManager guiCharTextureManager;
+      GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;
 
       bool aniIsPlaying;
