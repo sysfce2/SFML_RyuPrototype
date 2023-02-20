@@ -79,6 +79,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
 
   private:
       void initTextures();
+      void editFrame(size_t frame);
       GuiCharTextureManager guiCharTextureManager;
       GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;

@@ -291,7 +291,25 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::SameLine();
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::EndFrame)))
         {}
+
+    for (auto& f : ani.frames)
+    {
+        if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Frame)))
+        {
+            editFrame(i);
+        }
+        ImGui::SameLine();
+        ++i;
+    }
+    
     ImGui::EndChild();
+}
+
+
+void
+Editor::editFrame(size_t frame)
+{
+    ImGui::LogText("Frame %d clicked",frame);
 }
 
 void
@@ -305,6 +323,7 @@ Editor::initTextures()
     guiTextureManager.load(Textures::GuiID::Stop,"assets/gui/animator/05_stopAni.jpeg");
     guiTextureManager.load(Textures::GuiID::StartFrame,"assets/gui/animator/02_startFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::EndFrame,"assets/gui/animator/07_lastFrame.jpeg");
+    guiTextureManager.load(Textures::GuiID::Frame,"assets/gui/animator/01_frame.jpeg");
     
 }
 
