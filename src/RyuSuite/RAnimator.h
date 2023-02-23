@@ -68,7 +68,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
 
       bool showAnimationEditor;
       
-      void setFrameDetails();
+      void setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber);
   
       void createAnimationDetails(int selectedAni,const TaggedSheetAnimation& sheet );
       void setSpritesheetAnimationDetails(const AnimationConfig& config);

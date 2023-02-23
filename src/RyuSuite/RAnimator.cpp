@@ -1,7 +1,9 @@
 #include "RAnimator.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
+#include <Ryu/Events/EventEnums.h>
 
 #include <SFML/System/Time.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <bits/stdint-intn.h>
 #include <bits/stdint-uintn.h>
 #include <cstddef>
@@ -58,6 +60,11 @@ constexpr std::pair<float,float> frameSize{20.f,35.f};
 constexpr std::pair<float,float> frameAreaSize{860.f,180.f};
 constexpr std::pair<float,float> aniAreaSize{250.f,400.f};
 static bool frameDetailsVisible;
+// content of the selected Frame
+static int intDuration;
+static int selectedFrame;
+static Event frameEvent;
+static sf::Vector2i sheetPosition{};
 
 void
 Editor::update(sf::Time dt)
@@ -218,16 +225,6 @@ Editor::createEditorWidgets(bool* p_open)
     }
 }
 
-void
-Editor::setFrameDetails()
-{
-    if(frameDetailsVisible)
-    {
-        static int intDuration;
-    
-        ImGui::InputInt("Duration",&intDuration );
-    }
-}
 
 void 
 Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& sheet )
@@ -280,7 +277,7 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     // ImGui::ShowMetricsWindow();
     
-    setFrameDetails();
+    setFrameDetails(selectedAni,sheet,selectedFrame);
 
     ImGui::EndChild();
 
@@ -322,6 +319,7 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
             //if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Frame)))
             if(ImGui::Button(std::to_string(j).c_str(),ImVec2(frameSize.first,frameSize.second)))
             {
+                selectedFrame = j;
                 editFrame(i);
             }
             if(currentFrameAreaX < frameAreaSize.first)
@@ -341,11 +339,22 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::EndChild();
 }
 
+void
+Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber)
+{
+    auto ani = sheet.second.at(selectedAni);
+    if(frameDetailsVisible)
+    {
+        intDuration = ani.frames.at(frameNumber-1).duration;
+        ImGui::InputInt("Duration",&intDuration );
+    }
+}
 
 void
 Editor::editFrame(size_t frame)
 {
     frameDetailsVisible =! frameDetailsVisible;
+    
 }
 
 void
