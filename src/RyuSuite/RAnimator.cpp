@@ -13,6 +13,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <utility> /// std::pair
 
 namespace RyuAnimator{
 
@@ -53,6 +54,10 @@ Editor::Editor():
 Editor::~Editor()
 {}
 
+constexpr std::pair<float,float> frameSize{20.f,35.f};
+constexpr std::pair<float,float> frameAreaSize{860.f,180.f};
+constexpr std::pair<float,float> aniAreaSize{250.f,400.f};
+static bool frameDetailsVisible;
 
 void
 Editor::update(sf::Time dt)
@@ -213,6 +218,17 @@ Editor::createEditorWidgets(bool* p_open)
     }
 }
 
+void
+Editor::setFrameDetails()
+{
+    if(frameDetailsVisible)
+    {
+        static int intDuration;
+    
+        ImGui::InputInt("Duration",&intDuration );
+    }
+}
+
 void 
 Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& sheet )
 {
@@ -246,7 +262,8 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     uint16_t frameWidth = ani.frames.at(0).width;
     uint16_t frameHeight = ani.frames.at(0).height;
     
-    ImGui::BeginChild("Animation",ImVec2(frameWidth,frameHeight),true,ImGuiWindowFlags_NoScrollbar);
+    // ImGui::BeginChild("Animation",ImVec2(frameWidth,frameHeight),true,ImGuiWindowFlags_NoScrollbar);
+    ImGui::BeginChild("Animation",ImVec2(aniAreaSize.first,aniAreaSize.second),true,ImGuiWindowFlags_NoScrollbar);
 
     int16_t startX = ani.frames.at(0).x / frameWidth; // for the spritesheetAnimationDetails
     int16_t startY = ani.frames.at(0).y / frameHeight;// for the spritesheetAnimationDetails
@@ -262,11 +279,16 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
                ,.animationId = Textures::CharacterID::IchiIdleRun});///  TODO from editor ui: entered by user    
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     // ImGui::ShowMetricsWindow();
+    
+    setFrameDetails();
+
     ImGui::EndChild();
+
+    
     ImGui::SameLine();
 
     // TODO: adjust values due Spritesheetsize and FrameSize
-    ImGui::BeginChild("SpriteSheet", ImVec2(800,384),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
+    ImGui::BeginChild("SpriteSheet", ImVec2(800,400),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
 
     ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
     ImGui::EndChild();
@@ -292,15 +314,29 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::EndFrame)))
         {}
 
-    for (auto& f : ani.frames)
-    {
-        if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Frame)))
+    ImGui::BeginChild("TimeLine",ImVec2(frameAreaSize.first,frameAreaSize.second),ImGuiWindowFlags_AlwaysVerticalScrollbar);
+        size_t j = 1;
+        float currentFrameAreaX = 0;
+        for (auto& f : ani.frames)
         {
-            editFrame(i);
+            //if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Frame)))
+            if(ImGui::Button(std::to_string(j).c_str(),ImVec2(frameSize.first,frameSize.second)))
+            {
+                editFrame(i);
+            }
+            if(currentFrameAreaX < frameAreaSize.first)
+            {
+                currentFrameAreaX += (frameSize.first+10.f);
+                std::cout << currentFrameAreaX << "\n";
+                ImGui::SameLine();
+            }
+            else
+            {
+                currentFrameAreaX = 0;
+            }
+            ++j;
         }
-        ImGui::SameLine();
-        ++i;
-    }
+    ImGui::EndChild();
     
     ImGui::EndChild();
 }
@@ -309,7 +345,7 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
 void
 Editor::editFrame(size_t frame)
 {
-    ImGui::LogText("Frame %d clicked",frame);
+    frameDetailsVisible =! frameDetailsVisible;
 }
 
 void

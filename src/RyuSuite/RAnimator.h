@@ -67,6 +67,8 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
       void parseJsonData();
 
       bool showAnimationEditor;
+      
+      void setFrameDetails();
   
       void createAnimationDetails(int selectedAni,const TaggedSheetAnimation& sheet );
       void setSpritesheetAnimationDetails(const AnimationConfig& config);
