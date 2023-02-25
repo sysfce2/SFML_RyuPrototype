@@ -21,7 +21,7 @@ class Game : public Observer
 	  Game();
 	  void run();
     World& getWorld() {return mWorld;}
-    void onNotify(const SceneNode& entity, Event event) override;
+    void onNotify(const SceneNode& entity, EEvent event) override;
   private:
 	  void processEvents(sf::Event& event, CommandQueue& commands);
 	  void update(sf::Time deltaTime);

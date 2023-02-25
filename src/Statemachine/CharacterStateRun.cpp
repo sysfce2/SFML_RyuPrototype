@@ -69,7 +69,7 @@ CharacterStateRun::enter(CharacterBase& character)
 
     mLastCharacterSpeed = character.getCharacterSpeed();
     character.setCharacterSpeed(mRunCharacterSpeed);
-    character.notifyObservers(Event::CharacterSpeedChanged);
+    character.notifyObservers(EEvent::CharacterSpeedChanged);
     character.setCharacterStateEnum(ECharacterState::Run);
 }
 
@@ -77,7 +77,7 @@ void
 CharacterStateRun::exit(CharacterBase& character)
 {
     character.setCharacterSpeed(mLastCharacterSpeed);
-    character.notifyObservers(Event::CharacterSpeedChanged);
+    character.notifyObservers(EEvent::CharacterSpeedChanged);
 
     character.getSpriteAnimation().setNumFrames(1);
     character.getSpriteAnimation().restart();

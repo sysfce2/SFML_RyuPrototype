@@ -35,21 +35,21 @@ Game::Game()
 }
 
 void
-Game::onNotify(const SceneNode& entity, Event event)
+Game::onNotify(const SceneNode& entity, EEvent event)
 {
-	switch(event)
+	switch(event._value)
 	{
-		case Event::DebugToggle:
+		case EEvent::DebugToggle:
 		{
 				RyuDebug::activateRyuDebug == false ? RyuDebug::activateRyuDebug = true : RyuDebug::activateRyuDebug = false;
 				break;
 		}
-		case Event::ImGuiDemoToggle:
+		case EEvent::ImGuiDemoToggle:
 		{
 				RyuDebug::showImGuiDemoWindow == false ? RyuDebug::showImGuiDemoWindow = true : RyuDebug::showImGuiDemoWindow = false;
 				break;
 		}
-		case Event::RyuAnimatorToggle:
+		case EEvent::RyuAnimatorToggle:
 		{
 				mAnimator.showAnimationEditor == false ? mAnimator.showAnimationEditor=true : mAnimator.showAnimationEditor=false;		
 		}

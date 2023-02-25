@@ -25,7 +25,7 @@ public:
     void removeObserver(Observer* observer);
 
 protected:
-    void notify(const SceneNode& entity, Event event);
+    void notify(const SceneNode& entity, EEvent event);
 
 private:
     // approach without dynamic memallocation

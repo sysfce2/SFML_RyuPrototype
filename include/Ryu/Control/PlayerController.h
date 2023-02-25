@@ -32,7 +32,7 @@ class PlayerController : public Observer, public Subject /// notifier and observ
         void handleRealtimeInput(CommandQueue& commands);
         void setActionBindingCharacterSpeed();
 
-        void onNotify(const SceneNode& entity, Event event) override;
+        void onNotify(const SceneNode& entity, EEvent event) override;
 
     private:
         static bool isRealtimeAction(EInput action);

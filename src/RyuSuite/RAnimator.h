@@ -26,6 +26,7 @@ namespace AnimationTags {
     int16_t width;
     int16_t x; /// x-position in spritesheet
     int16_t y; /// y-position in spritesheet
+    EEvent event;
   };
 
   struct TaggedAnimation
@@ -81,7 +82,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
 
   private:
       void initTextures();
-      void editFrame(size_t frame);
+      void editFrame(AnimationTags::TaggedAnimation ani, size_t frame);
       GuiCharTextureManager guiCharTextureManager;
       GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;

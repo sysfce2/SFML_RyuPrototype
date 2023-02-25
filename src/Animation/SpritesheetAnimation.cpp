@@ -87,7 +87,7 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standar
 		AnimationFrame frame{
 			.duration= 100,
 			.frameSize = {80,96},
-			.event = Event::None
+			.event = EEvent::None
 		};
 			mFrames.push_back(frame);	
 	 }

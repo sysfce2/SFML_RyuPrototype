@@ -88,11 +88,11 @@ World::loadTextures()
 }
 
 void
-World::onNotify(const SceneNode& entity, Event event)
+World::onNotify(const SceneNode& entity, EEvent event)
 {
-    switch(event)
+    switch(event._value)
     {
-        case Event::DebugToggle:
+        case EEvent::DebugToggle:
         {
             toggleDrawDebug();
             break;       

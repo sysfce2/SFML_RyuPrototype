@@ -47,7 +47,7 @@ Editor::Editor():
     ,showAnimationEditor(true)
     ,guiCharTextureManager()
     ,guiTextureManager()
-    ,aniIsPlaying(false)
+    ,aniIsPlaying(true)
     ,textureSet(false)
 {
     initTextures();
@@ -59,11 +59,14 @@ Editor::~Editor()
 constexpr std::pair<float,float> frameSize{20.f,35.f};
 constexpr std::pair<float,float> frameAreaSize{860.f,180.f};
 constexpr std::pair<float,float> aniAreaSize{250.f,400.f};
-static bool frameDetailsVisible;
+static bool frameDetailsVisible=true;
 // content of the selected Frame
+/* FrameDetails-Section */
 static int intDuration;
 static int selectedFrame;
-static Event frameEvent;
+static int currentEventItem = 0;
+// TODO load / convert EventEnum to char array
+const char* eventItems[] = {"None","bla","blub"}; //frameEvents;
 static sf::Vector2i sheetPosition{};
 
 void
@@ -132,7 +135,8 @@ Editor::parseJsonData()
                         .height = data["frames"][framePosition]["frame"]["h"], 
                         .width = data["frames"][framePosition]["frame"]["w"],
                         .x = data["frames"][framePosition]["frame"]["x"],
-                        .y = data["frames"][framePosition]["frame"]["y"]
+                        .y = data["frames"][framePosition]["frame"]["y"],
+                        .event = EEvent::None,
                     };
                     ani.frames.push_back(frame);
                 }
@@ -192,6 +196,7 @@ Editor::createEditorWidgets(bool* p_open)
             if(ImGui::Selectable(label, selected == i)) 
             { 
                   selected = i;
+                  intDuration = 0;
             }
             i++;
           }
@@ -320,12 +325,12 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
             if(ImGui::Button(std::to_string(j).c_str(),ImVec2(frameSize.first,frameSize.second)))
             {
                 selectedFrame = j;
-                editFrame(i);
+                editFrame(ani,selectedFrame);
             }
             if(currentFrameAreaX < frameAreaSize.first)
             {
                 currentFrameAreaX += (frameSize.first+10.f);
-                std::cout << currentFrameAreaX << "\n";
+                //std::cout << currentFrameAreaX << "\n";
                 ImGui::SameLine();
             }
             else
@@ -342,19 +347,21 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
 void
 Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber)
 {
-    auto ani = sheet.second.at(selectedAni);
     if(frameDetailsVisible)
     {
-        intDuration = ani.frames.at(frameNumber-1).duration;
+        //auto ani = sheet.second.at(selectedAni);
+        ImGui::Text("Frame: %d", frameNumber);    
         ImGui::InputInt("Duration",&intDuration );
+        ImGui::Combo("Event",&currentEventItem, eventItems, IM_ARRAYSIZE(eventItems));
     }
 }
 
 void
-Editor::editFrame(size_t frame)
+Editor::editFrame(AnimationTags::TaggedAnimation ani, size_t frame )
 {
-    frameDetailsVisible =! frameDetailsVisible;
-    
+    std::cout << ani.name << "," << std::to_string(frame) << "\n";
+    intDuration = ani.frames.at(frame-1).duration;
+    //frameDetailsVisible =! frameDetailsVisible;
 }
 
 void

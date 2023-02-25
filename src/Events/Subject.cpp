@@ -45,7 +45,7 @@ Subject::removeObserver(Observer* observer)
 }
 
 void
-Subject::notify(const SceneNode& entity, Event event)
+Subject::notify(const SceneNode& entity, EEvent event)
 {
     if(numObservers_ > 0)
     {

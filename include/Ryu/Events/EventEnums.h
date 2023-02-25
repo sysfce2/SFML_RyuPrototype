@@ -1,10 +1,11 @@
 #pragma once
+#include <Thirdparty/betterEnum/enum.h>
 
-enum class Event{
-        None,
-        CharacterSpeedChanged,
-        DebugToggle,
-        ImGuiDemoToggle,
-        RyuAnimatorToggle,
+BETTER_ENUM(EEvent, char
+        ,None=0
+        ,CharacterSpeedChanged
+        ,DebugToggle
+        ,ImGuiDemoToggle
+        ,RyuAnimatorToggle
         
-};
+);
