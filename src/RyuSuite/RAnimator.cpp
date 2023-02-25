@@ -51,6 +51,7 @@ Editor::Editor():
     ,textureSet(false)
 {
     initTextures();
+    initData();
 }
 
 Editor::~Editor()
@@ -65,9 +66,23 @@ static bool frameDetailsVisible=true;
 static int intDuration;
 static int selectedFrame;
 static int currentEventItem = 0;
-// TODO load / convert EventEnum to char array
-const char* eventItems[] = {"None","bla","blub"}; //frameEvents;
+
+char* eventItems[] = {}; //frameEvents;
 static sf::Vector2i sheetPosition{};
+
+
+void
+Editor::initData()
+{
+    int i = 0;
+    for (const char *name :EEvent::_names())
+    {
+    //    eventItems[i] = name";
+        std::cout << name << " ";
+        ++i;
+    }
+    std::cout << std::endl;
+}
 
 void
 Editor::update(sf::Time dt)
@@ -353,6 +368,7 @@ Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int 
         ImGui::Text("Frame: %d", frameNumber);    
         ImGui::InputInt("Duration",&intDuration );
         ImGui::Combo("Event",&currentEventItem, eventItems, IM_ARRAYSIZE(eventItems));
+       //ImGui::Combo("Event",&currentEventItem, EEvent::_names(),3 );
     }
 }
 

@@ -62,6 +62,8 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
     //private:
 
       void update(sf::Time dt);
+
+      void initData();
   
       void createEditorWidgets(bool* p_open);
 
