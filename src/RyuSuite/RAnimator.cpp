@@ -57,7 +57,7 @@ Editor::Editor():
 Editor::~Editor()
 {}
 
-constexpr std::pair<float,float> frameSize{20.f,35.f};
+constexpr std::pair<float,float> frameSize{20.f,35.f}; 
 constexpr std::pair<float,float> frameAreaSize{860.f,180.f};
 constexpr std::pair<float,float> aniAreaSize{250.f,400.f};
 static bool frameDetailsVisible=true;
@@ -67,7 +67,9 @@ static int intDuration;
 static int selectedFrame;
 static int currentEventItem = 0;
 
-char* eventItems[] = {}; //frameEvents;
+// TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
+const char* eventItems[] = {"","","","",""};
+
 static sf::Vector2i sheetPosition{};
 
 
@@ -75,13 +77,11 @@ void
 Editor::initData()
 {
     int i = 0;
-    for (const char *name :EEvent::_names())
+    for (EEvent evt : EEvent::_values())
     {
-    //    eventItems[i] = name";
-        std::cout << name << " ";
+        eventItems[i] = evt._to_string();
         ++i;
     }
-    std::cout << std::endl;
 }
 
 void
