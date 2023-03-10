@@ -81,7 +81,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
 
       bool showAnimationEditor;
   
-      void exportAnimationDetailsToFile();
+      void exportAnimationDetailsToFile(char* JsonFilename);
       
       void setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber);
   

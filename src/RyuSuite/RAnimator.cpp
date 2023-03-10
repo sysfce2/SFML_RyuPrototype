@@ -335,7 +335,6 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::SameLine();
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::EndFrame)))
     {
-        exportAnimationDetailsToFile();
     }
 
     ImGui::BeginChild("TimeLine",ImVec2(frameAreaSize.first,frameAreaSize.second),ImGuiWindowFlags_AlwaysVerticalScrollbar);
@@ -376,6 +375,22 @@ Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int 
         ImGui::InputInt("Duration",&intDuration );
         ImGui::Combo("Event",&currentEventItem, eventItems, IM_ARRAYSIZE(eventItems));
        //ImGui::Combo("Event",&currentEventItem, EEvent::_names(),3 );
+        ImGui::Separator();
+        if(ImGui::BeginChild("Preferences", ImVec2(0,0), false))
+        {
+            // to use with std::string or own datatype we need a wrapper for InputTextXXX)
+            static char JsonFilename[128] = "";
+            // TODO: how to add automatically ?in C-style
+            // static char extension[6] = ".json";
+            ImGui::InputTextWithHint("Json","Json filename",JsonFilename,IM_ARRAYSIZE(JsonFilename));
+            ImGui::SameLine();
+            if(ImGui::Button("Save Json"))
+            {
+                exportAnimationDetailsToFile(JsonFilename);                
+            }
+            
+        }
+        ImGui::EndChild();
     }
 }
 
@@ -422,11 +437,11 @@ Editor::setSpritesheetAnimationDetails(const AnimationConfig& config)
 }
 
 void
-Editor::exportAnimationDetailsToFile()
+Editor::exportAnimationDetailsToFile(char* JsonFilename)
 {
-    
     std::vector<AnimationSpec::Animation> aniSpecs;
-    std::ofstream oJson("output.json");
+    // TODO: no filename entered ? what then -> standard name but: HOW 
+    std::ofstream oJson(sizeof(JsonFilename) == 0 ? "output.txt" : JsonFilename);
     
     for(auto& ani : animations[selectedSpritesheet])
     {
@@ -443,6 +458,8 @@ Editor::exportAnimationDetailsToFile()
         oJson << j;
         
     }
+
+    std::cout << "saved to " << (sizeof(JsonFilename) == 0 ? "output.txt" : JsonFilename) << "\n";
 
     // json j()
     /* 
