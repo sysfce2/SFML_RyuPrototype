@@ -39,6 +39,16 @@ namespace AnimationTags {
   };
 } /// namespace AnimationTags
 
+
+namespace AnimationSpec {
+    struct Animation{
+        int x;
+        int y;
+        int width;
+        int height;
+    };
+} /// namespace AnimationSpec    
+
 // fields important for every Animation 
 // TODO (if Editor in use: delete struct in CharacterBase.h)
 struct AnimationConfig
@@ -70,6 +80,8 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
       void parseJsonData();
 
       bool showAnimationEditor;
+  
+      void exportAnimationDetailsToFile();
       
       void setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber);
   
@@ -88,6 +100,8 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
       GuiCharTextureManager guiCharTextureManager;
       GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;
+
+      std::vector<AnimationSpec::Animation> animationSpecs;
 
       bool aniIsPlaying;
   };

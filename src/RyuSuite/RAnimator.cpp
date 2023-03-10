@@ -40,6 +40,14 @@ namespace AnimationTags {
     // to convert to a json one need to implement the method "to_json(...)"
 }
 
+namespace AnimationSpec {
+    
+    void to_json(json& j, const Animation& ani) {
+        j = json{"frame", {{"x", ani.x},{"y", ani.y},{"width", ani.width},{"height", ani.height}}};
+    }
+    
+}
+
 
 Editor::Editor():
      parsedSpritesheet(false)
@@ -132,9 +140,6 @@ Editor::parseJsonData()
             
             animations.emplace(spriteSheet, aniVector);
 
-            // just for testing the tabs a second spritesheet
-            aniVector.resize(11);              
-            animations.emplace("spritesheet2", aniVector);              
         }            
         selectedSpritesheet = spriteSheet;
         // read framespecific data due aseprite-json spec
@@ -315,10 +320,10 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     
     //if(ImGui::ArrowButton("Play",ImGuiDir_Right)) {aniIsPlaying = ! aniIsPlaying;}
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::StartFrame)))
-        {}
+    {}
     ImGui::SameLine();
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::BackwardFrame)))
-        {}
+    {}
     ImGui::SameLine();
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Play)))
     {
@@ -326,10 +331,12 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     }
     ImGui::SameLine();
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::ForwardFrame)))
-        {}
+    {}
     ImGui::SameLine();
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::EndFrame)))
-        {}
+    {
+        exportAnimationDetailsToFile();
+    }
 
     ImGui::BeginChild("TimeLine",ImVec2(frameAreaSize.first,frameAreaSize.second),ImGuiWindowFlags_AlwaysVerticalScrollbar);
         size_t j = 1;
@@ -395,9 +402,6 @@ Editor::initTextures()
     
 }
 
-
-
-
 void
 Editor::setSpritesheetAnimationDetails(const AnimationConfig& config)
 {   
@@ -414,7 +418,68 @@ Editor::setSpritesheetAnimationDetails(const AnimationConfig& config)
     // set origin of texture to center
     sf::FloatRect bounds = spritesheetAnimation.getSprite().getLocalBounds();
     spritesheetAnimation.getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+ 
+}
 
+void
+Editor::exportAnimationDetailsToFile()
+{
+    
+    std::vector<AnimationSpec::Animation> aniSpecs;
+    std::ofstream oJson("output.json");
+    
+    for(auto& ani : animations[selectedSpritesheet])
+    {
+        for (auto& frame : ani.frames)
+        {
+            AnimationSpec::Animation aniSpec{.x=frame.x,.y=frame.y,.width=frame.width,.height=frame.height};
+            aniSpecs.push_back(aniSpec);
+        }
+    }
+
+    for(const auto& spec : aniSpecs)
+    {
+        json j = spec;
+        oJson << j;
+        
+    }
+
+    // json j()
+    /* 
+    Output json: example ichi.json
+    {
+        "Name" : "Ichi",
+        "Spritesheet" : "level1.png"
+        "Animations" :
+        [
+            {"name": "idle", 
+            "sheetStart" : {"x":1, "y":1}, 
+            "frameSize" : {"width" : 80, "height" : 96},
+            "numFrames" : 4,
+            "duration_ms" : 800,
+            "frames" : 
+                [
+                    {"number" : 1, "duration_ms" : 200, "event" : "None"},
+                    {"number" : 2, "duration_ms" : 120, "event" : "None"},
+                    {"number" : 3, "duration_ms" : 80, "event" : "None"},
+                    {"number" : 4, "duration_ms" : 400, "event" : "FootstepSFX"},
+                ],
+            "repeat" : true,
+            "animationId" : "Textures::CharacterID::IchiIdleRun"        
+            },
+        ]
+    }
+    // built asserts if total duration = sumFrames 
+    */
+    // atm we need to save:
+    /*
+   .frameSize={frameWidth,frameHeight}
+   .startFrame={startX,startY} // reg. the spritesheet
+   .numFrames=i
+   .duration = sf::milliseconds(durationAni)// in ms
+   .repeat = true ///  TODO from editor ui: entered by user
+   .animationId = Textures::CharacterID::IchiIdleRun});///  TODO from editor ui: entered by user    
+   ^*/
 }
 
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <Thirdparty/betterEnum/enum.h>
 
 // Forward declaration of SFML classes
 namespace sf
@@ -34,8 +35,8 @@ namespace Textures
 	};
 
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
-    enum class CharacterID {
-        IchiIdleRun,
+    BETTER_ENUM(CharacterID, char ,
+        IchiIdleRun=0,
 				IchiJump,
 				IchiKatanaWalk,
 				IchiFallingLow,
@@ -50,9 +51,9 @@ namespace Textures
 				IchiJumpForward,
 				IchiSword1Idle,
 				IchiSword1Walk,
-				IchiWalk,
+				IchiWalk
 		// ... Spritesheets
-    };
+    );
 
 	enum class GuiID {
 			 None,
