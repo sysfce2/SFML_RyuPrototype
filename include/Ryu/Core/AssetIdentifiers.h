@@ -36,7 +36,8 @@ namespace Textures
 
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
     BETTER_ENUM(CharacterID, char ,
-        IchiIdleRun=0,
+        None=0,
+				IchiIdleRun,
 				IchiJump,
 				IchiKatanaWalk,
 				IchiFallingLow,

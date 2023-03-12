@@ -18,39 +18,9 @@ using GuiTextureManager = AssetManager<sf::Texture, Textures::GuiID>;
 namespace RyuAnimator
 {
 
-namespace AnimationTags {
-  struct Frame
-  {
-    int16_t duration;
-    int16_t height;
-    int16_t width;
-    int16_t x; /// x-position in spritesheet
-    int16_t y; /// y-position in spritesheet
-    EEvent event;
-  };
-
-  struct TaggedAnimation
-  {
-    std::string name;
-    int16_t fromFrame; /// Frame Startposition in spritesheet
-    int16_t toFrame; /// Frame Endposition in spritresheet
-    std::string direction;
-    std::vector<Frame> frames;
-  };
-} /// namespace AnimationTags
-
-
-namespace AnimationSpec {
-    struct Animation{
-        int x;
-        int y;
-        int width;
-        int height;
-    };
-} /// namespace AnimationSpec    
-
 // fields important for every Animation 
 // TODO (if Editor in use: delete struct in CharacterBase.h)
+// it'll also included in AnimationSpec::Animation
 struct AnimationConfig
 {
     sf::Vector2i frameSize;
@@ -61,7 +31,79 @@ struct AnimationConfig
     Textures::CharacterID animationId;
 };
 
-using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::TaggedAnimation>>  ; 
+namespace AnimationSpec {
+    // although the information for Frame & Taggednimation could be better consolidated
+    // this is done this way bc the input json file-format from aseprite demands it
+    // TODO: but we could use standard start values for other fields as well as we do with Event
+    struct Frame 
+    {
+      int16_t duration;
+      int16_t height;
+      int16_t width;
+      int16_t x; /// x-position in spritesheet
+      int16_t y; /// y-position in spritesheet
+      EEvent event;
+    };
+
+    struct Animation
+    {
+
+      Animation() : 
+           name("name")
+          ,fromFrame(0)
+          ,toFrame(0)
+          ,direction("forward")
+          ,frames()
+          ,numFrames(0)
+          ,frameSize()
+          ,animationDuration()
+          ,repeat(false)
+          ,animationId(Textures::CharacterID::None) {}
+  
+      std::string name;
+      int16_t fromFrame; /// Frame Startposition in spritesheet
+      int16_t toFrame; /// Frame Endposition in spritresheet
+      std::string direction;
+      std::vector<Frame> frames;
+      std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
+      sf::Vector2i frameSize;
+      sf::Time animationDuration;
+      bool repeat;
+      Textures::CharacterID animationId;
+    };
+    struct Spec{
+      std::string specName;
+      std::string spritesheetName;
+      std::vector<Animation> animations; 
+    }; 
+  
+} /// namespace AnimationSpec    
+
+/*
+    {
+        "Name" : "Ichi",
+        "Spritesheet" : "level1.png"
+        "Animations" :
+        [
+            {"name": "idle", 
+            "sheetStart" : {"x":1, "y":1}, 
+            "frameSize" : {"width" : 80, "height" : 96},
+            "numFrames" : 4,
+            "duration_ms" : 800,
+            "frames" : 
+                [
+                    {"number" : 1, "duration_ms" : 200, "event" : "None"},
+                    {"number" : 2, "duration_ms" : 120, "event" : "None"},
+                    {"number" : 3, "duration_ms" : 80, "event" : "None"},
+                    {"number" : 4, "duration_ms" : 400, "event" : "FootstepSFX"},
+                ],
+            "repeat" : true,
+            "animationId" : "Textures::CharacterID::IchiIdleRun"        
+            },
+        ]
+    }
+*/
+using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationSpec::Animation>>  ; 
 
   class Editor
   {
@@ -89,14 +131,16 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationTags::T
       void setSpritesheetAnimationDetails(const AnimationConfig& config);
       // map with all spritesheets loaded and according animations
       // key: spritesheetname, value: vector of animations
-      std::map<std::string, std::vector<AnimationTags::TaggedAnimation> > animations;
+      std::map<std::string, std::vector<AnimationSpec::Animation> > animations;
       bool parsedSpritesheet;
       bool textureSet;
       std::string selectedSpritesheet;
 
   private:
+
+      void setTooltipText(const char * tooltip);
       void initTextures();
-      void editFrame(AnimationTags::TaggedAnimation ani, size_t frame);
+      void editFrame(AnimationSpec::Animation ani, size_t frame);
       GuiCharTextureManager guiCharTextureManager;
       GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;
