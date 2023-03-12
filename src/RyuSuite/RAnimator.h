@@ -48,6 +48,17 @@ namespace AnimationSpec {
     struct Animation
     {
 
+      std::string name;
+      int16_t fromFrame; /// Frame Startposition in spritesheet
+      int16_t toFrame; /// Frame Endposition in spritresheet
+      std::string direction;
+      std::vector<Frame> frames;
+      std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
+      sf::Vector2i frameSize;
+      sf::Time animationDuration;
+      bool repeat;
+      Textures::CharacterID animationId;
+  
       Animation() : 
            name("name")
           ,fromFrame(0)
@@ -60,16 +71,6 @@ namespace AnimationSpec {
           ,repeat(false)
           ,animationId(Textures::CharacterID::None) {}
   
-      std::string name;
-      int16_t fromFrame; /// Frame Startposition in spritesheet
-      int16_t toFrame; /// Frame Endposition in spritresheet
-      std::string direction;
-      std::vector<Frame> frames;
-      std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
-      sf::Vector2i frameSize;
-      sf::Time animationDuration;
-      bool repeat;
-      Textures::CharacterID animationId;
     };
     struct Spec{
       std::string specName;

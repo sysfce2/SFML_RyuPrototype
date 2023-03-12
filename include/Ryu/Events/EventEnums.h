@@ -9,3 +9,13 @@ BETTER_ENUM(EEvent, char
         ,RyuAnimatorToggle
         
 );
+/*
+NLOHMANN_JSON_SERIALIZE_ENUM( EEvent, {
+        {None,"None"}
+        ,{CharacterSpeedChanged,"CharacterSpeedChanged"
+        ,{DebugToggle,"DebugToggle"}
+        ,{ImGuiDemoToggle,"ImGuiDemoToggle"}
+        ,{RyuAnimatorToggle,"RyuAnimatorToggle"}
+              
+})
+*/

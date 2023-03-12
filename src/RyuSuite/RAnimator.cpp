@@ -37,6 +37,20 @@ namespace AnimationSpec {
         j.at("frame").at("h").get_to(frame.height);
         j.at("duration").get_to(frame.duration);
     }
+
+
+    void to_json(json& j, const Frame& frame){
+        // json jEvent = frame.event;
+        j = json{
+            {"duration",frame.duration},
+            {"height",frame.height},
+            {"width",frame.width},
+            {"x_sheet",frame.x},
+            {"y_sheet",frame.x},
+            {"event",frame.event._to_string()}
+                
+        };
+    }
 /*
     struct Animation
     {
@@ -56,30 +70,24 @@ namespace AnimationSpec {
       std::string spritesheetName;
       std::vector<Animation> animations; 
     }; 
-    struct Frame 
-    {
-      int16_t duration;
-      int16_t height;
-      int16_t width;
-      int16_t x; /// x-position in spritesheet
-      int16_t y; /// y-position in spritesheet
-      EEvent event;
-    };
 */
  
     void to_json(json& j, const Animation& ani) {
-        j = json{
-        {"name", ani.name},
-                 {"sheet_start", ani.fromFrame},{"sheet_end", ani.toFrame},
-                 {"animationDirection",ani.direction},
-/*
-                 {"height", ani.frameSize.y},{"width", ani.frameSize.x},
-                 {"animationDuration",ani.animationDuration},
-                 {"repeat",ani.repeat},
-                 {"AnimationId",ani.animationId}
-        */
-                 // TODO: frames to json ? how
-        };
+    // TODO: fill some fields with corect values / add somehoe lienbreaks to the json file ?
+      std::string timeInMs{
+          std::to_string(ani.animationDuration.asMilliseconds()) + " ms"};
+    
+      json jFrames = ani.frames; 
+      j = json{{"Name", ani.name},
+               {"Sheet_begin", ani.fromFrame},
+               {"Sheet_end", ani.toFrame},
+               {"AnimationDirection", ani.direction},
+               {"Frames", {{"numFrames", ani.numFrames}, jFrames}},
+               {"FrameSize",
+                {{"Height", ani.frameSize.y}, {"width", ani.frameSize.x}}},
+               {"animationDuration", timeInMs},
+               {"repeat", ani.repeat},
+               {"AnimationId", ani.animationId._to_string()}};
     }
 } /// namespace AnimationSpec
 
@@ -220,23 +228,22 @@ Editor::createEditorWidgets(bool* p_open)
         if(ImGui::Begin("Ryu Animation Editor",p_open, window_flags))
         {
 
-            static int selected = 0;
-           
-             if(ImGui::BeginMenuBar())
-            {
-                if(ImGui::BeginMenu("File"))
-                {
-                    ImGui::MenuItem("Menu",NULL,false,false);
-                    if (ImGui::MenuItem("Read JSON (Aseprite)")) 
-                    {
-                        // TODO: here later something like open a dialog window
-                        parseJsonData();
-                    }
-                    if (ImGui::MenuItem("Close","Strg+W")) {*p_open = false;}
-                    ImGui::EndMenu();
-                }
-                ImGui::EndMenuBar();
+          static int selected = 0;
+
+          if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+              ImGui::MenuItem("Menu", NULL, false, false);
+              if (ImGui::MenuItem("Read JSON (Aseprite)")) {
+                // TODO: here later something like open a dialog window
+                parseJsonData();
+              }
+              if (ImGui::MenuItem("Close", "Strg+W")) {
+                *p_open = false;
+              }
+              ImGui::EndMenu();
             }
+            ImGui::EndMenuBar();
+          }
 
           // Left
           ImGui::BeginChild("left_section",ImVec2(150,0),true, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
@@ -496,55 +503,14 @@ Editor::exportAnimationDetailsToFile(char* JsonFilename)
     
     for(auto& ani : animations[selectedSpritesheet])
     {
-        //for (auto& frame : ani.frames)
-          RyuAnimator::AnimationSpec::Animation aniSpec;/*{   // TODO: CHECK HERE STE BY STEP whats wrong with the designated initializer ???
-              .name = ani.name,
-              .fromFrame = ani.fromFrame,
-              .toFrame = ani.fromFrame,
-              .direction = ani.direction,
-              .frames = ani.frames,
-              .numFrames = ani.frames.size(),
-              .frameSize =
-                  sf::Vector2i{
-                      ani.frames.at(0).height,
-                      ani.frames.at(0).width}, // TODO: take the frameSize from
-                                               // the aseprite json
-              .animationDuration = ani.animationDuration,
-              .repeat = false,
-              .animationId =
-                  Textures::CharacterID::None, // TODO: take it from a
-                                               // dropdownlist with available
-                                               // CharacterIDs :)
-          };
-         */
-          aniSpecs.push_back(aniSpec);
-        /*
-    struct Frame 
-    {
-      int16_t duration;
-      int16_t height;
-      int16_t width;
-      int16_t x; /// x-position in spritesheet
-      int16_t y; /// y-position in spritesheet
-      EEvent event;
-    };
-      std::string name;
-      int16_t fromFrame; /// Frame Startposition in spritesheet
-      int16_t toFrame; /// Frame Endposition in spritresheet
-      std::string direction;
-      std::vector<Frame> frames;
-      std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
-      sf::Vector2i frameSize;
-      sf::Time animationDuration;
-      bool repeat;
-      Textures::CharacterID animationId;
-*/
+          aniSpecs.push_back(ani);
     }
 
     for(const auto& spec : aniSpecs)
     {
         json j = spec;
         oJson << j;
+        oJson << "\n";
         
     }
 
