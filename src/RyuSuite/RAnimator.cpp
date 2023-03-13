@@ -300,6 +300,22 @@ Editor::setTooltipText(const char * tooltip="- not implemented -")
     }
 }
 
+
+void
+Editor::setAnimationDuration(uint16_t duration, std::string aniName,std::string sheetName)
+{
+    // std::cout << sheetName << ": " << aniName << ": duration " << std::to_string(duration) << "\n";
+    for(auto& ani : animations[sheetName])
+    {
+        // std::cout << "aniName: " << ani.name << "\n";
+        if(ani.name == aniName)
+        {
+            ani.animationDuration = sf::milliseconds(duration);
+        }
+    }
+    
+}
+
 void 
 Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& sheet )
 {
@@ -338,7 +354,11 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
 
     int16_t startX = ani.frames.at(0).x / frameWidth; // for the spritesheetAnimationDetails
     int16_t startY = ani.frames.at(0).y / frameHeight;// for the spritesheetAnimationDetails
-    
+
+    // ani.animationDuration = sf::milliseconds(durationAni);
+    // sheet.second.at(selectedAni).animationDuration =sf::milliseconds(durationAni) ;
+    setAnimationDuration(durationAni,ani.name,sheet.first);
+
 
     // TODO: here dynamic anis due selection from the right side
     setSpritesheetAnimationDetails({

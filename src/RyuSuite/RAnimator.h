@@ -127,6 +127,8 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationSpec::A
       void exportAnimationDetailsToFile(char* JsonFilename);
       
       void setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber);
+      
+      void setAnimationDuration(uint16_t duration, std::string aniName,std::string sheetName);
   
       void createAnimationDetails(int selectedAni,const TaggedSheetAnimation& sheet );
       void setSpritesheetAnimationDetails(const AnimationConfig& config);
