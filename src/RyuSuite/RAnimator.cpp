@@ -99,6 +99,7 @@ Editor::Editor():
     ,guiTextureManager()
     ,aniIsPlaying(true)
     ,textureSet(false)
+    ,preferences()
 {
     initTextures();
     initData();
@@ -184,6 +185,7 @@ Editor::parseJsonData()
 
         }            
         selectedSpritesheet = spriteSheet;
+
         // read framespecific data due aseprite-json spec
         if (data.contains("frames"))
         {
@@ -203,10 +205,15 @@ Editor::parseJsonData()
                     ani.frames.push_back(frame);
                 }
             }
+            
+            setAnimationDuration(selectedSpritesheet);
+        
         }
         
         std::cout << data["meta"]["frameTags"].dump() << "\n";
         parsedSpritesheet = true;
+
+        
         
     }
     catch(json::exception e)
@@ -277,6 +284,7 @@ Editor::createEditorWidgets(bool* p_open)
                  if(ImGui::BeginTabItem(sheet.first.c_str()))
                  {
                      selectedSpritesheet=sheet.first;
+                     setAnimationDuration(sheet.first);
                      createAnimationDetails(selected, sheet);   
                      ImGui::EndTabItem();
                  }
@@ -300,18 +308,32 @@ Editor::setTooltipText(const char * tooltip="- not implemented -")
     }
 }
 
-
+// we need the animation duration before we click on a animation (showing details) bc it can/will be that 
+// we instant want to export the data to json -
 void
-Editor::setAnimationDuration(uint16_t duration, std::string aniName,std::string sheetName)
+Editor::setAnimationDuration(std::string sheetName)
 {
+    if(preferences["animationDurationSet_"+sheetName])
+    {
+        return;
+    }    
+
+    preferences["animationDurationSet_"+sheetName] = true;
+    
+    std::cout << "SHEET: " << sheetName << "\n";
     // std::cout << sheetName << ": " << aniName << ": duration " << std::to_string(duration) << "\n";
     for(auto& ani : animations[sheetName])
     {
-        // std::cout << "aniName: " << ani.name << "\n";
-        if(ani.name == aniName)
+        size_t i = 0;
+        uint16_t durationAni = 0;
+        for(const auto& frame : ani.frames)
         {
-            ani.animationDuration = sf::milliseconds(duration);
+            i++;
+            durationAni+= frame.duration;
         }
+        std::cout << "Ani: " << ani.name << ": " << std::to_string(durationAni) << "ms \n";
+        ani.animationDuration = sf::milliseconds(durationAni);
+        ani.numFrames = i;
     }
     
 }
@@ -323,49 +345,24 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::Text((std::to_string(selectedAni)+": "+ani.name+", ").c_str());
     ImGui::SameLine();
     ImGui::Text("Frames : %s, ", (std::to_string(ani.frames.size()).c_str()));
-    size_t i = 0;
-    uint16_t durationAni = 0;
-
-    
-
-    // TODO: details as mouseoverhint / Frame ! 
-    for (const auto& frame : ani.frames)
-    {
-        durationAni+= frame.duration;   
-        /* MouseOver for the induvidual frames 
-        ImGui::Text("Duration(%d): %s ms",i, (std::to_string(frame.duration).c_str()));
-        ImGui::Text("height(%d): %s",i, (std::to_string(frame.height).c_str()));
-        ImGui::Text("width(%d): %s",i, (std::to_string(frame.width).c_str()));
-        ImGui::Text("x-sheet(%d): %s",i, (std::to_string(frame.x).c_str()));
-        ImGui::Text("y-sheet(%d): %s",i, (std::to_string(frame.y).c_str()));
-        */
-        i++;
-        // ImGui::Separator();
-    }
     
     ImGui::SameLine();
     
-    ImGui::Text("Ani-Duration: %d ms", durationAni);    
+    ImGui::Text("Ani-Duration: %d ms", ani.animationDuration.asMilliseconds());    
     uint16_t frameWidth = ani.frames.at(0).width;
     uint16_t frameHeight = ani.frames.at(0).height;
     
-    // ImGui::BeginChild("Animation",ImVec2(frameWidth,frameHeight),true,ImGuiWindowFlags_NoScrollbar);
     ImGui::BeginChild("Animation",ImVec2(aniAreaSize.first,aniAreaSize.second),true,ImGuiWindowFlags_NoScrollbar);
 
     int16_t startX = ani.frames.at(0).x / frameWidth; // for the spritesheetAnimationDetails
     int16_t startY = ani.frames.at(0).y / frameHeight;// for the spritesheetAnimationDetails
 
-    // ani.animationDuration = sf::milliseconds(durationAni);
-    // sheet.second.at(selectedAni).animationDuration =sf::milliseconds(durationAni) ;
-    setAnimationDuration(durationAni,ani.name,sheet.first);
-
-
     // TODO: here dynamic anis due selection from the right side
     setSpritesheetAnimationDetails({
                 .frameSize={frameWidth,frameHeight}
                ,.startFrame={startX,startY}
-               ,.numFrames=i
-               ,.duration = sf::milliseconds(durationAni)
+               ,.numFrames= ani.numFrames
+               ,.duration = ani.animationDuration
                ,.repeat = true ///  TODO from editor ui: entered by user
                ,.animationId = Textures::CharacterID::IchiIdleRun});///  TODO from editor ui: entered by user    
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);

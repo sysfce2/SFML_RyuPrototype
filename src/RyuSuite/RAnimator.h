@@ -128,7 +128,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationSpec::A
       
       void setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber);
       
-      void setAnimationDuration(uint16_t duration, std::string aniName,std::string sheetName);
+      void setAnimationDuration(std::string sheetName);
   
       void createAnimationDetails(int selectedAni,const TaggedSheetAnimation& sheet );
       void setSpritesheetAnimationDetails(const AnimationConfig& config);
@@ -150,6 +150,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationSpec::A
 
       std::vector<AnimationSpec::Animation> animationSpecs;
 
+      std::map<std::string, bool> preferences;
       bool aniIsPlaying;
   };
 }
