@@ -265,6 +265,8 @@ Editor::createEditorWidgets(bool* p_open)
             { 
                   selected = i;
                   intDuration = 0;
+                  selectedFrame = 0;
+                  currentEventItem = 0;
             }
             i++;
           }
