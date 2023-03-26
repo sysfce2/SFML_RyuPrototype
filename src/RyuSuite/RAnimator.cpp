@@ -465,7 +465,15 @@ Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int 
         ImGui::Text("Frame: %d", frameNumber);    
         ImGui::InputInt("Duration",&intDuration );
         setTooltipText();
-        ImGui::Combo("Event",&currentEventItem, eventItems, IM_ARRAYSIZE(eventItems));
+        if(ImGui::Combo("Event",&currentEventItem, eventItems, IM_ARRAYSIZE(eventItems))) //;
+        {
+            if(selectedFrame != 0)
+            {
+               std::cout << "Event : " << std::to_string(currentEventItem) << " saved to Frame: " << std::to_string(frameNumber) <<" \n";
+               auto ani = sheet.second.at(selectedAni);
+               ani.frames.at(frameNumber).event = EEvent::_from_integral(currentEventItem); 
+            }
+        }
        //ImGui::Combo("Event",&currentEventItem, EEvent::_names(),3 );
         ImGui::Separator();
     }
