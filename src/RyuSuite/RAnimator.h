@@ -104,7 +104,7 @@ namespace AnimationSpec {
         ]
     }
 */
-using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationSpec::Animation>>  ; 
+using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationSpec::Animation>>  ; 
 
   class Editor
   {
@@ -126,11 +126,11 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationSpec::A
   
       void exportAnimationDetailsToFile(char* JsonFilename);
       
-      void setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber);
+      void setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameNumber, AnimationSpec::Animation& ani);
       
       void setAnimationDuration(std::string sheetName);
   
-      void createAnimationDetails(int selectedAni,const TaggedSheetAnimation& sheet );
+      void createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet );
       void setSpritesheetAnimationDetails(const AnimationConfig& config);
       // map with all spritesheets loaded and according animations
       // key: spritesheetname, value: vector of animations
@@ -143,7 +143,7 @@ using TaggedSheetAnimation = std::pair<std::string, std::vector<AnimationSpec::A
 
       void setTooltipText(const char * tooltip);
       void initTextures();
-      void editFrame(AnimationSpec::Animation ani, size_t frame);
+      void editFrame(AnimationSpec::Animation& ani, size_t frame);
       GuiCharTextureManager guiCharTextureManager;
       GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;

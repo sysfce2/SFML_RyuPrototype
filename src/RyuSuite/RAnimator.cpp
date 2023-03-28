@@ -280,7 +280,7 @@ Editor::createEditorWidgets(bool* p_open)
         ImGui::BeginGroup();
         if(ImGui::BeginTabBar("SpriteSheets"))
         {
-            for (const auto& sheet : animations)
+            for (auto& sheet : animations)
             {
                  if(sheet.first == "") continue; /// otherwise we create an empty tab
                  if(ImGui::BeginTabItem(sheet.first.c_str()))
@@ -341,7 +341,7 @@ Editor::setAnimationDuration(std::string sheetName)
 }
 
 void 
-Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& sheet )
+Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
 {
     auto ani = sheet.second.at(selectedAni);
     ImGui::Text((std::to_string(selectedAni)+": "+ani.name+", ").c_str());
@@ -370,7 +370,7 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     // ImGui::ShowMetricsWindow();
     
-    setFrameDetails(selectedAni,sheet,selectedFrame);
+    setFrameDetails(selectedAni,sheet,selectedFrame,sheet.second.at(selectedAni));
 
     ImGui::EndChild();
 
@@ -457,7 +457,7 @@ Editor::createAnimationDetails(int selectedAni, const TaggedSheetAnimation& shee
 }
 
 void
-Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int frameNumber)
+Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameNumber, AnimationSpec::Animation& ani)
 {
     if(frameDetailsVisible)
     {
@@ -469,9 +469,10 @@ Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int 
         {
             if(selectedFrame != 0)
             {
-               std::cout << "Event : " << std::to_string(currentEventItem) << " saved to Frame: " << std::to_string(frameNumber) <<" \n";
-               auto ani = sheet.second.at(selectedAni);
-               ani.frames.at(frameNumber).event = EEvent::_from_integral(currentEventItem); 
+               std::cout << "Event : " << std::to_string(currentEventItem) << "(" << EEvent::_from_integral(currentEventItem)._to_string()  << ") saved to Frame: " << std::to_string(frameNumber) <<" \n";
+               //auto ani = sheet.second.at(selectedAni);
+               ani.frames.at(frameNumber-1).event = EEvent::_from_integral(currentEventItem);
+               std::cout << "From ani-map: " << ani.frames.at(frameNumber-1).event._to_string() << "\n";  
             }
         }
        //ImGui::Combo("Event",&currentEventItem, EEvent::_names(),3 );
@@ -480,10 +481,12 @@ Editor::setFrameDetails(int selectedAni, const TaggedSheetAnimation& sheet, int 
 }
 
 void
-Editor::editFrame(AnimationSpec::Animation ani, size_t frame )
+Editor::editFrame(AnimationSpec::Animation& ani, size_t frame )
 {
     std::cout << ani.name << "," << std::to_string(frame) << "\n";
     intDuration = ani.frames.at(frame-1).duration;
+    currentEventItem = (ani.frames.at(frame-1).event)._to_integral(); 
+    std::cout << "FrameDetail(event): " << currentEventItem << ", ani-map: " << ani.frames.at(frame-1).event._to_string() << "\n";
     //frameDetailsVisible =! frameDetailsVisible;
 }
 
