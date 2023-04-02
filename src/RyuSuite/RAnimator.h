@@ -128,7 +128,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       
       void setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameNumber, AnimationSpec::Animation& ani);
       
-      void setAnimationDuration(std::string sheetName);
+      void setAnimationPreferences(std::string sheetName);
   
       void createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet );
       void setSpritesheetAnimationDetails(const AnimationConfig& config);

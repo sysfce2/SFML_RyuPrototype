@@ -84,7 +84,7 @@ namespace AnimationSpec {
                {"AnimationDirection", ani.direction},
                {"Frames", {{"numFrames", ani.numFrames}, jFrames}},
                {"FrameSize",
-                {{"Height", ani.frameSize.y}, {"width", ani.frameSize.x}}},
+                {{"height", ani.frameSize.y}, {"width", ani.frameSize.x}}},
                {"animationDuration", timeInMs},
                {"repeat", ani.repeat},
                {"AnimationId", ani.animationId._to_string()}};
@@ -206,7 +206,7 @@ Editor::parseJsonData()
                 }
             }
             
-            setAnimationDuration(selectedSpritesheet);
+            setAnimationPreferences(selectedSpritesheet);
         
         }
         
@@ -286,7 +286,7 @@ Editor::createEditorWidgets(bool* p_open)
                  if(ImGui::BeginTabItem(sheet.first.c_str()))
                  {
                      selectedSpritesheet=sheet.first;
-                     setAnimationDuration(sheet.first);
+                     setAnimationPreferences(sheet.first);
                      createAnimationDetails(selected, sheet);   
                      ImGui::EndTabItem();
                  }
@@ -313,7 +313,7 @@ Editor::setTooltipText(const char * tooltip="- not implemented -")
 // we need the animation duration before we click on a animation (showing details) bc it can/will be that 
 // we instant want to export the data to json -
 void
-Editor::setAnimationDuration(std::string sheetName)
+Editor::setAnimationPreferences(std::string sheetName)
 {
     if(preferences["animationDurationSet_"+sheetName])
     {
@@ -336,6 +336,10 @@ Editor::setAnimationDuration(std::string sheetName)
         std::cout << "Ani: " << ani.name << ": " << std::to_string(durationAni) << "ms \n";
         ani.animationDuration = sf::milliseconds(durationAni);
         ani.numFrames = i;
+        ani.frameSize.y = ani.frames.at(0).height;
+        ani.frameSize.x = ani.frames.at(0).width;
+
+        // TODO: set Anidirection / AniId / repeat
     }
     
 }
@@ -378,7 +382,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     ImGui::SameLine();
 
     // TODO: adjust values due Spritesheetsize and FrameSize
-    ImGui::BeginChild("SpriteSheet", ImVec2(800,400),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
+    ImGui::BeginChild("SpriteSheet", ImVec2(650,400),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
 
     ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
     ImGui::EndChild();
@@ -463,8 +467,15 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
     {
         //auto ani = sheet.second.at(selectedAni);
         ImGui::Text("Frame: %d", frameNumber);    
-        ImGui::InputInt("Duration",&intDuration );
-        setTooltipText();
+        if(ImGui::InputInt("Duration",&intDuration))
+        {
+            if(selectedFrame != 0)
+            {
+                std::cout << "DurationPress: " << intDuration << "\n";    
+                ani.frames.at(frameNumber-1).duration = intDuration ;
+            }
+        }
+        setTooltipText("set duration in ms");
         if(ImGui::Combo("Event",&currentEventItem, eventItems, IM_ARRAYSIZE(eventItems))) //;
         {
             if(selectedFrame != 0)
@@ -475,7 +486,8 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
                std::cout << "From ani-map: " << ani.frames.at(frameNumber-1).event._to_string() << "\n";  
             }
         }
-       //ImGui::Combo("Event",&currentEventItem, EEvent::_names(),3 );
+
+        //ImGui::Combo("Event",&currentEventItem, EEvent::_names(),3 );
         ImGui::Separator();
     }
 }
@@ -488,6 +500,8 @@ Editor::editFrame(AnimationSpec::Animation& ani, size_t frame )
     currentEventItem = (ani.frames.at(frame-1).event)._to_integral(); 
     std::cout << "FrameDetail(event): " << currentEventItem << ", ani-map: " << ani.frames.at(frame-1).event._to_string() << "\n";
     //frameDetailsVisible =! frameDetailsVisible;
+    ani.frameSize.x = (ani.frames.at(frame-1)).height;
+    ani.frameSize.y = (ani.frames.at(frame-1)).width;
 }
 
 void
