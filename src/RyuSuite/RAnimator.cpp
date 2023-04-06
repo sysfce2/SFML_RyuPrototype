@@ -257,16 +257,17 @@ Editor::createEditorWidgets(bool* p_open)
 
           int i = 0;
                                 
-          for(const auto& ani : animations[selectedSpritesheet])
+          for(auto& ani : animations[selectedSpritesheet])
           {
             char label[128];
             sprintf(label,"%d_%s", i,ani.name.c_str());
             if(ImGui::Selectable(label, selected == i)) 
             { 
                   selected = i;
-                  intDuration = 0;
-                  selectedFrame = 0;
-                  currentEventItem = 0;
+                  // intDuration = 0;
+                  selectedFrame = 1;
+                  // currentEventItem = 0;
+                  editFrame(ani,selectedFrame);
             }
             i++;
           }

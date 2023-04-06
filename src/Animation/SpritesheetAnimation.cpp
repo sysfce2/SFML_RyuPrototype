@@ -81,7 +81,7 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standar
 	{
 	*/
 	// standardValues for every Frame
-		mFrames.clear();
+	 mFrames.clear();
 	 for(int i=0;i<numFrames;++i)
 	 {
 		AnimationFrame frame{
@@ -156,7 +156,7 @@ SpritesheetAnimation::update(sf::Time dt)
     * 2. Time per frame
     * 3. get movedirection / mirrow spritesheet IF sprite is morrowable
     */
-    
+    // TODO: here take the timedirectly from the Frame itself and not the average time
     sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
     mElapsedTime += dt;
     sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
@@ -167,7 +167,7 @@ SpritesheetAnimation::update(sf::Time dt)
     }
 
     //std::cout << "texRec:" << textureRect.width << "," << textureRect.height << "\n";
-    
+    // TODO: in the loop get the frametime
     while (mElapsedTime >= timePerFrame && (mCurrentFrame <= mNumFrames || mRepeat))
     {
         textureRect.left += textureRect.width;
