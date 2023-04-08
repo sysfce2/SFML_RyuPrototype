@@ -1,9 +1,11 @@
 
 #include <Ryu/Animation/SpritesheetAnimation.h>
+#include <Ryu/Animation/EditorEnums.h>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
+#include <SFML/System/Time.hpp>
 #include <iostream>
 #include <vector>
 
@@ -59,7 +61,7 @@ sf::Vector2i SpritesheetAnimation::getFrameSize() const
 
 
 
-void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standardDuration*/ )
+void SpritesheetAnimation::setNumFrames(std::size_t numFrames, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames) 
 {
 	mNumFrames = numFrames;
 
@@ -84,8 +86,17 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames/*,sf::Time standar
 	 mFrames.clear();
 	 for(int i=0;i<numFrames;++i)
 	 {
+		float dur;
+		if (aniFrames.empty())
+		{ 
+			dur = 100;
+		} 
+		else
+		{
+			dur = (float)aniFrames.at(i).duration;
+		}
 		AnimationFrame frame{
-			.duration= 100,
+			.duration = dur,
 			.frameSize = {80,96},
 			.event = EEvent::None
 		};
@@ -152,12 +163,13 @@ SpritesheetAnimation::update(sf::Time dt)
     /* Tasks:
     * X1. start ani with specific frame on spritesheet
 		* 1b send signal when animation is finished
-		* 1c. make Frame a struct
+		* x1c. make Frame a struct
     * 2. Time per frame
     * 3. get movedirection / mirrow spritesheet IF sprite is morrowable
     */
     // TODO: here take the timedirectly from the Frame itself and not the average time
-    sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
+    //sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
+		sf::Time timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame).duration);
     mElapsedTime += dt;
     sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
     sf::IntRect textureRect = mSprite.getTextureRect();
@@ -189,6 +201,7 @@ SpritesheetAnimation::update(sf::Time dt)
         {
             mCurrentFrame++;
         }
+				std::cout << "F(" << mCurrentFrame << ")" << timePerFrame.asMilliseconds() << "\n";
     }
     //std::cout << "TextureRect: " << textureRect.width << "," << textureRect.height << "\n"; 
     mSprite.setTextureRect(textureRect); 

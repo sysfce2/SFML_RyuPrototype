@@ -2,6 +2,7 @@
 
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Events/EventEnums.h>
+#include <Ryu/Animation/EditorEnums.h>
 
 #include <SFML/Graphics.hpp>
 
@@ -24,7 +25,7 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
 		    void setFrameSize(sf::Vector2i mFrameSize);
 		    sf::Vector2i getFrameSize() const;
 
-		    void setNumFrames(std::size_t numFrames);
+		    void setNumFrames(std::size_t numFrames, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames = {});
 		    std::size_t getNumFrames() const;
 		    std::size_t getFramesCount() const {return mFrames.size();}
 

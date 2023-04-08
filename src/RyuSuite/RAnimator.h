@@ -4,6 +4,7 @@
 #include <Ryu/Core/AssetManager.h> 
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
+#include <Ryu/Animation/EditorEnums.h>
 
 #include <bits/stdint-intn.h>
 #include <cstdint>
@@ -32,54 +33,6 @@ struct AnimationConfig
     Textures::CharacterID animationId;
 };
 
-namespace AnimationSpec {
-    // although the information for Frame & Taggednimation could be better consolidated
-    // this is done this way bc the input json file-format from aseprite demands it
-    // TODO: but we could use standard start values for other fields as well as we do with Event
-    struct Frame 
-    {
-      int16_t duration;
-      int16_t height;
-      int16_t width;
-      int16_t x; /// x-position in spritesheet
-      int16_t y; /// y-position in spritesheet
-      EEvent event;
-    };
-
-    struct Animation
-    {
-
-      std::string name;
-      int16_t fromFrame; /// Frame Startposition in spritesheet
-      int16_t toFrame; /// Frame Endposition in spritresheet
-      std::string direction;
-      std::vector<Frame> frames;
-      std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
-      sf::Vector2i frameSize;
-      sf::Time animationDuration;
-      bool repeat;
-      Textures::CharacterID animationId;
-  
-      Animation() : 
-           name("name")
-          ,fromFrame(0)
-          ,toFrame(0)
-          ,direction("forward")
-          ,frames()
-          ,numFrames(0)
-          ,frameSize()
-          ,animationDuration()
-          ,repeat(false)
-          ,animationId(Textures::CharacterID::None) {}
-  
-    };
-    struct Spec{
-      std::string specName;
-      std::string spritesheetName;
-      std::vector<Animation> animations; 
-    }; 
-  
-} /// namespace AnimationSpec    
 
 /*
     {
@@ -132,7 +85,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       void setAnimationPreferences(std::string sheetName);
   
       void createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet );
-      void setSpritesheetAnimationDetails(const AnimationConfig& config);
+      void setSpritesheetAnimationDetails(const AnimationConfig& config, std::vector<AnimationSpec::Frame>& frames);
       // map with all spritesheets loaded and according animations
       // key: spritesheetname, value: vector of animations
       std::map<std::string, std::vector<AnimationSpec::Animation> > animations;

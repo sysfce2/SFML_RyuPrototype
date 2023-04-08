@@ -1,6 +1,7 @@
 #include "RAnimator.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Events/EventEnums.h>
+#include <Ryu/Animation/EditorEnums.h>
 
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -371,7 +372,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
                ,.numFrames= ani.numFrames
                ,.duration = ani.animationDuration
                ,.repeat = true ///  TODO from editor ui: entered by user
-               ,.animationId = Textures::CharacterID::IchiIdleRun});///  TODO from editor ui: entered by user    
+               ,.animationId = Textures::CharacterID::IchiIdleRun}, ani.frames);///  TODO from editor ui: entered by user    
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     // ImGui::ShowMetricsWindow();
     
@@ -521,12 +522,12 @@ Editor::initTextures()
 }
 
 void
-Editor::setSpritesheetAnimationDetails(const AnimationConfig& config)
+Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, std::vector<AnimationSpec::Frame>& frames)
 {   
     
     spritesheetAnimation.setFrameSize(config.frameSize);
     spritesheetAnimation.setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
-    spritesheetAnimation.setNumFrames(config.numFrames);
+    spritesheetAnimation.setNumFrames(config.numFrames, frames);
     spritesheetAnimation.setDuration(config.duration);
     spritesheetAnimation.setRepeating(config.repeat);
 
