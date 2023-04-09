@@ -346,6 +346,21 @@ Editor::setAnimationPreferences(std::string sheetName)
     
 }
 
+void
+Editor::calculateAnimationDuration(AnimationSpec::Animation& ani)
+{
+    int32_t overallDuration = 0;
+    for(const auto frame : ani.frames)
+    {
+        overallDuration+=frame.duration;
+    }
+
+    if(intDuration != overallDuration)
+    {
+        ani.animationDuration = sf::milliseconds(overallDuration);
+    }
+}
+
 void 
 Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
 {
@@ -355,7 +370,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     ImGui::Text("Frames : %s, ", (std::to_string(ani.frames.size()).c_str()));
     
     ImGui::SameLine();
-    
+    calculateAnimationDuration(ani);
     ImGui::Text("Ani-Duration: %d ms", ani.animationDuration.asMilliseconds());    
     uint16_t frameWidth = ani.frames.at(0).width;
     uint16_t frameHeight = ani.frames.at(0).height;
@@ -372,7 +387,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
                ,.numFrames= ani.numFrames
                ,.duration = ani.animationDuration
                ,.repeat = true ///  TODO from editor ui: entered by user
-               ,.animationId = Textures::CharacterID::IchiIdleRun}, ani.frames);///  TODO from editor ui: entered by user    
+               ,.animationId = Textures::CharacterID::IchiIdleRun}, ani.animationDuration,  ani.frames);///  TODO from editor ui: entered by user    
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     // ImGui::ShowMetricsWindow();
     
@@ -522,12 +537,12 @@ Editor::initTextures()
 }
 
 void
-Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, std::vector<AnimationSpec::Frame>& frames)
+Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<AnimationSpec::Frame>& frames)
 {   
-    
+    // std::cout << "OverallDuration: " << aniDuration.asMilliseconds() << " ms\n";
     spritesheetAnimation.setFrameSize(config.frameSize);
     spritesheetAnimation.setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
-    spritesheetAnimation.setNumFrames(config.numFrames, frames);
+    spritesheetAnimation.setNumFrames(aniDuration, frames);
     spritesheetAnimation.setDuration(config.duration);
     spritesheetAnimation.setRepeating(config.repeat);
 

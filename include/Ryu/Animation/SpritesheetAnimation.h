@@ -25,7 +25,9 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
 		    void setFrameSize(sf::Vector2i mFrameSize);
 		    sf::Vector2i getFrameSize() const;
 
-		    void setNumFrames(std::size_t numFrames, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames = {});
+				/* TODO setNumFrames(numframes) == old method without the use of the AnimationEditor (later delete it) */
+		    void setNumFrames(std::size_t numFrames);
+		    void setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames);
 		    std::size_t getNumFrames() const;
 		    std::size_t getFramesCount() const {return mFrames.size();}
 
@@ -60,5 +62,6 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
         sf::Time mDuration;
         sf::Time mElapsedTime;
         bool mRepeat;
-        std::vector<AnimationFrame> mFrames;
+        // std::vector<AnimationFrame> mFrames;
+        std::vector<RyuAnimator::AnimationSpec::Frame> mFrames;
 };  

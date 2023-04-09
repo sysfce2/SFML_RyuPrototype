@@ -60,34 +60,44 @@ sf::Vector2i SpritesheetAnimation::getFrameSize() const
 }
 
 
-
-void SpritesheetAnimation::setNumFrames(std::size_t numFrames, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames) 
+//TODO this method needs to be renemaed because it does more then settung the number of frames
+void SpritesheetAnimation::setNumFrames(std::size_t numFrames) 
+// void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames) 
 {
 	mNumFrames = numFrames;
+  mFrames.clear();
+	 for(int i=0;i<numFrames;++i)
+	 {
+		RyuAnimator::AnimationSpec::Frame frame{
+			.duration = 100,
+			.height = 96,
+			.width= 80, //frameSize = {80,96},
+			.x = 0,
+			.y = 0,
+			.event = EEvent::None
+		};
+			mFrames.push_back(frame);	
+	 }
+}
 
-	/* TODO: 	what if we want to extend the animation afterwards, 
-						we dont want to recreate all the timing for every frame...
-	*/
- /*
-	if(numFrames > mFrames.size())
-	{
-		mFrames.push_back(
-			{
-				.duration= 100,
-				.frameSize = {80,96},
-				.event = Event::None
-			}
-		);
-	}
-	else
-	{
-	*/
-	// standardValues for every Frame
+void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames) 
+{
+  mFrames = aniFrames;
+	mNumFrames = aniFrames.size();
+	mDuration = aniDuration;
+	
+  // std::cout << "FramesCount: " << aniFrames.size() << "\n";
+
+	/* old implememattion
+	mNumFrames = numFrames;
+	if (aniDuration != sf::Time::Zero && aniDuration != mDuration)
+	{ mDuration = aniDuration; }// sum all frames from input !
+
 	 mFrames.clear();
 	 for(int i=0;i<numFrames;++i)
 	 {
 		float dur;
-		if (aniFrames.empty())
+		if (aniFrames.empty() || aniFrames.size() <= i)
 		{ 
 			dur = 100;
 		} 
@@ -101,7 +111,7 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames, std::vector<RyuAn
 			.event = EEvent::None
 		};
 			mFrames.push_back(frame);	
-	 }
+	 }*/
 	//}
 }
 
@@ -169,7 +179,7 @@ SpritesheetAnimation::update(sf::Time dt)
     */
     // TODO: here take the timedirectly from the Frame itself and not the average time
     //sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
-		sf::Time timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame).duration);
+		sf::Time timePerFrame = sf::milliseconds(mFrames.at(0).duration);
     mElapsedTime += dt;
     sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
     sf::IntRect textureRect = mSprite.getTextureRect();
@@ -182,6 +192,11 @@ SpritesheetAnimation::update(sf::Time dt)
     // TODO: in the loop get the frametime
     while (mElapsedTime >= timePerFrame && (mCurrentFrame <= mNumFrames || mRepeat))
     {
+				if(mCurrentFrame-1 < mFrames.size())
+				{
+					timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame-1).duration);
+				}
+
         textureRect.left += textureRect.width;
         if (textureRect.left + textureRect.width > textureBounds.x)
         {
@@ -201,7 +216,7 @@ SpritesheetAnimation::update(sf::Time dt)
         {
             mCurrentFrame++;
         }
-				std::cout << "F(" << mCurrentFrame << ")" << timePerFrame.asMilliseconds() << "\n";
+				// std::cout << "F(" << mCurrentFrame << ")" << timePerFrame.asMilliseconds() << "\n";
     }
     //std::cout << "TextureRect: " << textureRect.width << "," << textureRect.height << "\n"; 
     mSprite.setTextureRect(textureRect); 

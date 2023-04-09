@@ -72,6 +72,8 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
 
       void initData();
   
+      void calculateAnimationDuration(AnimationSpec::Animation& ani);
+  
       void createEditorWidgets(bool* p_open);
 
       void parseJsonData();
@@ -85,7 +87,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       void setAnimationPreferences(std::string sheetName);
   
       void createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet );
-      void setSpritesheetAnimationDetails(const AnimationConfig& config, std::vector<AnimationSpec::Frame>& frames);
+      void setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<AnimationSpec::Frame>& frames);
       // map with all spritesheets loaded and according animations
       // key: spritesheetname, value: vector of animations
       std::map<std::string, std::vector<AnimationSpec::Animation> > animations;
