@@ -47,6 +47,7 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
 
 		    sf::FloatRect getLocalBounds() const;
 		    sf::FloatRect getGlobalBounds() const;
+				int getCurrentFrame() const;
         void update(sf::Time dt);
 		    sf::Sprite& getSprite() { return mSprite;}
         

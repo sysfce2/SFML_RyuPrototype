@@ -120,6 +120,11 @@ std::size_t SpritesheetAnimation::getNumFrames() const
 	return mNumFrames;
 }
 
+int SpritesheetAnimation::getCurrentFrame() const
+{
+	return (int)mCurrentFrame;
+}
+
 void SpritesheetAnimation::setDuration(sf::Time duration)
 {
 	mDuration = duration;
@@ -192,9 +197,9 @@ SpritesheetAnimation::update(sf::Time dt)
     // TODO: in the loop get the frametime
     while (mElapsedTime >= timePerFrame && (mCurrentFrame <= mNumFrames || mRepeat))
     {
-				if(mCurrentFrame-1 < mFrames.size())
+				if(mCurrentFrame+1 < mFrames.size())
 				{
-					timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame-1).duration);
+					timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame+1).duration);
 				}
 
         textureRect.left += textureRect.width;

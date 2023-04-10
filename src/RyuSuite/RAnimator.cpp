@@ -118,6 +118,7 @@ static bool frameDetailsVisible=true;
 static int intDuration;
 static int selectedFrame;
 static int currentEventItem = 0;
+static int currentActiveFrame = 0;
 
 // TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
 const char* eventItems[] = {"","","","",""};
@@ -368,10 +369,12 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     ImGui::Text((std::to_string(selectedAni)+": "+ani.name+", ").c_str());
     ImGui::SameLine();
     ImGui::Text("Frames : %s, ", (std::to_string(ani.frames.size()).c_str()));
-    
     ImGui::SameLine();
     calculateAnimationDuration(ani);
     ImGui::Text("Ani-Duration: %d ms", ani.animationDuration.asMilliseconds());    
+    ImGui::SameLine();
+    ImGui::Text("CurrentFrame: %s / %s", std::to_string(currentActiveFrame).c_str(),std::to_string(ani.frames.size()).c_str());
+    
     uint16_t frameWidth = ani.frames.at(0).width;
     uint16_t frameHeight = ani.frames.at(0).height;
     
@@ -389,6 +392,8 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
                ,.repeat = true ///  TODO from editor ui: entered by user
                ,.animationId = Textures::CharacterID::IchiIdleRun}, ani.animationDuration,  ani.frames);///  TODO from editor ui: entered by user    
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
+    currentActiveFrame =  spritesheetAnimation.getCurrentFrame()+1;
+    std::cout << currentActiveFrame << " set AniPrefs(dur in ms):" << spritesheetAnimation.getDuration().asMilliseconds() << "\n" ;
     // ImGui::ShowMetricsWindow();
     
     setFrameDetails(selectedAni,sheet,selectedFrame,sheet.second.at(selectedAni));
@@ -539,7 +544,7 @@ Editor::initTextures()
 void
 Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<AnimationSpec::Frame>& frames)
 {   
-    // std::cout << "OverallDuration: " << aniDuration.asMilliseconds() << " ms\n";
+    std::cout << "OverallDuration: " << aniDuration.asMilliseconds() << " ms, config-dur: " << config.duration.asMilliseconds() << "ms\n";
     spritesheetAnimation.setFrameSize(config.frameSize);
     spritesheetAnimation.setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
     spritesheetAnimation.setNumFrames(aniDuration, frames);
