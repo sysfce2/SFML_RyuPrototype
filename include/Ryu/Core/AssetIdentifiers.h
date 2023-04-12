@@ -64,7 +64,8 @@ namespace Textures
 			 Stop,
 			 EndFrame,
 			 StartFrame,
-			 Frame	
+			 Frame,
+			 FrameBorder,	
 	};
 }
 

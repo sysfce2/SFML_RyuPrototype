@@ -12,6 +12,8 @@
 #include <vector>
 #include <string>
 
+#include <SFML/Graphics.hpp>
+
 class SpritesheetAnimation;
 
 using GuiCharTextureManager = AssetManager<sf::Texture, Textures::LevelID>;

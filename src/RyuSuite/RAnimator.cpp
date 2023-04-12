@@ -362,6 +362,7 @@ Editor::calculateAnimationDuration(AnimationSpec::Animation& ani)
     }
 }
 
+// Note: when editinmg timing in the animation please note that changing the time in frame 1 leads to a weird overall timing, dont know why :/
 void 
 Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
 {
@@ -407,6 +408,9 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     ImGui::BeginChild("SpriteSheet", ImVec2(650,400),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
 
     ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
+    // hm how to add image oveer another with SFML?
+    sf::Texture* texture = &(guiTextureManager.getResource(Textures::GuiID::FrameBorder));
+    ImGui::GetWindowDrawList()->AddImage((void*)texture, ImVec2(startX/*+80*/, startY/*+96*/), ImVec2(0,0), ImVec2(1,1));
     ImGui::EndChild();
     ImGui::BeginChild("PlayButton");
     ImGuiComboFlags flags = 0;
@@ -538,6 +542,8 @@ Editor::initTextures()
     guiTextureManager.load(Textures::GuiID::StartFrame,"assets/gui/animator/02_startFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::EndFrame,"assets/gui/animator/07_lastFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::Frame,"assets/gui/animator/01_frame.jpeg");
+    guiTextureManager.load(Textures::GuiID::FrameBorder,"assets/gui/animator/08_border_frame.png");
+
     
 }
 
