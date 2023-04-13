@@ -394,7 +394,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
                ,.animationId = Textures::CharacterID::IchiIdleRun}, ani.animationDuration,  ani.frames);///  TODO from editor ui: entered by user    
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     currentActiveFrame =  spritesheetAnimation.getCurrentFrame()+1;
-    std::cout << currentActiveFrame << " set AniPrefs(dur in ms):" << spritesheetAnimation.getDuration().asMilliseconds() << "\n" ;
+    // std::cout << currentActiveFrame << " set AniPrefs(dur in ms):" << spritesheetAnimation.getDuration().asMilliseconds() << "\n" ;
     // ImGui::ShowMetricsWindow();
     
     setFrameDetails(selectedAni,sheet,selectedFrame,sheet.second.at(selectedAni));
@@ -407,10 +407,18 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     // TODO: adjust values due Spritesheetsize and FrameSize
     ImGui::BeginChild("SpriteSheet", ImVec2(650,400),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
 
+    sf::Texture* texture = &(guiTextureManager.getResource(Textures::GuiID::FrameBorder));
+    ImVec2 pos = ImGui::GetCursorScreenPos();//ImVec2(100,200);//
+    pos.x = pos.x + 80;
+    pos.y = pos.y + 96;
+    
+    // ImGui::GetWindowDrawList()->AddImage((void*)texture, pos,ImVec2(pos.x+80,pos.y+96)/* ImVec2(800, 600),ImVec2(880, 696)*/, ImVec2(0,0), ImVec2(1,1),IM_COL32_A_MASK);
+    ImGui::GetWindowDrawList()->AddRectFilled(pos,ImVec2(pos.x+80,pos.y+96),IM_COL32(127,0,0,255));//L32_WHITE);
+
     ImGui::Image(guiCharTextureManager.getResource(Textures::LevelID::Level1));
     // hm how to add image oveer another with SFML?
-    sf::Texture* texture = &(guiTextureManager.getResource(Textures::GuiID::FrameBorder));
-    ImGui::GetWindowDrawList()->AddImage((void*)texture, ImVec2(startX/*+80*/, startY/*+96*/), ImVec2(0,0), ImVec2(1,1));
+    
+     // std::cout << "whygetcursoscreenpos???\n";
     ImGui::EndChild();
     ImGui::BeginChild("PlayButton");
     ImGuiComboFlags flags = 0;
@@ -542,7 +550,7 @@ Editor::initTextures()
     guiTextureManager.load(Textures::GuiID::StartFrame,"assets/gui/animator/02_startFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::EndFrame,"assets/gui/animator/07_lastFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::Frame,"assets/gui/animator/01_frame.jpeg");
-    guiTextureManager.load(Textures::GuiID::FrameBorder,"assets/gui/animator/08_border_frame.png");
+    guiTextureManager.load(Textures::GuiID::FrameBorder,"assets/gui/animator/08_border_frame.jpeg");
 
     
 }
@@ -550,7 +558,7 @@ Editor::initTextures()
 void
 Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<AnimationSpec::Frame>& frames)
 {   
-    std::cout << "OverallDuration: " << aniDuration.asMilliseconds() << " ms, config-dur: " << config.duration.asMilliseconds() << "ms\n";
+    // std::cout << "OverallDuration: " << aniDuration.asMilliseconds() << " ms, config-dur: " << config.duration.asMilliseconds() << "ms\n";
     spritesheetAnimation.setFrameSize(config.frameSize);
     spritesheetAnimation.setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
     spritesheetAnimation.setNumFrames(aniDuration, frames);
