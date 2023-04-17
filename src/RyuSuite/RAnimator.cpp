@@ -98,7 +98,7 @@ Editor::Editor():
     ,showAnimationEditor(true)
     ,guiCharTextureManager()
     ,guiTextureManager()
-    ,aniIsPlaying(true)
+    ,aniIsPlaying(false)
     ,textureSet(false)
     ,preferences()
 {
@@ -362,6 +362,7 @@ Editor::calculateAnimationDuration(AnimationSpec::Animation& ani)
     }
 }
 
+
 // Note: when editinmg timing in the animation please note that changing the time in frame 1 leads to a weird overall timing, dont know why :/
 void 
 Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
@@ -407,10 +408,19 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     // TODO: adjust values due Spritesheetsize and FrameSize
     ImGui::BeginChild("SpriteSheet", ImVec2(650,400),true,ImGuiWindowFlags_HorizontalScrollbar ); /// orig. 1040x960
 
-    sf::Texture* texture = &(guiTextureManager.getResource(Textures::GuiID::FrameBorder));
+    // sf::Texture* texture = &(guiTextureManager.getResource(Textures::GuiID::FrameBorder));
     ImVec2 pos = ImGui::GetCursorScreenPos();//ImVec2(100,200);//
-    pos.x = pos.x + 80;
-    pos.y = pos.y + 96;
+
+    // std::cout << "Pos_ori: " << pos.x << "|" << pos.y << "\n";
+
+    if(currentActiveFrame-1 <= ani.frames.size())
+    {
+        pos.x = pos.x + ani.frames.at(currentActiveFrame-1).x;
+        pos.y = pos.y + ani.frames.at(currentActiveFrame-1).y;
+    }
+
+    
+    // std::cout << "Pos_new: " << pos.x << "|" << pos.y << "\n";
     
     // ImGui::GetWindowDrawList()->AddImage((void*)texture, pos,ImVec2(pos.x+80,pos.y+96)/* ImVec2(800, 600),ImVec2(880, 696)*/, ImVec2(0,0), ImVec2(1,1),IM_COL32_A_MASK);
     ImGui::GetWindowDrawList()->AddRectFilled(pos,ImVec2(pos.x+80,pos.y+96),IM_COL32(127,0,0,255));//L32_WHITE);
@@ -434,9 +444,18 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     {}
     setTooltipText();
     ImGui::SameLine();
-    if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Play)))
+    if(!aniIsPlaying)
     {
-        aniIsPlaying = ! aniIsPlaying;         
+        if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Play)))
+        {
+            aniIsPlaying = true;         
+        }
+    }
+    else{
+        if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::Stop)))
+        {
+            aniIsPlaying = false;         
+        }
     }
     ImGui::SameLine();
     if(ImGui::ImageButton(guiTextureManager.getResource(Textures::GuiID::ForwardFrame)))
