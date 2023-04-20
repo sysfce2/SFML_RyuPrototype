@@ -1,5 +1,6 @@
 #pragma once
 #include <Ryu/Core/AssetIdentifiers.h>
+#include <Ryu/Events/EventEnums.h>
 #include <SFML/Graphics.hpp>
 
 #include <vector>

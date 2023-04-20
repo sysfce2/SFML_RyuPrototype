@@ -2,6 +2,7 @@
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Animation/EditorEnums.h>
+#include <Ryu/Animation/JsonParser.h>
 
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -226,6 +227,14 @@ Editor::parseJsonData()
     
 }
 
+void
+Editor::parseJsonFile()
+{
+    RyuParser::JsonParser jParser;
+    std::string file("test7.json");
+    jParser.getAnimationsFromJson(file);
+}
+
 
 void
 Editor::createEditorWidgets(bool* p_open)
@@ -246,6 +255,10 @@ Editor::createEditorWidgets(bool* p_open)
                 // TODO: here later something like open a dialog window
                 parseJsonData();
               }
+              if (ImGui::MenuItem("Open Json ...")){
+                parseJsonFile();
+              }
+                    
               if (ImGui::MenuItem("Close", "Strg+W")) {
                 *p_open = false;
               }
