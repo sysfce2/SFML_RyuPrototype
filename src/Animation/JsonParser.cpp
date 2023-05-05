@@ -1,7 +1,11 @@
 #include <Ryu/Animation/JsonParser.h>
 #include <fmt/core.h>
+#include <fmt/format.h>
 #include <string>
 #include <fstream>
+#include <iostream>
+
+
 
 namespace RyuParser {
 
@@ -20,13 +24,21 @@ void
 JsonParser::getAnimationsFromJson(std::string jsonFile)
 {
     std::ifstream f(jsonFile);
-    fmt::print(stderr, "Open Json, Don't {}!\n", "panic");
+    fmt::print(stderr, "Open Json, {}!\n", jsonFile);
     try
     {
         json data = json::parse(f);
-        fmt::print("Parsing Json\n");  
+        fmt::print("Parsing Json from file: \n");  
         std::string jsonString = data.dump();
-        fmt::print({},jsonString);
+        try
+        {
+            fmt::print("JSON-OUTPUT: {}\n",jsonString);
+        }
+        catch(const std::exception& e)
+        {
+            fmt::print("Error outputting json-content: {} \n",e.what());            
+        }
+        // std::cout << jsonString << "\n";
     }
     catch(json::exception e)
     {

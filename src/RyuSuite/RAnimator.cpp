@@ -12,6 +12,9 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 #include <nlohmann/json.hpp>
+#include <fmt/core.h>
+#include <fmt/format.h>
+
 
 #include <iostream>
 #include <fstream>
@@ -231,7 +234,7 @@ void
 Editor::parseJsonFile()
 {
     RyuParser::JsonParser jParser;
-    std::string file("test7.json");
+    std::string file("ichi.json");
     jParser.getAnimationsFromJson(file);
 }
 
@@ -618,15 +621,27 @@ Editor::exportAnimationDetailsToFile(char* JsonFilename)
           aniSpecs.push_back(ani);
     }
 
+    // TODO: use variables for spritesheetname etc.
+    oJson << "{\n" << R"(  "Name" : "ichi",)" << "\n";
+    oJson << R"(  "Spritesheet" : ")" << selectedSpritesheet << R"(",)" << "\n";
+    oJson << R"(  "Animations" : [)" << "\n    ";
+
+    int lineNr = 0;
     for(const auto& spec : aniSpecs)
     {
+        lineNr++;
         json j = spec;
         oJson << j;
-        oJson << "\n";
-        
+        if (lineNr != aniSpecs.size())
+        {
+            oJson << R"(,)";
+        }
+        oJson << "\n    " ;
     }
 
-    std::cout << "saved to " << (sizeof(JsonFilename) == 0 ? "output.txt" : JsonFilename) << "\n";
+    oJson << R"(])" << "\n}";
+
+    fmt::print("saved to {}\n", (sizeof(JsonFilename) == 0 ? "output.txt" : JsonFilename));
 
     // json j()
     /* 
