@@ -27,6 +27,7 @@ namespace RyuAnimator{
 using namespace ImGui;
 using json = nlohmann::json;
 
+// namespace RyuParser {
 namespace AnimationSpec {
     void from_json(const json& j, Animation& ani) {
         j.at("name").get_to(ani.name);
@@ -87,7 +88,8 @@ namespace AnimationSpec {
                {"Sheet_begin", ani.fromFrame},
                {"Sheet_end", ani.toFrame},
                {"AnimationDirection", ani.direction},
-               {"Frames", {{"numFrames", ani.numFrames}, jFrames}},
+               {"numFrames", ani.numFrames},
+               {"Frames", jFrames},
                {"FrameSize",
                 {{"height", ani.frameSize.y}, {"width", ani.frameSize.x}}},
                {"animationDuration", timeInMs},
@@ -95,6 +97,9 @@ namespace AnimationSpec {
                {"AnimationId", ani.animationId._to_string()}};
     }
 } /// namespace AnimationSpec
+
+
+// namespace RyuAnimator{
 
 Editor::Editor():
      parsedSpritesheet(false)
@@ -621,7 +626,7 @@ Editor::exportAnimationDetailsToFile(char* JsonFilename)
           aniSpecs.push_back(ani);
     }
 
-    // TODO: use variables for spritesheetname etc.
+    // TODO: use variables for charcter name etc.
     oJson << "{\n" << R"(  "Name" : "ichi",)" << "\n";
     oJson << R"(  "Spritesheet" : ")" << selectedSpritesheet << R"(",)" << "\n";
     oJson << R"(  "Animations" : [)" << "\n    ";

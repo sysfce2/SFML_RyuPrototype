@@ -31,12 +31,46 @@
 class EEvent;
 
 using json = nlohmann::json;
-using animation = RyuAnimator::AnimationSpec::Animation;
 
 namespace RyuParser {
 
+    struct Frame 
+    {
+      int16_t duration;
+      int16_t height;
+      int16_t width;
+      int16_t x; /// x-position in spritesheet
+      int16_t y; /// y-position in spritesheet
+      EEvent event;
+    };
 
+    struct Animation
+    {
 
+      std::string name;
+      int16_t fromFrame; /// Frame Startposition in spritesheet
+      int16_t toFrame; /// Frame Endposition in spritresheet
+      std::string direction;
+      std::vector<Frame> frames;
+      std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
+      sf::Vector2i frameSize;
+      sf::Time animationDuration;
+      bool repeat;
+      Textures::CharacterID animationId;
+  
+      Animation() : 
+           name("name")
+          ,fromFrame(0)
+          ,toFrame(0)
+          ,direction("forward")
+          ,frames()
+          ,numFrames(0)
+          ,frameSize()
+          ,animationDuration()
+          ,repeat(false)
+          ,animationId(Textures::CharacterID::None) {}
+  
+    };
 
 class JsonParser
 {
@@ -48,7 +82,7 @@ class JsonParser
         void getAnimationsFromJson(std::string jsonFile);
 
     private:
-        std::map<std::string,animation> animations;
+        std::map<std::string,Animation> animations;
   
   
 };
