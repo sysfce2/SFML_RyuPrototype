@@ -35,6 +35,7 @@ namespace Textures
 	};
 
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
+  // Rename ? to CharacterAnimationId
     BETTER_ENUM(CharacterID, char ,
         None=0,
 				IchiIdleRun,

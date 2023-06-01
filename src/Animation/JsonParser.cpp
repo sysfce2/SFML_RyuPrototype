@@ -1,5 +1,6 @@
 #include <Ryu/Animation/JsonParser.h>
 #include <Ryu/Animation/EditorEnums.h>
+#include <Ryu/Core/AssetIdentifiers.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <string>
@@ -49,6 +50,12 @@ namespace RyuParser {
             animations({}) {}
     };
 
+    void from_json(const json& j, Textures::CharacterID& id){
+        auto jString = j.dump(); 
+        id = Textures::CharacterID::_from_string(jString.c_str());
+        // .get<Textures::CharacterID>(ani.animationId);
+    }
+
     void from_json(const json& j, Animation& ani) {
         j.at("Name").get_to(ani.name);
         j.at("Sheet_begin").get_to(ani.fromFrame);
@@ -58,8 +65,10 @@ namespace RyuParser {
 
         // TODO: whats with Frames ? -> frames need to be serialized somehow else -> atm its an array of array ??? why:w
         // j.at("Frames").get_to(ani.frames);
-        
-        // j.at("AnimationId").get_to(ani.animationId);
+        json aniId = j.at("AnimationId");
+        // ani.animationId = aniId.get<Textures::CharacterID>();
+        //auto ID = aniId.get<Textures::CharacterID>();
+        ani.animationId=Textures::CharacterID::_from_string((aniId.dump()).c_str());
         // j.at("FrameSize").at("height").get_to(ani.frameSize.y);
         // j.at("FrameSize").at("width").get_to(ani.frameSize.x);
     
