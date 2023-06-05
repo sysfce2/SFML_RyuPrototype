@@ -69,6 +69,7 @@ namespace RyuParser {
         // ani.animationId = aniId.get<Textures::CharacterID>();
         //auto ID = aniId.get<Textures::CharacterID>();
         ani.animationId=Textures::CharacterID::_from_string((aniId.dump()).c_str());
+        // write unittests to this to test if animation holds the correct stuff, so we can practise finally utests !
         // j.at("FrameSize").at("height").get_to(ani.frameSize.y);
         // j.at("FrameSize").at("width").get_to(ani.frameSize.x);
     
@@ -127,4 +128,5 @@ JsonParser::getAnimationsFromJson(std::string jsonFile)
       fmt::print("Can't parse file, probably filestream-error. Filename correct ?\n");
     }
 }
+
 } /// namespace RyuParser

@@ -1,7 +1,7 @@
 
 #cmake_minimum_required(VERSION 2.8)
 
-cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.25.0 FATAL_ERROR)
 
 message("Your C++ compiler supports these C++ features:")
 foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
@@ -26,6 +26,7 @@ find_package(box2d CONFIG REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(ImGui-SFML REQUIRED)
 find_package(fmt)
+find_package(GTest CONFIG REQUIRED)
 
 if(ImGui-SFML_FOUND)
 	message("\n-> ImGui-SFML directory found.")
@@ -170,3 +171,16 @@ add_subdirectory(TestBed)
 #add_subdirectory(08_Graphics/Source)
 #add_subdirectory(09_Audio/Source)
 #add_subdirectory(10_Network/Source)
+enable_testing()
+
+add_executable(
+  JsonParser_test
+	src/Unittests/Animation/JsonParserTest.cpp
+)
+target_link_libraries(
+  JsonParser_test
+  GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(JsonParser_test)

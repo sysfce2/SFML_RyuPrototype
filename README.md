@@ -6,11 +6,7 @@ But before starting with Ryu one need to learn SFML. Here we did with the SFML G
 See [License.txt]. in 02_SFML_GD_BOOK.
 
 # used tools & libraries
-- Ryu makes use of the BETTER_ENUM library v.0.11.3
-    - git@github.com:aantron/better-enums.git
-- further used libs see build -  section
 
-# building Ryu
 1. SFML v 2.5.1
     - see https://en.sfml-dev.org/
     - sudo apt install libsfml-dev
@@ -29,7 +25,13 @@ See [License.txt]. in 02_SFML_GD_BOOK.
 5. nlohmann/json
     - see git@github.com:nlohmann/json.git
     - clone, cmake, make, make install
-6. - in Ryu project:
+6. BETTER_ENUM library v.0.11.3
+    - git@github.com:aantron/better-enums.git
+7. googletest
+    - https://github.com/google/googletest/blob/main/googletest/README.md
+
+# building Ryu
+- in Ryu project:
     - (mkdir build && cd build)
     - cmake ..
     - make
