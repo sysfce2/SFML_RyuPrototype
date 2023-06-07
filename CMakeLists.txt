@@ -1,8 +1,24 @@
+cmake_minimum_required(VERSION 3.7...3.26)
 
-#cmake_minimum_required(VERSION 2.8)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
 
-cmake_minimum_required(VERSION 3.25.0 FATAL_ERROR)
+project(RyuPrototype VERSION 1.0
+        DESCRIPTION "SFML prototype of RYU - a combat based cinematic puzzle platformer"
+        LANGUAGES CXX)
 
+set(MAIN "src/Main.cpp")
+set(INCLUDE_FOLDER "src/include")
+
+add_library(ryuptlib SHARED "${MAIN}")
+target_include_directories(ryuptlib PUBLIC "${INCLUDE_FOLDER}") #HOW >TO ADD SUBFOLDErS ?
+target_compile_features(ryuptlib PUBLIC cxx_std_20)
+
+add_executable(ryupt "${MAIN}")
+target_link_libraries(ryupt PUBLIC ryuptlib)
+
+#[[ this is the old cmake part
 message("Your C++ compiler supports these C++ features:")
 foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
   message("${i}")
@@ -184,3 +200,5 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(JsonParser_test)
+
+]]
