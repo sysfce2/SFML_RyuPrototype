@@ -5,7 +5,7 @@
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Core/World.h>
 #include <Ryu/Events/Observer.h>
-#include "../src/RyuSuite/RAnimator.h"
+#include <RyuSuite/RAnimator.h>
 
 #include <memory>
 

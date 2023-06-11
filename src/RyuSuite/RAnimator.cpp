@@ -1,4 +1,4 @@
-#include "RAnimator.h"
+#include <RyuSuite/RAnimator.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Animation/EditorEnums.h>

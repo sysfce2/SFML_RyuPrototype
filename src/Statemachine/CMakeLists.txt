@@ -1,0 +1,28 @@
+set (SRC 
+      "CharacterStateClimb.cpp"
+      "CharacterStateIdle.cpp"
+      "CharacterStateDuckEnter.cpp"
+      "CharacterStateDuckIdle.cpp"
+      "CharacterStateDuckWalk.cpp"
+      "CharacterStateRun.cpp"
+      "CharacterStateJumpUp.cpp"
+      "CharacterStateFalling.cpp"
+      "CharacterStateFallingEnd.cpp"
+    )
+
+set(HEADER
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateClimb.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateIdle.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateDuckEnter.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateDuckIdle.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateDuckWalk.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateRun.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateJumpUp.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateFalling.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateFallingEnd.h"
+)
+
+add_library(ryustateslib SHARED "${SRC}" "${HEADER}")
+
+target_include_directories(ryustateslib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
+target_link_libraries(ryuptlib PUBLIC ryustateslib)
