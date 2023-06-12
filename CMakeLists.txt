@@ -1,3 +1,5 @@
+# could take a lok and test: https://github.com/friendlyanon/cmake-init
+
 cmake_minimum_required(VERSION 3.7...3.26)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
