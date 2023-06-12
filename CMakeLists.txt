@@ -10,52 +10,38 @@ project(RyuPrototype VERSION 1.0
 
 set(MAIN "src/Main.cpp")
 set(INCLUDE_FOLDER "src/include")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
 
-add_library(ryuptlib SHARED "${MAIN}")
-# set_property(TARGET ryuptlib PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-add_subdirectory("src")
-
+# lib for main under linux not recommended / possible add_library(ryuptlib SHARED "${MAIN}")
 
 target_include_directories(ryuptlib PUBLIC "${INCLUDE_FOLDER}") #HOW >TO ADD SUBFOLDErS ?
 target_compile_features(ryuptlib PUBLIC cxx_std_20)
 
-# macro(USE_EXTERNAL_LIB TARGET LIBS_TO_LINK_TO)
-  # message(STATUS "Use external libs.")
-  # set(${REQUIRED_ARG} "From SIMPLE" PARENT_SCOPE)
-	find_package(SFML 2.5.1 COMPONENTS audio graphics window system network)
-	find_package(box2d CONFIG REQUIRED)
-	find_package(nlohmann_json 3.2.0 REQUIRED)
-	find_package(ImGui-SFML REQUIRED)
-	find_package(fmt)
-	find_package(GTest CONFIG REQUIRED)
+find_package(SFML 2.5.1 COMPONENTS audio graphics window system network)
+find_package(box2d CONFIG REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
+find_package(ImGui-SFML REQUIRED)
+find_package(fmt)
+find_package(GTest CONFIG REQUIRED)
 	
-	if(ImGui-SFML_FOUND)
-		message("\n-> ImGui-SFML directory found.")
-	else()
-		message("\n-> ImGui-SFML directory not found.")
-	endif()
+if(ImGui-SFML_FOUND)
+	message("\n-> ImGui-SFML directory found.")
+else()
+	message("\n-> ImGui-SFML directory not found.")
+endif()
 
-	# If found, include and link; otherwise output error message
-	if(SFML_FOUND)
-		include_directories(${SFML_INCLUDE_DIR})
-	else()
-		set(SFML_ROOT "" CACHE PATH "SFML top-level directory")
-		message("\n-> SFML directory not found. Set SFML_ROOT to SFML's top-level path (containing \"include\" and \"lib\" directories).")
-		message("-> Make sure the SFML libraries with the same configuration (Release/Debug, Static/Dynamic) exist.\n")
-	endif()
+# If found, include and link; otherwise output error message
+if(SFML_FOUND)
+	include_directories(${SFML_INCLUDE_DIR})
+else()
+	set(SFML_ROOT "" CACHE PATH "SFML top-level directory")
+	message("\n-> SFML directory not found. Set SFML_ROOT to SFML's top-level path (containing \"include\" and \"lib\" directories).")
+	message("-> Make sure the SFML libraries with the same configuration (Release/Debug, Static/Dynamic) exist.\n")
+endif()
 
-	# target_link_libraries(${TARGET} PUBLIC ${LIBS_TO_LINK_TO})
-
-# endmacro()
-	
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
-
+# first add global find packages !!! -> then add sub CMakeLists -> the sub CMakes have all the find packages
+add_subdirectory("src") 
 add_executable(ryupt "${MAIN}")
-
-#how to avoid multiple linking in CMakeLists of other libs
-# SET(EXT_LIBS_TO_LINK_TO ryuptlib ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d ImGui-SFML::ImGui-SFML nlohmann_json::nlohmann_json fmt::fmt)
-# USE_EXTERNAL_LIB(ryupt EXT_LIBS_TO_LINK_TO)
 
 target_link_libraries(ryupt PUBLIC ryuptlib ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ImGui-SFML::ImGui-SFML nlohmann_json::nlohmann_json fmt::fmt)# b2DebugDraw)
 # target_link_libraries(ryupt PUBLIC ryuptlib)
