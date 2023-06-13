@@ -1,4 +1,3 @@
-# x	Events/Subject.cpp
 set (SRC 
       "Subject.cpp"
     )
@@ -12,4 +11,3 @@ set(HEADER
 add_library(ryueventslib SHARED "${SRC}" "${HEADER}")
 
 target_include_directories(ryueventslib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
-target_link_libraries(ryuptlib PUBLIC ryueventslib)

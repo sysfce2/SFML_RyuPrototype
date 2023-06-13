@@ -1,5 +1,5 @@
 set (SRC 
-      "DebugDraw.cpp"
+     "DebugDraw.cpp"
     )
 
 set(HEADER
@@ -10,4 +10,3 @@ set(HEADER
 add_library(ryuphysicslib SHARED "${SRC}" "${HEADER}")
 
 target_include_directories(ryuphysicslib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
-target_link_libraries(ryuptlib PUBLIC ryuphysicslib)

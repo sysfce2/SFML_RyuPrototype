@@ -17,4 +17,3 @@ add_library(ryuscenelib SHARED "${SRC}" "${HEADER}")
 target_include_directories(ryuscenelib PUBLIC 
     "${RyuPrototype_SOURCE_DIR}/include"
 )
-target_link_libraries(ryuptlib PUBLIC ryuscenelib)

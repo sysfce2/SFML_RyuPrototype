@@ -1,6 +1,6 @@
 set (SRC 
-        "CharacterBase.cpp"
-        "CharacterIchi.cpp"
+     "CharacterBase.cpp"
+     "CharacterIchi.cpp"
     )
 
 set(HEADER
@@ -11,4 +11,3 @@ set(HEADER
 add_library(ryucharacterlib SHARED "${SRC}" "${HEADER}")
 
 target_include_directories(ryucharacterlib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
-target_link_libraries(ryuptlib PUBLIC ryucharacterlib)

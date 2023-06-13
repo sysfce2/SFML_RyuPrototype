@@ -1,13 +1,13 @@
 set (SRC 
-      "CharacterStateClimb.cpp"
-      "CharacterStateIdle.cpp"
-      "CharacterStateDuckEnter.cpp"
-      "CharacterStateDuckIdle.cpp"
-      "CharacterStateDuckWalk.cpp"
-      "CharacterStateRun.cpp"
-      "CharacterStateJumpUp.cpp"
-      "CharacterStateFalling.cpp"
-      "CharacterStateFallingEnd.cpp"
+     "CharacterStateClimb.cpp"
+     "CharacterStateIdle.cpp"
+     "CharacterStateDuckEnter.cpp"
+     "CharacterStateDuckIdle.cpp"
+     "CharacterStateDuckWalk.cpp"
+     "CharacterStateRun.cpp"
+     "CharacterStateJumpUp.cpp"
+     "CharacterStateFalling.cpp"
+     "CharacterStateFallingEnd.cpp"
     )
 
 set(HEADER
@@ -25,4 +25,3 @@ set(HEADER
 add_library(ryustateslib SHARED "${SRC}" "${HEADER}")
 
 target_include_directories(ryustateslib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
-target_link_libraries(ryuptlib PUBLIC ryustateslib)

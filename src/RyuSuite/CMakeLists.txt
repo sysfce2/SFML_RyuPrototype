@@ -1,5 +1,5 @@
 set (SRC 
-        "RAnimator.cpp"
+     "RAnimator.cpp"
     )
 
 set(HEADER
@@ -9,4 +9,3 @@ set(HEADER
 add_library(ryusuitelib SHARED "${SRC}" "${HEADER}")
 
 target_include_directories(ryusuitelib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
-target_link_libraries(ryuptlib PUBLIC ryusuitelib)

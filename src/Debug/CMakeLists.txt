@@ -1,5 +1,5 @@
 set (SRC 
-        "b2DrawSFML.cpp"
+      "b2DrawSFML.cpp"
     )
 
 set(HEADER
@@ -10,4 +10,3 @@ set(HEADER
 add_library(ryudebuglib SHARED "${SRC}" "${HEADER}")
 
 target_include_directories(ryudebuglib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
-target_link_libraries(ryuptlib PUBLIC ryudebuglib)

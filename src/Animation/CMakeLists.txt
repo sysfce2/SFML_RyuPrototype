@@ -1,6 +1,6 @@
 set (SRC 
-      "SpritesheetAnimation.cpp"
-      "JsonParser.cpp"
+     "SpritesheetAnimation.cpp"
+     "JsonParser.cpp"
     )
 
 set(HEADER
@@ -10,4 +10,3 @@ set(HEADER
 add_library(ryuanimationlib SHARED "${SRC}" "${HEADER}")
 
 target_include_directories(ryuanimationlib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
-target_link_libraries(ryuptlib PUBLIC ryuanimationlib)
