@@ -12,8 +12,10 @@ See [License.txt]. in 02_SFML_GD_BOOK.
     - sudo apt install libsfml-dev
 2. Box2D for physics v 2.4.1
     - clone it from: git@github.com:erincatto/box2d.git
-    - ./build.sh
-    - make install
+     (./build.sh for static library)
+    - mkdir build, cd build && cmake -DBUILD_SHARED_LIBS=on ..
+        - if its not building deactivate the build for testbed in CMakeLists.txt     
+    - sudo make install
 3. Dear ImGui >=v1.8
     - see https://github.com/ocornut/imgui
     - clone git@github.com:ocornut/imgui.git    
@@ -29,7 +31,10 @@ See [License.txt]. in 02_SFML_GD_BOOK.
     - git@github.com:aantron/better-enums.git
 7. googletest
     - https://github.com/google/googletest/blob/main/googletest/README.md
-
+8. fmt
+    - git clone git@github.com:fmtlib/fmt.git
+    - mkdir build, cd build && cmake -DBUILD_SHARED_LIBS=on ..
+    - sudo make install
 # building Ryu
 - in Ryu project:
     - (mkdir build && cd build)

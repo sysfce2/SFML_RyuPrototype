@@ -19,7 +19,6 @@ find_package(box2d CONFIG REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(ImGui-SFML REQUIRED)
 find_package(fmt)
-find_package(GTest CONFIG REQUIRED)
 	
 if(ImGui-SFML_FOUND)
 	message("\n-> ImGui-SFML directory found.")
@@ -62,17 +61,4 @@ target_link_libraries(ryupt PUBLIC
 	nlohmann_json::nlohmann_json 
 )# b2DebugDraw)
 
-enable_testing()
-
-add_executable(
-  JsonParser_test
-	src/Tests/Animation/JsonParserTest.cpp
-)
-
-target_link_libraries(
-  JsonParser_test
-  GTest::gtest_main
-)
-
-include(GoogleTest)
-gtest_discover_tests(JsonParser_test)
+add_subdirectory("src/Tests")

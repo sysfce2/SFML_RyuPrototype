@@ -79,6 +79,7 @@ class JsonParser
         JsonParser();
         ~JsonParser();
 
+        void unitTest();
         void getAnimationsFromJson(std::string jsonFile);
 
     private:

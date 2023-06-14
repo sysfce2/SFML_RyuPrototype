@@ -40,13 +40,12 @@ TEST_F(RyuParserTest, MethodBarDoesAbc) {
   const std::string input_filepath = "this/package/testdata/myinputfile.dat";
   const std::string output_filepath = "this/package/testdata/myoutputfile.dat";
   JsonParser f;
-  EXPECT_EQ(f.Bar(input_filepath, output_filepath), 0);
+  f.unitTest();
 }
 
 // Tests that Foo does Xyz.
 // TEST_F(FooTest, DoesXyz) {
   // Exercises the Xyz feature of Foo.
-}
 
 }  // namespace
 

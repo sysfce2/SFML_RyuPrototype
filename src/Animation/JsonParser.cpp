@@ -100,6 +100,12 @@ JsonParser::JsonParser(){}
 JsonParser::~JsonParser(){}
 
 void
+JsonParser::unitTest()
+{
+    fmt::print("Connection to gtest works !");
+}
+
+void
 JsonParser::getAnimationsFromJson(std::string jsonFile)
 {
     std::ifstream f(jsonFile);
