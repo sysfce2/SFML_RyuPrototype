@@ -7,8 +7,7 @@
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Debug/imGuiDebug.h>
-// TODO: change to relative path
-#include "../RyuSuite/RAnimator.h"
+#include <RyuSuite/RAnimator.h>
 
 // #include <imgui.h>
 #include <imgui-SFML.h>

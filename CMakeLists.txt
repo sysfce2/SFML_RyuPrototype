@@ -1,74 +1,31 @@
+# could take a lok and test: https://github.com/friendlyanon/cmake-init
 
-#cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.7...3.26)
 
-cmake_minimum_required(VERSION 3.25.0 FATAL_ERROR)
-
-message("Your C++ compiler supports these C++ features:")
-foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
-  message("${i}")
-endforeach()
-
-# Specify default build type if none provided (before project() command)
-if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-# For generators with multiple configurations (like VS), only allow Debug and Release
-if(CMAKE_CONFIGURATION_TYPES)
-	set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Limited configurations" FORCE)
-	mark_as_advanced(CMAKE_CONFIGURATION_TYPES)
-endif()
+project(RyuPrototype VERSION 1.0
+        DESCRIPTION "SFML prototype of RYU - a combat based cinematic puzzle platformer"
+        LANGUAGES CXX)
 
-# Project name
-project(Ryu)
+set(MAIN "src/Main.cpp")
+set(INCLUDE_FOLDER "src/include")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
 
+find_package(SFML 2.5.1 COMPONENTS audio graphics window system network)
 find_package(box2d CONFIG REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(ImGui-SFML REQUIRED)
 find_package(fmt)
 find_package(GTest CONFIG REQUIRED)
-
+	
 if(ImGui-SFML_FOUND)
 	message("\n-> ImGui-SFML directory found.")
 else()
 	message("\n-> ImGui-SFML directory not found.")
 endif()
-
-# Configuration options
-set(SFML_STATIC_LIBRARIES FALSE CACHE BOOL "Use static SFML librares")
-
-# General compiler options
-if (SFML_STATIC_LIBRARIES)
-	add_definitions(-DSFML_STATIC)
-endif()
-
-# Specific compiler options - set C++11 flag for g++ and clang
-if(CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-	
-	# Mac OS X: clang uses libc++ standard library
-	if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-	endif()
-endif()
-
-
-#we have the macro build_chapter for this
-#include_directories(${PROJECT_SOURCE_DIR}/include)
-# C++ source code
-#add_subdirectory(src)
-
-#####################################################################################################################################
-
-
-# Add directory containing FindSFML.cmake to module path
-set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
-
-# Find SFML
-# Note: SFML_STATIC_LIBRARIES determines which libraries are found by find_package()
-find_package(SFML 2.5.1 COMPONENTS audio graphics window system network)
 
 # If found, include and link; otherwise output error message
 if(SFML_FOUND)
@@ -79,104 +36,39 @@ else()
 	message("-> Make sure the SFML libraries with the same configuration (Release/Debug, Static/Dynamic) exist.\n")
 endif()
 
-######################################################################################################################################
+# first add global find packages !!! -> then add sub CMakeLists -> the sub CMakes have all the find packages
+add_subdirectory("src") 
+add_executable(ryupt "${MAIN}")
 
+target_include_directories(ryupt PUBLIC "${INCLUDE_FOLDER}") #HOW >TO ADD SUBFOLDErS ?
+target_compile_features(ryupt PUBLIC cxx_std_17)
 
-# Interprets an argument list separated with keywords.
-# Example: 
-#  parse_argument_list("MY" "FIRST;SECOND" "FIRST;a;b;c;SECOND;x;y") defines the following variables:
-#  MY_FIRST  = a;b;c
-#  MY_SECOND = x;y
-macro(parse_argument_list PREFIX KEYWORDS ARGUMENTS)
-	# Indirection over KEYWORD_LIST necessary because macro parameters are no real variables.
-	set(KEYWORD_LIST "${KEYWORDS}")
-	set(CURRENT_KEYWORD "")
+target_link_libraries(ryupt PUBLIC
+	ryucorelib 
+  ryudebuglib
+	ryuscenelib	
+  ryueventslib
+	ryucontrollib
+	ryuphysicslib
+	ryusuitelib
+	ryuanimationlib
+	ryucharacterlib
+	ryustateslib
+	box2d	
+	fmt::fmt
+	${SFML_LIBRARIES} 
+	${SFML_DEPENDENCIES} 
+	ImGui-SFML::ImGui-SFML 
+	nlohmann_json::nlohmann_json 
+)# b2DebugDraw)
 
-	# Parse argument list
-	foreach(ARG ${ARGUMENTS})
-		# See if current argument is in the list of keywords
-		list(FIND KEYWORD_LIST "${ARG}" KEYWORD_FOUND)
-		if(NOT KEYWORD_FOUND EQUAL -1)
-			# If current element is a keyword, store it
-			set(CURRENT_KEYWORD ${ARG})
-		else()
-			# Append current argument to last stored keyword variable
-			set(${PREFIX}_${CURRENT_KEYWORD} ${${PREFIX}_${CURRENT_KEYWORD}};${ARG})
-		endif()
-	endforeach()
-endmacro()
-
-######################################################################################################################################
-
-# Macro for chapter building
-# Usage:
-#  build_chapter(Audio SOURCES First.cpp Second.cpp)
-macro(build_chapter CHAPTER_NAME)
-
-	# Parse additional arguments (fills variables CHAPTER_SOURCES and CHAPTER_DEPENDS)
-	parse_argument_list("CHAPTER" "SOURCES" "${ARGN}")
-
-	# Status output
-	message(STATUS "-> Chapter ${CHAPTER_NAME}")
-
-
-	#############################################################################
-	# Build executable
-	project(${CHAPTER_NAME})
-
-	set(CHAPTER_DIR "${PROJECT_SOURCE_DIR}/..")
-	include_directories("${CHAPTER_DIR}/include")
-
-	# Executable: Add only Main.cpp, set name without _EXE postfix
-	add_executable(${PROJECT_NAME} Main.cpp ${CHAPTER_SOURCES})
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${CHAPTER_NAME})
-
-	# Build static or shared libraries? Set chapter-specific DLL import macro
-	if(SFML_STATIC_LIBRARIES)
-		set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "SFML_STATIC")
-	endif()
-
-	# Link SFML. For versions < 2.2, SFML_DEPENDENCIES is not defined, and we do not need to link dependencies
-	if(SFML_VERSION_MINOR LESS 2)
-        set(SFML_DEPENDENCIES "")
-	endif()
-	target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} box2d ImGui-SFML::ImGui-SFML nlohmann_json::nlohmann_json fmt::fmt)# b2DebugDraw)
-	#if(${CHAPTER_NAME} EQUAL RyuPt)
-	#	message("->Linking ImGui-SFML")
-  #	target_link_libraries(RyuPt PRIVATE ImGui-SFML::ImGui-SFML)# b2DebugDraw)
-	#endif()
-	
-	#target_link_libraries(${PROJECT_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
-	
-	install(TARGETS ${PROJECT_NAME}	RUNTIME DESTINATION ${CHAPTER_NAME})
-
-	install(DIRECTORY ${CHAPTER_DIR}/Media
-			DESTINATION ${PROJECT_NAME}
-			PATTERN "CMakeLists.txt" EXCLUDE)
-endmacro()
-
-
-# C++ source code, list of all subdirectories
-# Must appear after macros, otherwise they are not visible in subdirectories
-add_subdirectory(src)
-add_subdirectory(TestBed)
-#add_subdirectory(src/Thirdparty)
-
-
-#add_subdirectory(03_World/Source)
-#add_subdirectory(04_Input/Source)
-#add_subdirectory(05_States/Source)
-#add_subdirectory(06_Menus/Source)
-#add_subdirectory(07_Gameplay/Source)
-#add_subdirectory(08_Graphics/Source)
-#add_subdirectory(09_Audio/Source)
-#add_subdirectory(10_Network/Source)
 enable_testing()
 
 add_executable(
   JsonParser_test
-	src/Unittests/Animation/JsonParserTest.cpp
+	src/Tests/Animation/JsonParserTest.cpp
 )
+
 target_link_libraries(
   JsonParser_test
   GTest::gtest_main

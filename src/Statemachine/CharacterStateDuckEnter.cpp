@@ -36,7 +36,7 @@ CharacterStateDuckEnter::update(CharacterBase& character)
 {
     if(character.getSpriteAnimation().isFinished())
     {
-        std::unique_ptr state = std::make_unique<CharacterStateDuckIdle>();
+        auto state = std::make_unique<CharacterStateDuckIdle>();
         character.changeState(std::move(state));
     }
 }
