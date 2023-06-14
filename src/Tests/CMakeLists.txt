@@ -42,3 +42,5 @@ gtest_discover_tests(Template_test)
 #add_library(ryudebuglib SHARED "${SRC}" ) #"${HEADER}")
 
 target_include_directories(Template_test PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
+
+add_subdirectory("Animation")

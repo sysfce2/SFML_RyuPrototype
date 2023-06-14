@@ -1,4 +1,4 @@
-// #include "../../Animation/JsonParser.h"
+#include <Ryu/Animation/JsonParser.h>
 
 #include "gtest/gtest.h"
 
@@ -40,9 +40,9 @@ class JsonParserTest : public ::testing::Test {
 TEST_F(JsonParserTest, MethodBarDoesAbc) {
   const std::string input_filepath = "this/package/testdata/myinputfile.dat";
   const std::string output_filepath = "this/package/testdata/myoutputfile.dat";
-  // JsonParser p;
+  JsonParser p;
   EXPECT_EQ(0,10);
-  // p.getAnimationsFromJson(input_filepath);
+  p.getAnimationsFromJson(input_filepath);
 }
 
 // Tests that Foo does Xyz.
