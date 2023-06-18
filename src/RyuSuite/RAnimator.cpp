@@ -239,8 +239,24 @@ void
 Editor::parseJsonFile()
 {
     RyuParser::JsonParser jParser;
+    // TODO: make it a variable from EditorDialog
     std::string file("ichi.json");
-    jParser.getAnimationsFromJson(file);
+
+    std::ifstream f(file);
+    fmt::print(stderr, "Open Json, {}!\n", file);
+    json data;
+    try
+    {
+        data = json::parse(f);
+    }
+    catch(json::exception e)
+    {
+      fmt::print("{}: {}\n",e.id,e.what());
+      fmt::print("Can't parse file, probably filestream-error. Filename correct ?\n");
+    }
+    
+    RyuParser::JsonAnimations jsonContent;
+    jParser.getAnimationsFromJson(data, jsonContent);
 }
 
 

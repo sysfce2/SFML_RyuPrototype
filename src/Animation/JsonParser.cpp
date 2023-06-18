@@ -39,19 +39,10 @@
 namespace RyuParser {
 // namespace RyuAnimator::AnimationSpec {
     
-    struct jsonFile {
-        std::string jsonName;
-        std::string spritesheetName;
-        std::vector<Animation> animations;
-
-        jsonFile()
-            : jsonName(),
-            spritesheetName(),
-            animations({}) {}
-    };
 
     void from_json(const json& j, Textures::CharacterID& id){
         auto jString = j.dump(); 
+        fmt::print("AniId {aniId}: ", jString);
         id = Textures::CharacterID::_from_string(jString.c_str());
         // .get<Textures::CharacterID>(ani.animationId);
     }
@@ -65,10 +56,11 @@ namespace RyuParser {
 
         // TODO: whats with Frames ? -> frames need to be serialized somehow else -> atm its an array of array ??? why:w
         // j.at("Frames").get_to(ani.frames);
-        json aniId = j.at("AnimationId");
+        // json aniId = j.at("AnimationId");
         // ani.animationId = aniId.get<Textures::CharacterID>();
         //auto ID = aniId.get<Textures::CharacterID>();
-        ani.animationId=Textures::CharacterID::_from_string((aniId.dump()).c_str());
+        // fmt::print("AniId {aniId}: ", aniId.dump());
+        // ani.animationId=Textures::CharacterID::_from_string((aniId.dump()).c_str());
         // write unittests to this to test if animation holds the correct stuff, so we can practise finally utests !
         // j.at("FrameSize").at("height").get_to(ani.frameSize.y);
         // j.at("FrameSize").at("width").get_to(ani.frameSize.x);
@@ -78,9 +70,9 @@ namespace RyuParser {
         // j.at("").get_to(ani.animationId);
     }
     
-    void from_json(const json& j, jsonFile& jsonFile) {
-        j.at("Name").get_to(jsonFile.jsonName);
-        j.at("Spritesheet").get_to(jsonFile.spritesheetName);
+    void from_json(const json& j, JsonAnimations& JsonAnimations) {
+        j.at("Name").get_to(JsonAnimations.jsonName);
+        j.at("Spritesheet").get_to(JsonAnimations.spritesheetName);
         json anis = j["Animations"];
         // std::vector<animation> anisVec;
 // MAEH !!!!
@@ -89,9 +81,9 @@ namespace RyuParser {
 // using animation = RyuAnimator::AnimationSpec::Animation;
             auto vecAni = ani.get<Animation>();
             // animation vecAni = ani;
-            jsonFile.animations.emplace_back(vecAni);
+            JsonAnimations.animations.emplace_back(vecAni);
         }
-        // j.at("Animations").get_to<std::vector<animation> >(jsonFile.animations);
+        // j.at("Animations").get_to<std::vector<animation> >~/Projects/RyuPrototypeSFML/build/JsonAnimations.animations);
     }
 
 
@@ -106,33 +98,20 @@ JsonParser::unitTest()
 }
 
 void
-JsonParser::getAnimationsFromJson(std::string jsonFile)
+JsonParser::getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis)
 {
-    std::ifstream f(jsonFile);
-    fmt::print(stderr, "Open Json, {}!\n", jsonFile);
-    try
-    {
-        json data = json::parse(f);
-
-        
-        
         fmt::print("Parsing Json from file: \n");  
-        std::string jsonString = data.dump();
+        std::string jsonString = jsonData.dump();
         try
         {
-            fmt::print("JSON-OUTPUT: {}\n",jsonString);
+            fmt::print("JSON-OUTPUT: {}\n\n\n",jsonString);
+            // convert json object to struct with animations
+            jsonAnis = jsonData;
         }
         catch(const std::exception& e)
         {
             fmt::print("Error outputting json-content: {} \n",e.what());            
         }
-        // std::cout << jsonString << "\n";
-    }
-    catch(json::exception e)
-    {
-      fmt::print("{}: {}\n",e.id,e.what());
-      fmt::print("Can't parse file, probably filestream-error. Filename correct ?\n");
-    }
 }
 
 } /// namespace RyuParser

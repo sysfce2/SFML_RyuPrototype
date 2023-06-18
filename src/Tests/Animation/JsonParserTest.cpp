@@ -1,11 +1,20 @@
 #include <Ryu/Animation/JsonParser.h>
 
+#include <fmt/format.h>
+#include <fmt/core.h>
 #include "gtest/gtest.h"
+#include <fstream>
 
 namespace RyuParser {
 
 // The fixture for testing class Foo.
 class JsonParserTest : public ::testing::Test {
+
+ public:
+  RyuParser::JsonAnimations jsonAnis;
+  json jsonContent;
+  std::string validJsonString;
+  
  protected:
   // You can remove any or all of the following functions if their bodies would
   // be empty.
@@ -25,6 +34,15 @@ class JsonParserTest : public ::testing::Test {
   void SetUp() override {
      // Code here will be called immediately after the constructor (right
      // before each test).
+
+     validJsonString = R"(
+      {
+        "Name" : "hannes",
+        "Spritesheet" : "sheet_l1",
+        "Animations" : [
+          {"AnimationDirection":"forward","AnimationId":"None","FrameSize":{"height":96,"width":80},"Frames":[{"duration":100,"event":"None","height":96,"width":80,"x_sheet":0,"y_sheet":0}],"Name":"idle","Sheet_begin":0,"Sheet_end":0,"animationDuration":"100 ms","numFrames":1,"repeat":false}
+        ]
+      })";
   }
 
   void TearDown() override {
@@ -37,12 +55,21 @@ class JsonParserTest : public ::testing::Test {
 };
 
 // Tests that the Foo::Bar() method does Abc.
-TEST_F(JsonParserTest, MethodBarDoesAbc) {
-  const std::string input_filepath = "this/package/testdata/myinputfile.dat";
-  const std::string output_filepath = "this/package/testdata/myoutputfile.dat";
+TEST_F(JsonParserTest, CheckJsonFields) {
+  
+  std::string file("ichi.json"); //this/package/testdata/myinputfile.dat";
   JsonParser p;
-  EXPECT_EQ(0,10);
-  p.getAnimationsFromJson(input_filepath);
+  std::ifstream f(file);
+  // jsonContent = json::parse(f);
+  jsonContent = json::parse(validJsonString);
+
+  p.getAnimationsFromJson(jsonContent, jsonAnis);
+            
+  for(auto& i : jsonAnis.animations)
+  {
+    fmt::print("ani: {} frames: {} dur: {} \n", i.name, i.numFrames, i.animationDuration.asMilliseconds());
+  }
+  // EXPECT_THROW("Can't parse",json::exception);
 }
 
 // Tests that Foo does Xyz.

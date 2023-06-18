@@ -34,6 +34,7 @@ using json = nlohmann::json;
 
 namespace RyuParser {
 
+
     struct Frame 
     {
       int16_t duration;
@@ -72,6 +73,17 @@ namespace RyuParser {
   
     };
 
+    struct JsonAnimations {
+        std::string jsonName;
+        std::string spritesheetName;
+        std::vector<Animation> animations;
+
+        JsonAnimations()
+            : jsonName(),
+            spritesheetName(),
+            animations({}) {}
+    };
+
 class JsonParser
 {
 
@@ -80,7 +92,7 @@ class JsonParser
         ~JsonParser();
 
         void unitTest();
-        void getAnimationsFromJson(std::string jsonFile);
+        void getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis);
 
     private:
         std::map<std::string,Animation> animations;
