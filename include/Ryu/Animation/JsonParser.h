@@ -32,6 +32,7 @@ class EEvent;
 
 using json = nlohmann::json;
 
+
 namespace RyuParser {
 
 
@@ -42,7 +43,15 @@ namespace RyuParser {
       int16_t width;
       int16_t x; /// x-position in spritesheet
       int16_t y; /// y-position in spritesheet
-      EEvent event;
+      Ryu::EEvent event;
+
+      Frame() :
+        duration(0)
+       ,height(0)
+       ,width(0)
+       ,x(0)
+       ,y(0)
+       ,event(Ryu::EEvent::None) {}     
     };
 
     struct Animation

@@ -16,7 +16,7 @@ namespace RyuAnimator::AnimationSpec {
       int16_t width;
       int16_t x; /// x-position in spritesheet
       int16_t y; /// y-position in spritesheet
-      EEvent event;
+      Ryu::EEvent event;
     };
 
     struct Animation

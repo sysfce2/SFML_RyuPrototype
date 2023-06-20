@@ -19,7 +19,7 @@ public:
   explicit Observer(std::string _name){mName=_name;}
   std::string getObserverName(){return mName;}
   virtual ~Observer() {}
-  virtual void onNotify(const SceneNode& entity, EEvent event) = 0;
+  virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) = 0;
 
 protected:
   std::string mName;

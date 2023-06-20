@@ -1,6 +1,8 @@
 #pragma once
 #include <Thirdparty/betterEnum/enum.h>
 
+namespace Ryu{
+
 BETTER_ENUM(EEvent, char
         ,None=0
         ,CharacterSpeedChanged
@@ -9,6 +11,8 @@ BETTER_ENUM(EEvent, char
         ,RyuAnimatorToggle
         
 );
+
+} // namespace Ryu
 /*
 NLOHMANN_JSON_SERIALIZE_ENUM( EEvent, {
         {None,"None"}

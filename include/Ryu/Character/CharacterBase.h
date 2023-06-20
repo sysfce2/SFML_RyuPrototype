@@ -91,7 +91,7 @@ class CharacterBase : public SceneNode , public Subject
         std::unique_ptr<b2World>& getPhysicsWorldRef() {return phWorldRef;}
         void changeColor(sf::Color color);
 
-        void notifyObservers(EEvent event);
+        void notifyObservers(Ryu::EEvent event);
         bool isFalling() {return mCharacterFalling;}
 
         b2Body* getBody(){return mBody;}

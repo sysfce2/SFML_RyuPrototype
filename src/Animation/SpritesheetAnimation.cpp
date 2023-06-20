@@ -74,7 +74,7 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames)
 			.width= 80, //frameSize = {80,96},
 			.x = 0,
 			.y = 0,
-			.event = EEvent::None
+			.event = Ryu::EEvent::None
 		};
 			mFrames.push_back(frame);	
 	 }

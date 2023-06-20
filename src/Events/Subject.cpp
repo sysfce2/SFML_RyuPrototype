@@ -4,6 +4,7 @@
 #include <Ryu/Events/Observer.h>
 #include <Ryu/Events/EventEnums.h>
 
+using EEvent = Ryu::EEvent;
 
 Subject::Subject()
 :   numObservers_(0)

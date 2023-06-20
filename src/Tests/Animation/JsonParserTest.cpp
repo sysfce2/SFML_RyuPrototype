@@ -35,14 +35,6 @@ class JsonParserTest : public ::testing::Test {
      // Code here will be called immediately after the constructor (right
      // before each test).
 
-     validJsonString = R"(
-      {
-        "Name" : "hannes",
-        "Spritesheet" : "sheet_l1",
-        "Animations" : [
-          {"AnimationDirection":"forward","AnimationId":"None","FrameSize":{"height":96,"width":80},"Frames":[{"duration":100,"event":"None","height":96,"width":80,"x_sheet":0,"y_sheet":0}],"Name":"idle","Sheet_begin":0,"Sheet_end":0,"animationDuration":"100 ms","numFrames":1,"repeat":false}
-        ]
-      })";
   }
 
   void TearDown() override {
@@ -54,16 +46,66 @@ class JsonParserTest : public ::testing::Test {
   // for Foo.
 };
 
+
 // Tests that the Foo::Bar() method does Abc.
 TEST_F(JsonParserTest, CheckJsonFields) {
   
-  std::string file("ichi.json"); //this/package/testdata/myinputfile.dat";
+  auto getAnimationDir = [this](int index){
+    return jsonAnis.animations.at(index).direction;
+  };
+
+  
+  validJsonString = R"(
+      {
+        "Name" : "hannes",
+        "Spritesheet" : "sheet_level1",
+        "Animations" : 
+        [
+          {"AnimationDirection":"forward","AnimationId":"CharacterSpeedChanged",
+            "FrameSize": {"height":96,"width":80},
+            "Frames":[{"duration":100,"event":"None","height":96,"width":80,"x_sheet":0,"y_sheet":0}],
+            "Name":"idle","Sheet_begin":0,"Sheet_end":0,
+            "animationDuration":"100 ms",
+            "numFrames":1,"repeat":false}
+        ]
+      })";
+  
   JsonParser p;
-  std::ifstream f(file);
-  // jsonContent = json::parse(f);
   jsonContent = json::parse(validJsonString);
 
   p.getAnimationsFromJson(jsonContent, jsonAnis);
+
+  // spritesheet name
+  EXPECT_EQ("hannes",jsonAnis.jsonName);
+  // spritesheet-fielname
+  EXPECT_EQ("sheet_level1",jsonAnis.spritesheetName);
+  // Animation count
+  EXPECT_EQ(1,jsonAnis.animations.size());
+  // animationName[0]
+  EXPECT_EQ("idle",jsonAnis.animations.at(0).name);
+  // animationName[0].fromFrame
+  EXPECT_EQ(0,jsonAnis.animations.at(0).fromFrame);
+  // animationName[0].toFrame
+  EXPECT_EQ(0,jsonAnis.animations.at(0).toFrame);
+  // animation[0] direction 
+  EXPECT_EQ("forward", getAnimationDir(0));
+  // animation[0].frame[0].duration
+  EXPECT_EQ(100,jsonAnis.animations.at(0).frames.at(0).duration);
+  // animation[0].frame[0].height
+  EXPECT_EQ(96,jsonAnis.animations.at(0).frames.at(0).height);
+  // animation[0].frame[0].width
+  EXPECT_EQ(80,jsonAnis.animations.at(0).frames.at(0).width);
+  // animation[0].frame[0].x
+  EXPECT_EQ(0,jsonAnis.animations.at(0).frames.at(0).x);
+  // animation[0].frame[0].y
+  EXPECT_EQ(0,jsonAnis.animations.at(0).frames.at(0).y);
+  // animation[0].frame[0].event
+  // TODO: check why this is everytime 0 (None) -> cdor issue ?
+  EXPECT_EQ(1,jsonAnis.animations.at(0).frames.at(0).event);
+    
+  // numFrames
+  EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
+  
             
   for(auto& i : jsonAnis.animations)
   {

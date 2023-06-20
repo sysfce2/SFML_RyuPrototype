@@ -10,7 +10,7 @@ struct AnimationFrame
 {
   float duration; // in seconds
   sf::Vector2i frameSize;
-	EEvent event;
+	Ryu::EEvent event;
 };
 
 class SpritesheetAnimation : public sf::Drawable, public sf::Transformable

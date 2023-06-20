@@ -188,7 +188,7 @@ CharacterBase::drawCurrent(sf::RenderTarget& target, sf::RenderStates) const
 CharacterBase::~CharacterBase() {}
 
 void 
-CharacterBase::notifyObservers(EEvent event)
+CharacterBase::notifyObservers(Ryu::EEvent event)
 {   
     notify(*this,event);
 }

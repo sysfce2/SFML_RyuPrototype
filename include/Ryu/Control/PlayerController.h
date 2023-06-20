@@ -12,6 +12,8 @@ class CommandQueue;
 class Command;
 class CharacterIchi;
 
+using EEvent = Ryu::EEvent;
+
 namespace sf{
     class Event;
 }

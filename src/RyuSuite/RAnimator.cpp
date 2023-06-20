@@ -26,6 +26,7 @@ namespace RyuAnimator{
 
 using namespace ImGui;
 using json = nlohmann::json;
+using EEvent = Ryu::EEvent;
 
 // namespace RyuParser {
 namespace AnimationSpec {

@@ -49,7 +49,7 @@ class World : private sf::NonCopyable, public Observer
             phDebugPhysics = not phDebugPhysics;    
         }
         void setDebugDrawer(sf::RenderTarget& target);
-        void onNotify(const SceneNode& entity, EEvent event) override;
+        void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
 
     private:
         enum class Layer

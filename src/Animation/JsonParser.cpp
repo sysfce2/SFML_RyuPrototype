@@ -1,5 +1,6 @@
 #include <Ryu/Animation/JsonParser.h>
 #include <Ryu/Animation/EditorEnums.h>
+#include <Ryu/Events/EventEnums.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -38,7 +39,20 @@
 
 namespace RyuParser {
 // namespace RyuAnimator::AnimationSpec {
-    
+    void from_json(const json& j, Frame& frame) {
+        j.at("duration").get_to(frame.duration);
+        j.at("height").get_to(frame.height);
+        j.at("width").get_to(frame.width);
+        j.at("x_sheet").get_to(frame.x);
+        j.at("y_sheet").get_to(frame.y);
+
+        std::string frameEvent = j.at("event");
+        fmt::print("frameEvenent: {} \n",frameEvent);
+        Ryu::EEvent s = Ryu::EEvent::_from_string(frameEvent.c_str());
+        frame.event = s;
+        // create EEvent from string ...
+        // j.at("duration").get_to(frame.event);
+    }    
 
     void from_json(const json& j, Textures::CharacterID& id){
         auto jString = j.dump(); 
@@ -53,6 +67,14 @@ namespace RyuParser {
         j.at("Sheet_end").get_to(ani.toFrame);
         j.at("AnimationDirection").get_to(ani.direction);
         j.at("numFrames").get_to(ani.numFrames);
+
+        json frames = j["Frames"];
+
+        for(auto frame : frames)
+        {
+            auto vecFrame = frame.get<Frame>();
+            ani.frames.emplace_back(vecFrame);
+        }
 
         // TODO: whats with Frames ? -> frames need to be serialized somehow else -> atm its an array of array ??? why:w
         // j.at("Frames").get_to(ani.frames);
@@ -74,16 +96,12 @@ namespace RyuParser {
         j.at("Name").get_to(JsonAnimations.jsonName);
         j.at("Spritesheet").get_to(JsonAnimations.spritesheetName);
         json anis = j["Animations"];
-        // std::vector<animation> anisVec;
-// MAEH !!!!
+
         for(auto ani : anis)
         {
-// using animation = RyuAnimator::AnimationSpec::Animation;
             auto vecAni = ani.get<Animation>();
-            // animation vecAni = ani;
             JsonAnimations.animations.emplace_back(vecAni);
         }
-        // j.at("Animations").get_to<std::vector<animation> >~/Projects/RyuPrototypeSFML/build/JsonAnimations.animations);
     }
 
 
