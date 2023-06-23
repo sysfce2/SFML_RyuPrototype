@@ -63,8 +63,8 @@ TEST_F(JsonParserTest, CheckJsonFields) {
         [
           {"AnimationDirection":"forward","AnimationId":"CharacterSpeedChanged",
             "FrameSize": {"height":96,"width":80},
-            "Frames":[{"duration":100,"event":"None","height":96,"width":80,"x_sheet":0,"y_sheet":0}],
-            "Name":"idle","Sheet_begin":0,"Sheet_end":0,
+            "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
+            "Name":"idle","Sheet_begin":3,"Sheet_end":3,
             "animationDuration":"100 ms",
             "numFrames":1,"repeat":false}
         ]
@@ -84,9 +84,9 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   // animationName[0]
   EXPECT_EQ("idle",jsonAnis.animations.at(0).name);
   // animationName[0].fromFrame
-  EXPECT_EQ(0,jsonAnis.animations.at(0).fromFrame);
+  EXPECT_EQ(3,jsonAnis.animations.at(0).fromFrame);
   // animationName[0].toFrame
-  EXPECT_EQ(0,jsonAnis.animations.at(0).toFrame);
+  EXPECT_EQ(3,jsonAnis.animations.at(0).toFrame);
   // animation[0] direction 
   EXPECT_EQ("forward", getAnimationDir(0));
   // animation[0].frame[0].duration
@@ -96,16 +96,19 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   // animation[0].frame[0].width
   EXPECT_EQ(80,jsonAnis.animations.at(0).frames.at(0).width);
   // animation[0].frame[0].x
-  EXPECT_EQ(0,jsonAnis.animations.at(0).frames.at(0).x);
+  EXPECT_EQ(3,jsonAnis.animations.at(0).frames.at(0).x);
   // animation[0].frame[0].y
-  EXPECT_EQ(0,jsonAnis.animations.at(0).frames.at(0).y);
+  EXPECT_EQ(2,jsonAnis.animations.at(0).frames.at(0).y);
   // animation[0].frame[0].event
-  // TODO: check why this is everytime 0 (None) -> cdor issue ?
   EXPECT_EQ(1,jsonAnis.animations.at(0).frames.at(0).event);
-    
   // numFrames
   EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
-  
+  // frameSize.x  
+  // EXPECT_EQ(1,jsonAnis.animations.at(0).frameSize.x);
+  // frameSize.y  
+  // EXPECT_EQ(1,jsonAnis.animations.at(0).frameSize.y);
+  // EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
+  // EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
             
   for(auto& i : jsonAnis.animations)
   {
