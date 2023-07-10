@@ -40,7 +40,7 @@ TEST_F(RyuParserTest, MethodBarDoesAbc) {
   const std::string input_filepath = "this/package/testdata/myinputfile.dat";
   const std::string output_filepath = "this/package/testdata/myoutputfile.dat";
   JsonParser f;
-  f.unitTest();
+  //f.unitTest();
 }
 
 // Tests that Foo does Xyz.

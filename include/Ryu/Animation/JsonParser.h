@@ -100,7 +100,6 @@ class JsonParser
         JsonParser();
         ~JsonParser();
 
-        void unitTest();
         void getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis);
 
     private:

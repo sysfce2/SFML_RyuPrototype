@@ -13,6 +13,8 @@ project(RyuPrototype VERSION 1.0
 set(MAIN "src/Main.cpp")
 set(INCLUDE_FOLDER "src/include")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/;${CMAKE_MODULE_PATH}")
+set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_CXX_COMPILER "gcc")
 
 find_package(SFML 2.5.1 COMPONENTS audio graphics window system network)
 find_package(box2d CONFIG REQUIRED)
@@ -40,7 +42,6 @@ add_subdirectory("src")
 add_executable(ryupt "${MAIN}")
 
 target_include_directories(ryupt PUBLIC "${INCLUDE_FOLDER}") #HOW >TO ADD SUBFOLDErS ?
-target_compile_features(ryupt PUBLIC cxx_std_17)
 
 target_link_libraries(ryupt PUBLIC
 	ryucorelib 

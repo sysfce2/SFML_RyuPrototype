@@ -65,8 +65,14 @@ TEST_F(JsonParserTest, CheckJsonFields) {
             "FrameSize": {"height":96,"width":80},
             "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
             "Name":"idle","Sheet_begin":3,"Sheet_end":3,
-            "animationDuration":"100 ms",
-            "numFrames":1,"repeat":false}
+            "animationDuration":"666 ms",
+            "numFrames":1,"repeat":false},
+          {"AnimationDirection":"backward","AnimationId":"None",
+            "FrameSize": {"height":96,"width":80},
+            "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2},{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
+            "Name":"walkBack","Sheet_begin":4,"Sheet_end":5,
+            "animationDuration":"2 s",
+            "numFrames":2,"repeat":false}
         ]
       })";
   
@@ -75,14 +81,16 @@ TEST_F(JsonParserTest, CheckJsonFields) {
 
   p.getAnimationsFromJson(jsonContent, jsonAnis);
 
+
   // spritesheet name
   EXPECT_EQ("hannes",jsonAnis.jsonName);
   // spritesheet-fielname
   EXPECT_EQ("sheet_level1",jsonAnis.spritesheetName);
   // Animation count
-  EXPECT_EQ(1,jsonAnis.animations.size());
+  EXPECT_EQ(2,jsonAnis.animations.size());
   // animationName[0]
   EXPECT_EQ("idle",jsonAnis.animations.at(0).name);
+  EXPECT_EQ("walkBack",jsonAnis.animations.at(1).name);
   // animationName[0].fromFrame
   EXPECT_EQ(3,jsonAnis.animations.at(0).fromFrame);
   // animationName[0].toFrame
@@ -104,10 +112,15 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   // numFrames
   EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
   // frameSize.x  
-  // EXPECT_EQ(1,jsonAnis.animations.at(0).frameSize.x);
+  EXPECT_EQ(96,jsonAnis.animations.at(0).frameSize.x);
   // frameSize.y  
-  // EXPECT_EQ(1,jsonAnis.animations.at(0).frameSize.y);
-  // EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
+  EXPECT_EQ(80,jsonAnis.animations.at(0).frameSize.y);
+  // duration
+  EXPECT_EQ(sf::milliseconds(666),jsonAnis.animations.at(0).animationDuration);
+  EXPECT_EQ(sf::seconds(2),jsonAnis.animations.at(1).animationDuration);
+
+  // repeat
+  EXPECT_EQ(false,jsonAnis.animations.at(0).repeat);
   // EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
             
   for(auto& i : jsonAnis.animations)
