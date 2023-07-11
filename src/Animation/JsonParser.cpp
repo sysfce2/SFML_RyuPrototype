@@ -2,6 +2,7 @@
 #include <Ryu/Animation/EditorEnums.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Core/AssetIdentifiers.h>
+#include <exception>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <string>
@@ -72,17 +73,7 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         fmt::print("frameEvenent: {} \n",frameEvent);
         Ryu::EEvent s = Ryu::EEvent::_from_string(frameEvent.c_str());
         frame.event = s;
-        // create EEvent from string ...
-        // j.at("duration").get_to(frame.event);
-    }    
-
-    void from_json(const json& j, Textures::CharacterID& id){
-        auto jString = j.dump(); 
-        fmt::print("AniId {aniId}: ", jString);
-        id = Textures::CharacterID::_from_string(jString.c_str());
-        // .get<Textures::CharacterID>(ani.animationId);
     }
-
 
     void from_json(const json& j, Animation& ani) {
         j.at("Name").get_to(ani.name);
@@ -113,46 +104,30 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         // aniTime
         std::string timeDur;
         j.at("animationDuration").get_to(timeDur);
-        // sf::Time sfTime;
 
         std::vector<std::string> v;
         splitStrings(timeDur,' ', v);
 
         fmt::print("Duration in {}: {}",v.at(1),v.at(0));
-
+        // atm we only support ms and s
         if(v.at(1) == "ms")
         {
             ani.animationDuration = sf::milliseconds((stoi(v.at(0))));
         }
-
-        if(v.at(1) == "s")
+        else if(v.at(1) == "s")
         {
             ani.animationDuration = sf::seconds((stoi(v.at(0))));
         }
+        else { // how to handle other times ?
+            throw std::exception();
+        }
 
         j.at("repeat").get_to(ani.repeat);
-       /*
-        for (const auto& s : v)
-        {
-            fmt::print("{} ", s);
-        }
-        */
-        //fmt::print("{}\n");
-        // switch (timeDur.contains("ms"))
-        // {
-        //     case "ms":
-        // }    
-        // j.at("").get_to(ani.animationId);
-        // j.at("").get_to(ani.animationId);
 
-        // json aniId = j.at("AnimationId");
-        // ani.animationId = aniId.get<Textures::CharacterID>();
-        //auto ID = aniId.get<Textures::CharacterID>();
-        // fmt::print("AniId {aniId}: ", aniId.dump());
-        // ani.animationId=Textures::CharacterID::_from_string((aniId.dump()).c_str());
-        // write unittests to this to test if animation holds the correct stuff, so we can practise finally utests !
-    
-    }
+        std::string aniId = j.at("AnimationId");
+        Textures::CharacterID aId = Textures::CharacterID::_from_string(aniId.c_str());
+        ani.animationId = aId;
+   }
     
     void from_json(const json& j, JsonAnimations& JsonAnimations) {
         j.at("Name").get_to(JsonAnimations.jsonName);

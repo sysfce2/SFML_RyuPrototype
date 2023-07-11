@@ -1,5 +1,8 @@
+#include "Ryu/Core/AssetIdentifiers.h"
+#include "Ryu/Events/EventEnums.h"
 #include <Ryu/Animation/JsonParser.h>
 
+#include <SFML/System/Time.hpp>
 #include <fmt/format.h>
 #include <fmt/core.h>
 #include "gtest/gtest.h"
@@ -61,7 +64,7 @@ TEST_F(JsonParserTest, CheckJsonFields) {
         "Spritesheet" : "sheet_level1",
         "Animations" : 
         [
-          {"AnimationDirection":"forward","AnimationId":"CharacterSpeedChanged",
+          {"AnimationDirection":"forward","AnimationId":"IchiDuckIdle",
             "FrameSize": {"height":96,"width":80},
             "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
             "Name":"idle","Sheet_begin":3,"Sheet_end":3,
@@ -107,8 +110,9 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   EXPECT_EQ(3,jsonAnis.animations.at(0).frames.at(0).x);
   // animation[0].frame[0].y
   EXPECT_EQ(2,jsonAnis.animations.at(0).frames.at(0).y);
-  // animation[0].frame[0].event
-  EXPECT_EQ(1,jsonAnis.animations.at(0).frames.at(0).event);
+  // animation[0].frame[0].event, Better Enum need first an variable with the value
+  Ryu::EEvent evt = Ryu::EEvent::CharacterSpeedChanged;
+  EXPECT_EQ(evt._to_integral(),jsonAnis.animations.at(0).frames.at(0).event);
   // numFrames
   EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
   // frameSize.x  
@@ -118,10 +122,12 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   // duration
   EXPECT_EQ(sf::milliseconds(666),jsonAnis.animations.at(0).animationDuration);
   EXPECT_EQ(sf::seconds(2),jsonAnis.animations.at(1).animationDuration);
-
+  // EXPECT_EQ(sf::microseconds(2),jsonAnis.animations.at(1).animationDuration);
   // repeat
   EXPECT_EQ(false,jsonAnis.animations.at(0).repeat);
-  // EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
+  // animationID
+  Textures::CharacterID aniId = Textures::CharacterID::IchiDuckIdle;
+  EXPECT_EQ(aniId._to_integral(),jsonAnis.animations.at(0).animationId);
             
   for(auto& i : jsonAnis.animations)
   {
