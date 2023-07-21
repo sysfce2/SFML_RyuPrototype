@@ -70,7 +70,6 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         j.at("y_sheet").get_to(frame.y);
 
         std::string frameEvent = j.at("event");
-        fmt::print("frameEvenent: {} \n",frameEvent);
         Ryu::EEvent s = Ryu::EEvent::_from_string(frameEvent.c_str());
         frame.event = s;
     }
@@ -108,7 +107,6 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         std::vector<std::string> v;
         splitStrings(timeDur,' ', v);
 
-        fmt::print("Duration in {}: {}",v.at(1),v.at(0));
         // atm we only support ms and s
         if(v.at(1) == "ms")
         {
@@ -131,8 +129,10 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
     
     void from_json(const json& j, JsonAnimations& JsonAnimations) {
         j.at("Name").get_to(JsonAnimations.jsonName);
-        fmt::print("Name: {} \n",JsonAnimations.jsonName);
-        j.at("Spritesheet").get_to(JsonAnimations.spritesheetName);
+        std::string spritesheetId = j.at("Spritesheet");
+        Textures::LevelID sId = Textures::LevelID::_from_string(spritesheetId.c_str());
+        JsonAnimations.spritesheetId = sId;
+        j.at("Path").get_to(JsonAnimations.spritesheetPath);
         json anis = j["Animations"];
 
         for(auto& ani : anis)
@@ -151,11 +151,10 @@ JsonParser::~JsonParser(){}
 void
 JsonParser::getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis)
 {
-        fmt::print("Parsing Json from file: \n");  
-        std::string jsonString = jsonData.dump();
         try
         {
-            fmt::print("JSON-OUTPUT: {}\n\n\n",jsonString);
+            // std::string jsonString = jsonData.dump();
+            // fmt::print("JSON-OUTPUT: {}\n\n\n",jsonString);
             // convert json object to struct with animations
             jsonAnis = jsonData;
         }

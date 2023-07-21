@@ -28,11 +28,11 @@ namespace Textures
 		Crate,
 	};
 
-	enum class LevelID {
-		Unknown,
+	BETTER_ENUM(LevelID, char,
+		Unknown=0,
 		Level1,
-		Level2,
-	};
+		Level2
+	);
 
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
   // Rename ? to CharacterAnimationId

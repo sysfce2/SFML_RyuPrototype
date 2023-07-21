@@ -49,6 +49,10 @@ class JsonParserTest : public ::testing::Test {
   // for Foo.
 };
 
+TEST_F(JsonParserTest, InvalidInput) {
+  // t.b.d fill with content
+}
+
 
 // Tests that the Foo::Bar() method does Abc.
 TEST_F(JsonParserTest, CheckJsonFields) {
@@ -57,11 +61,12 @@ TEST_F(JsonParserTest, CheckJsonFields) {
     return jsonAnis.animations.at(index).direction;
   };
 
-  
+
   validJsonString = R"(
       {
         "Name" : "hannes",
-        "Spritesheet" : "sheet_level1",
+        "Spritesheet" : "Level1",
+        "Path" : "assets/spritesheets/ichi/ichi_spritesheet_level1.png",
         "Animations" : 
         [
           {"AnimationDirection":"forward","AnimationId":"IchiDuckIdle",
@@ -88,7 +93,10 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   // spritesheet name
   EXPECT_EQ("hannes",jsonAnis.jsonName);
   // spritesheet-fielname
-  EXPECT_EQ("sheet_level1",jsonAnis.spritesheetName);
+  Textures::LevelID sId = Textures::LevelID::Level1;
+  EXPECT_EQ(sId._to_integral(),jsonAnis.spritesheetId);
+  // spritesheetPath
+  EXPECT_EQ("assets/spritesheets/ichi/ichi_spritesheet_level1.png",jsonAnis.spritesheetPath);
   // Animation count
   EXPECT_EQ(2,jsonAnis.animations.size());
   // animationName[0]
@@ -128,18 +136,15 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   // animationID
   Textures::CharacterID aniId = Textures::CharacterID::IchiDuckIdle;
   EXPECT_EQ(aniId._to_integral(),jsonAnis.animations.at(0).animationId);
-            
+
+  /* Debug
   for(auto& i : jsonAnis.animations)
   {
     fmt::print("ani: {} frames: {} dur: {} \n", i.name, i.numFrames, i.animationDuration.asMilliseconds());
   }
+  */
   // EXPECT_THROW("Can't parse",json::exception);
 }
-
-// Tests that Foo does Xyz.
-// TEST_F(FooTest, DoesXyz) {
-  // Exercises the Xyz feature of Foo.
-
 }  // namespace
 
 int main(int argc, char **argv) {
