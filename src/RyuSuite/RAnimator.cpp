@@ -1,3 +1,4 @@
+#include "Ryu/Core/AssetIdentifiers.h"
 #include <RyuSuite/RAnimator.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Events/EventEnums.h>
@@ -22,7 +23,8 @@
 #include <vector>
 #include <utility> /// std::pair
 
-namespace RyuAnimator{
+namespace RyuAnimator {
+using ImGui::EndTabBar;
 
 using namespace ImGui;
 using json = nlohmann::json;
@@ -128,10 +130,12 @@ static bool frameDetailsVisible=true;
 static int intDuration;
 static int selectedFrame;
 static int currentEventItem = 0;
+static int currentLevelItem = 0;
 static int currentActiveFrame = 0;
 
 // TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
 const char* eventItems[] = {"","","","",""};
+const char* levelItems[] = {"","","","",""};
 
 static sf::Vector2i sheetPosition{};
 
@@ -143,6 +147,15 @@ Editor::initData()
     for (EEvent evt : EEvent::_values())
     {
         eventItems[i] = evt._to_string();
+        ++i;
+    }
+
+
+    // LevelIds for spritesheets
+    i = 0;
+    for (Textures::LevelID level : Textures::LevelID::_values())
+    {
+        levelItems[i] = level._to_string();
         ++i;
     }
 }
@@ -332,7 +345,7 @@ Editor::createEditorWidgets(bool* p_open)
                      ImGui::EndTabItem();
                  }
             }
-            ImGui::EndTabBar();
+            EndTabBar();
         }
 
         ImGui::EndGroup();
@@ -537,17 +550,23 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     if(ImGui::BeginChild("Preferences", ImVec2(0,0), false))
     {
         // to use with std::string or own datatype we need a wrapper for InputTextXXX)
-        static char JsonFilename[128] = "";
+        static char JsonFilename[128] = "jsonFile.json";
         // TODO: how to add automatically ?in C-style
         // static char extension[6] = ".json";
         ImGui::InputTextWithHint("Filename","put Json filename here",JsonFilename,IM_ARRAYSIZE(JsonFilename));
+        ImGui::InputTextWithHint("Path","put Json filename here",selectedSpriteSheetPath,IM_ARRAYSIZE(selectedSpriteSheetPath));
+        if(ImGui::Combo("Spritesheet-Id",&currentLevelItem, levelItems, IM_ARRAYSIZE(levelItems))) //;
+        {
+            selectedSpritesheetId = Textures::LevelID::_from_integral(currentLevelItem)._to_string();
+        }
         if(ImGui::Button("Save Json"))
         {
-            exportAnimationDetailsToFile(JsonFilename);                
+            exportAnimationDetailsToFile(JsonFilename);
         }
+
      }
      ImGui::EndChild();
-    
+
     ImGui::EndChild();
 }
 
@@ -645,7 +664,8 @@ Editor::exportAnimationDetailsToFile(char* JsonFilename)
 
     // TODO: use variables for charcter name etc.
     oJson << "{\n" << R"(  "Name" : "ichi",)" << "\n";
-    oJson << R"(  "Spritesheet" : ")" << selectedSpritesheet << R"(",)" << "\n";
+    oJson << R"(  "Spritesheet" : ")" << selectedSpritesheetId << R"(",)" << "\n";
+    oJson << R"(  "Path" : ")" << selectedSpriteSheetPath << R"(",)" << "\n";
     oJson << R"(  "Animations" : [)" << "\n    ";
 
     int lineNr = 0;
@@ -703,5 +723,4 @@ Editor::exportAnimationDetailsToFile(char* JsonFilename)
    ^*/
 }
 
-
-} /// namespace RyuAnimator 
+} // namespace RyuAnimator

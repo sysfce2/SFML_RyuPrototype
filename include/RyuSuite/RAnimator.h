@@ -96,6 +96,9 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       bool parsedSpritesheet;
       bool textureSet;
       std::string selectedSpritesheet;
+      std::string selectedSpritesheetPath;
+      std::string selectedSpritesheetId;
+      char selectedSpriteSheetPath[128] = "assets/spritesheets/ichi/ichi_spritesheet_level1.png";
 
   private:
 

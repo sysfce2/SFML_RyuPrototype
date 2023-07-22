@@ -160,7 +160,7 @@ JsonParser::getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis)
         }
         catch(const std::exception& e)
         {
-            fmt::print("Error outputting json-content: {} \n",e.what());            
+            fmt::print("Error outputting json-content, missing Enum-value ?: {} \n",e.what());
         }
 }
 
