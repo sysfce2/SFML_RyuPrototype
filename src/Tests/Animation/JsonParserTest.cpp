@@ -7,6 +7,7 @@
 #include <fmt/core.h>
 #include "gtest/gtest.h"
 #include <fstream>
+#include <variant>
 
 namespace RyuParser {
 
@@ -53,12 +54,14 @@ TEST_F(JsonParserTest, InvalidInput) {
   // t.b.d fill with content
 }
 
+// TODO: add case for Type: Scene ...
 
 // Tests that the Foo::Bar() method does Abc.
-TEST_F(JsonParserTest, CheckJsonFields) {
-  
-  auto getAnimationDir = [this](int index){
-    return jsonAnis.animations.at(index).direction;
+TEST_F(JsonParserTest, CheckJsonFieldsCharacter) {
+
+  using CharId = Textures::CharacterID;
+  auto getAnimationDir = [this](CharId id){
+    return jsonAnis.animations.at(id).direction;
   };
 
 
@@ -69,13 +72,13 @@ TEST_F(JsonParserTest, CheckJsonFields) {
         "Path" : "assets/spritesheets/ichi/ichi_spritesheet_level1.png",
         "Animations" : 
         [
-          {"AnimationDirection":"forward","AnimationId":"IchiDuckIdle",
+          {"AnimationDirection":"forward","AnimationId":"IchiDuckIdle", "Type" : "Character",
             "FrameSize": {"height":96,"width":80},
             "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
             "Name":"idle","Sheet_begin":3,"Sheet_end":3,
             "animationDuration":"666 ms",
             "numFrames":1,"repeat":false},
-          {"AnimationDirection":"backward","AnimationId":"None",
+          {"AnimationDirection":"backward","AnimationId":"IchiDuckWalk", "Type" : "Character",
             "FrameSize": {"height":96,"width":80},
             "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2},{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
             "Name":"walkBack","Sheet_begin":4,"Sheet_end":5,
@@ -100,42 +103,43 @@ TEST_F(JsonParserTest, CheckJsonFields) {
   // Animation count
   EXPECT_EQ(2,jsonAnis.animations.size());
   // animationName[0]
-  EXPECT_EQ("idle",jsonAnis.animations.at(0).name);
-  EXPECT_EQ("walkBack",jsonAnis.animations.at(1).name);
+  EXPECT_EQ("idle",jsonAnis.animations.at(CharId::IchiDuckIdle).name);
+  EXPECT_EQ("walkBack",jsonAnis.animations.at(CharId::IchiDuckWalk).name);
   // animationName[0].fromFrame
-  EXPECT_EQ(3,jsonAnis.animations.at(0).fromFrame);
+  EXPECT_EQ(3,jsonAnis.animations.at(CharId::IchiDuckIdle).fromFrame);
   // animationName[0].toFrame
-  EXPECT_EQ(3,jsonAnis.animations.at(0).toFrame);
+  EXPECT_EQ(3,jsonAnis.animations.at(CharId::IchiDuckIdle).toFrame);
   // animation[0] direction 
-  EXPECT_EQ("forward", getAnimationDir(0));
+  EXPECT_EQ("forward", getAnimationDir(CharId::IchiDuckIdle));
   // animation[0].frame[0].duration
-  EXPECT_EQ(100,jsonAnis.animations.at(0).frames.at(0).duration);
+  EXPECT_EQ(100,jsonAnis.animations.at(CharId::IchiDuckIdle).frames.at(0).duration);
   // animation[0].frame[0].height
-  EXPECT_EQ(96,jsonAnis.animations.at(0).frames.at(0).height);
+  EXPECT_EQ(96,jsonAnis.animations.at(CharId::IchiDuckIdle).frames.at(0).height);
   // animation[0].frame[0].width
-  EXPECT_EQ(80,jsonAnis.animations.at(0).frames.at(0).width);
+  EXPECT_EQ(80,jsonAnis.animations.at(CharId::IchiDuckIdle).frames.at(0).width);
   // animation[0].frame[0].x
-  EXPECT_EQ(3,jsonAnis.animations.at(0).frames.at(0).x);
+  EXPECT_EQ(3,jsonAnis.animations.at(CharId::IchiDuckIdle).frames.at(0).x);
   // animation[0].frame[0].y
-  EXPECT_EQ(2,jsonAnis.animations.at(0).frames.at(0).y);
+  EXPECT_EQ(2,jsonAnis.animations.at(CharId::IchiDuckIdle).frames.at(0).y);
   // animation[0].frame[0].event, Better Enum need first an variable with the value
   Ryu::EEvent evt = Ryu::EEvent::CharacterSpeedChanged;
-  EXPECT_EQ(evt._to_integral(),jsonAnis.animations.at(0).frames.at(0).event);
+  EXPECT_EQ(evt._to_integral(),jsonAnis.animations.at(CharId::IchiDuckIdle).frames.at(0).event);
   // numFrames
-  EXPECT_EQ(1,jsonAnis.animations.at(0).numFrames);
+  EXPECT_EQ(1,jsonAnis.animations.at(CharId::IchiDuckIdle).numFrames);
   // frameSize.x  
-  EXPECT_EQ(96,jsonAnis.animations.at(0).frameSize.x);
+  EXPECT_EQ(96,jsonAnis.animations.at(CharId::IchiDuckIdle).frameSize.x);
   // frameSize.y  
-  EXPECT_EQ(80,jsonAnis.animations.at(0).frameSize.y);
+  EXPECT_EQ(80,jsonAnis.animations.at(CharId::IchiDuckIdle).frameSize.y);
   // duration
-  EXPECT_EQ(sf::milliseconds(666),jsonAnis.animations.at(0).animationDuration);
-  EXPECT_EQ(sf::seconds(2),jsonAnis.animations.at(1).animationDuration);
+  EXPECT_EQ(sf::milliseconds(666),jsonAnis.animations.at(CharId::IchiDuckIdle).animationDuration);
+  EXPECT_EQ(sf::seconds(2),jsonAnis.animations.at(CharId::IchiDuckWalk).animationDuration);
   // EXPECT_EQ(sf::microseconds(2),jsonAnis.animations.at(1).animationDuration);
   // repeat
-  EXPECT_EQ(false,jsonAnis.animations.at(0).repeat);
+  EXPECT_EQ(false,jsonAnis.animations.at(CharId::IchiDuckIdle).repeat);
   // animationID
-  Textures::CharacterID aniId = Textures::CharacterID::IchiDuckIdle;
-  EXPECT_EQ(aniId._to_integral(),jsonAnis.animations.at(0).animationId);
+  CharId aniId = CharId::IchiDuckIdle;
+  auto animationId = jsonAnis.animations.at(CharId::IchiDuckIdle).animationId;
+  EXPECT_EQ(aniId._to_integral(),std::get<CharId>(animationId));
 
   /* Debug
   for(auto& i : jsonAnis.animations)

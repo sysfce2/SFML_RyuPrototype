@@ -1,5 +1,6 @@
 #pragma once
 #include <Thirdparty/betterEnum/enum.h>
+#include <variant>
 
 // Forward declaration of SFML classes
 namespace sf
@@ -26,7 +27,13 @@ namespace Textures
 	{
 		Empty,
 		Crate,
-	};
+};
+
+    BETTER_ENUM(AnimationType, char,
+                None=0,
+                Character,
+                Scene
+                );
 
 	BETTER_ENUM(LevelID, char,
 		Unknown=0,
@@ -55,6 +62,11 @@ namespace Textures
 				IchiSword1Walk,
 				IchiWalk
 		// ... Spritesheets
+                );
+
+    BETTER_ENUM(SceneBGAni, char,
+                // TODO: fill for SceneBackgroundAnimationIds
+                None=0
     );
 
 	enum class GuiID {
@@ -67,7 +79,9 @@ namespace Textures
 			 StartFrame,
 			 Frame,
 			 FrameBorder,	
-	};
+    };
+
+
 }
 
 

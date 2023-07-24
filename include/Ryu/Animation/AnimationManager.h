@@ -19,6 +19,7 @@ public:
     void readAnimationConfigs();
     std::string readFile(fs::path path);
     void outputConfigs();
+    const RyuParser::Animation& getCharacterAnimationConfig(Textures::LevelID level, Textures::CharacterID aniId);
 
 private:
     RyuParser::JsonParser jParser;

@@ -20,6 +20,13 @@ AnimationManager::~AnimationManager()
     fmt::print("Destructor AnimationManager\n");
 }
 
+const RyuParser::Animation &
+AnimationManager::getCharacterAnimationConfig(Textures::LevelID level, Textures::CharacterID aniId)
+{
+    // fiXME: use a map,
+    return spritesheetConfigs.at(level).animations.at(aniId);
+}
+
 void
 AnimationManager::readAnimationConfigs()
 {

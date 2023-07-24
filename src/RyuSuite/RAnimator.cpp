@@ -576,7 +576,10 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
     if(frameDetailsVisible)
     {
         //auto ani = sheet.second.at(selectedAni);
-        ImGui::Text("Frame: %d", frameNumber);    
+        ImGui::Text("Frame: %d", frameNumber);
+        static bool repeatAnimation;
+        ImGui::Checkbox("Repeat", &repeatAnimation);
+        ImGui::Text("AnimationType: TODO");
         if(ImGui::InputInt("Duration",&intDuration))
         {
             if(selectedFrame != 0)

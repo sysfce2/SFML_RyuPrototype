@@ -9,6 +9,7 @@ class EEvent;
 
 using json = nlohmann::json;
 
+using AnimationId = std::variant<Textures::CharacterID, Textures::SceneBGAni>;
 
 namespace RyuParser {
 
@@ -43,7 +44,8 @@ namespace RyuParser {
       sf::Vector2i frameSize;
       sf::Time animationDuration;
       bool repeat;
-      Textures::CharacterID animationId;
+      Textures::AnimationType animationType;
+      AnimationId animationId;
   
       Animation() : 
            name("name")
@@ -55,6 +57,7 @@ namespace RyuParser {
           ,frameSize()
           ,animationDuration()
           ,repeat(false)
+          ,animationType(Textures::AnimationType::None)
           ,animationId(Textures::CharacterID::None) {}
   
     };
@@ -63,7 +66,7 @@ namespace RyuParser {
         std::string jsonName;
         Textures::LevelID spritesheetId;
         std::string spritesheetPath;
-        std::vector<Animation> animations;
+        std::map<AnimationId,Animation> animations;
 
         JsonAnimations()
             : jsonName(),

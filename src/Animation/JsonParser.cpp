@@ -123,8 +123,36 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         j.at("repeat").get_to(ani.repeat);
 
         std::string aniId = j.at("AnimationId");
-        Textures::CharacterID aId = Textures::CharacterID::_from_string(aniId.c_str());
-        ani.animationId = aId;
+        std::string aniType = j.at("AnimationType");
+
+        // TODO: this is ugly but it seems to work, its because animationId can hold dioffernet tyoes (variant)
+        Textures::AnimationType aType = Textures::AnimationType::_from_string(aniType.c_str());
+
+        try{
+         switch(aType)
+         {
+            case Textures::AnimationType::Character:
+            {
+                Textures::CharacterID aId = Textures::CharacterID::_from_string(aniId.c_str());
+                ani.animationId = aId;
+                break;
+            }
+            case Textures::AnimationType::Scene:
+            {
+                Textures::SceneBGAni aId = Textures::SceneBGAni::_from_string(aniId.c_str());
+                ani.animationId = aId;
+                break;
+            }
+            default:
+                throw std::exception();
+         }
+
+        }
+        catch (std::exception())
+        {
+            fmt::print("Invalid AnimationId.");
+        }
+
    }
     
     void from_json(const json& j, JsonAnimations& JsonAnimations) {
@@ -138,7 +166,7 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         for(auto& ani : anis)
         {
             auto vecAni = ani.get<Animation>();
-            JsonAnimations.animations.emplace_back(vecAni);
+            JsonAnimations.animations.emplace(vecAni.animationId,vecAni);
         }
     }
 
