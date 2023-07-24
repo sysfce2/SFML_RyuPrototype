@@ -12,7 +12,7 @@ class CommandQueue;
 class Command;
 class CharacterIchi;
 
-using EEvent = Ryu::EEvent;
+using RyuEvent = Ryu::EEvent;
 
 namespace sf{
     class Event;
@@ -34,7 +34,7 @@ class PlayerController : public Observer, public Subject /// notifier and observ
         void handleRealtimeInput(CommandQueue& commands);
         void setActionBindingCharacterSpeed();
 
-        void onNotify(const SceneNode& entity, EEvent event) override;
+        void onNotify(const SceneNode& entity, RyuEvent event) override;
 
     private:
         static bool isRealtimeAction(EInput action);

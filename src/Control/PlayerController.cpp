@@ -47,12 +47,12 @@ std::function<void(SceneNode&, sf::Time)> derivedEInput(Function fn)
 }
 
 void
-PlayerController::onNotify(const SceneNode& entity, EEvent event)
+PlayerController::onNotify(const SceneNode& entity, RyuEvent event)
 {
     std::cout << "received change for characterspeed" << std::endl;
     switch (event._value)
     {
-        case EEvent::CharacterSpeedChanged:
+        case RyuEvent::CharacterSpeedChanged:
         {
             setActionBindingCharacterSpeed();
             break; 
@@ -182,17 +182,17 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 {
                     std::cout << s.getPosition().x << "," << s.getPosition().y << "\n";
                 };
-                notify(*playerCharacter,EEvent::DebugToggle);
+                notify(*playerCharacter,RyuEvent::DebugToggle);
                 break;
             }
             case sf::Keyboard::Hyphen:
             {
-                notify(*playerCharacter,EEvent::ImGuiDemoToggle);
+                notify(*playerCharacter,RyuEvent::ImGuiDemoToggle);
                 break;
             }
             case sf::Keyboard::Num1:
             {
-                 notify(*playerCharacter,EEvent::RyuAnimatorToggle);
+                 notify(*playerCharacter,RyuEvent::RyuAnimatorToggle);
                  break;
             }
 

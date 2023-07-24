@@ -1,3 +1,4 @@
+#include <Ryu/Animation/AnimationManager.h>
 #include <Ryu/Core/Game.h>
 #include <Ryu/Core/World.h>
 #include <Ryu/Core/AssetManager.h>
@@ -25,6 +26,7 @@ Game::Game()
 ,mWindow(sf::VideoMode(1200, 800), "SFML Application")
 ,mWorld(mWindow)
 ,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
+,mAnimationManager(std::make_unique<AnimationManager>())
 ,mIsPaused(false)
 ,mAnimator()
 {
@@ -34,21 +36,21 @@ Game::Game()
 }
 
 void
-Game::onNotify(const SceneNode& entity, EEvent event)
+Game::onNotify(const SceneNode& entity, RyuEvent event)
 {
 	switch(event._value)
 	{
-		case EEvent::DebugToggle:
+		case RyuEvent::DebugToggle:
 		{
 				RyuDebug::activateRyuDebug == false ? RyuDebug::activateRyuDebug = true : RyuDebug::activateRyuDebug = false;
 				break;
 		}
-		case EEvent::ImGuiDemoToggle:
+		case RyuEvent::ImGuiDemoToggle:
 		{
 				RyuDebug::showImGuiDemoWindow == false ? RyuDebug::showImGuiDemoWindow = true : RyuDebug::showImGuiDemoWindow = false;
 				break;
 		}
-		case EEvent::RyuAnimatorToggle:
+		case RyuEvent::RyuAnimatorToggle:
 		{
 				mAnimator.showAnimationEditor == false ? mAnimator.showAnimationEditor=true : mAnimator.showAnimationEditor=false;		
 		}
@@ -70,9 +72,9 @@ void Game::run()
 	sf::Clock clock;
 	// uses fixed tick steps (use same delta every time)
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
-	ImGui::SFML::Init(mWindow);
+	bool mWindowState = ImGui::SFML::Init(mWindow);
 	
-	while (mWindow.isOpen())
+	while (mWindow.isOpen() && mWindowState)
 	{
 		timeSinceLastUpdate += clock.restart();
 		while (timeSinceLastUpdate > TimePerFrame)

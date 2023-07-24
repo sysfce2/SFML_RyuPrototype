@@ -1,9 +1,11 @@
-set (SRC 
+set (SRC
+     "AnimationManager.cpp"
      "SpritesheetAnimation.cpp"
      "JsonParser.cpp"
     )
 
 set(HEADER
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Animation/AnimationManager.h"
      "${RyuPrototype_SOURCE_DIR}/include/RyuSuite/RAnimator.h"
 )
 
