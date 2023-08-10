@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <variant>
 #include <vector>
 #include <utility> /// std::pair
 
@@ -29,6 +30,8 @@ using ImGui::EndTabBar;
 using namespace ImGui;
 using json = nlohmann::json;
 using EEvent = Ryu::EEvent;
+
+
 
 // namespace RyuParser {
 namespace AnimationSpec {
@@ -80,12 +83,13 @@ namespace AnimationSpec {
       std::vector<Animation> animations; 
     }; 
 */
- 
+
     void to_json(json& j, const Animation& ani) {
     // TODO: fill some fields with corect values / add somehoe lienbreaks to the json file ?
       std::string timeInMs{
           std::to_string(ani.animationDuration.asMilliseconds()) + " ms"};
-    
+
+      // TODO: implement animationType / animationId !
       json jFrames = ani.frames; 
       j = json{{"Name", ani.name},
                {"Sheet_begin", ani.fromFrame},
@@ -97,7 +101,9 @@ namespace AnimationSpec {
                 {{"height", ani.frameSize.y}, {"width", ani.frameSize.x}}},
                {"animationDuration", timeInMs},
                {"repeat", ani.repeat},
-               {"AnimationId", ani.animationId._to_string()}};
+               {"AnimationId", std::visit( // as animationId is a std::variant with different datatypes we need to use visit
+                       [](auto&& cId){return cId._to_string();},
+                       ani.animationId)}};
     }
 } /// namespace AnimationSpec
 
@@ -131,11 +137,16 @@ static int intDuration;
 static int selectedFrame;
 static int currentEventItem = 0;
 static int currentLevelItem = 0;
+// standard is a character animation
+static int currentAnimationType = 1;
 static int currentActiveFrame = 0;
+// standard is a cycled animation
+static bool repeatAnimation = true;
 
 // TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
 const char* eventItems[] = {"","","","",""};
 const char* levelItems[] = {"","","","",""};
+const char* animationTypes[] = {"","","","",""};
 
 static sf::Vector2i sheetPosition{};
 
@@ -149,13 +160,18 @@ Editor::initData()
         eventItems[i] = evt._to_string();
         ++i;
     }
-
-
     // LevelIds for spritesheets
     i = 0;
     for (Textures::LevelID level : Textures::LevelID::_values())
     {
         levelItems[i] = level._to_string();
+        ++i;
+    }
+    // LevelIds for spritesheets
+    i = 0;
+    for (Textures::AnimationType aType : Textures::AnimationType::_values())
+    {
+        animationTypes[i] = aType._to_string();
         ++i;
     }
 }
@@ -414,7 +430,7 @@ Editor::calculateAnimationDuration(AnimationSpec::Animation& ani)
 }
 
 
-// Note: when editinmg timing in the animation please note that changing the time in frame 1 leads to a weird overall timing, dont know why :/
+// Note: when editing timing in the animation please note that changing the time in frame 1 leads to a weird overall timing, dont know why :/
 void 
 Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
 {
@@ -577,9 +593,11 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
     {
         //auto ani = sheet.second.at(selectedAni);
         ImGui::Text("Frame: %d", frameNumber);
-        static bool repeatAnimation;
         ImGui::Checkbox("Repeat", &repeatAnimation);
-        ImGui::Text("AnimationType: TODO");
+        if(ImGui::Combo("AnimationType",&currentAnimationType, animationTypes, IM_ARRAYSIZE(animationTypes))) //;
+        {
+            ani.animationType = Textures::AnimationType::_from_integral(currentAnimationType);
+        }
         if(ImGui::InputInt("Duration",&intDuration))
         {
             if(selectedFrame != 0)

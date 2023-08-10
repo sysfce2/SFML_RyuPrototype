@@ -2,11 +2,13 @@
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Events/EventEnums.h>
 #include <SFML/Graphics.hpp>
-
+#include <variant>
 #include <vector>
 
+using AnimationId = std::variant<Textures::CharacterID, Textures::SceneBGAni>;
+
 namespace RyuAnimator::AnimationSpec {
-    // although the information for Frame & Taggednimation could be better consolidated
+    // although the information for Frame & TaggedAnimation could be better consolidated
     // this is done this way bc the input json file-format from aseprite demands it
     // TODO: but we could use standard start values for other fields as well as we do with Event
     struct Frame 
@@ -17,6 +19,14 @@ namespace RyuAnimator::AnimationSpec {
       int16_t x; /// x-position in spritesheet
       int16_t y; /// y-position in spritesheet
       Ryu::EEvent event;
+/*TODO: conflict ?
+      Frame() :
+        duration(0)
+       ,height(0)
+       ,width(0)
+       ,x(0)
+       ,y(0)
+       ,event(Ryu::EEvent::None) {} */
     };
 
     struct Animation
@@ -31,7 +41,8 @@ namespace RyuAnimator::AnimationSpec {
       sf::Vector2i frameSize;
       sf::Time animationDuration;
       bool repeat;
-      Textures::CharacterID animationId;
+      Textures::AnimationType animationType;
+      AnimationId animationId;
   
       Animation() : 
            name("name")
@@ -43,6 +54,7 @@ namespace RyuAnimator::AnimationSpec {
           ,frameSize()
           ,animationDuration()
           ,repeat(false)
+          ,animationType(Textures::AnimationType::Character)
           ,animationId(Textures::CharacterID::None) {}
   
     };
