@@ -104,6 +104,7 @@ namespace AnimationSpec {
                {"AnimationId", std::visit( // as animationId is a std::variant with different datatypes we need to use visit
                        [](auto&& cId){return cId._to_string();},
                        ani.animationId)}};
+      // TODO: how to set the animationID ? -> Gui field missing / set here animation type as well ?
     }
 } /// namespace AnimationSpec
 
@@ -127,6 +128,7 @@ Editor::Editor():
 Editor::~Editor()
 {}
 
+// GUI variables
 constexpr std::pair<float,float> frameSize{20.f,35.f}; 
 constexpr std::pair<float,float> frameAreaSize{705.f,180.f};
 constexpr std::pair<float,float> aniAreaSize{250.f,400.f};
@@ -139,6 +141,7 @@ static int currentEventItem = 0;
 static int currentLevelItem = 0;
 // standard is a character animation
 static int currentAnimationType = 1;
+static int currentAnimationId = 0;
 static int currentActiveFrame = 0;
 // standard is a cycled animation
 static bool repeatAnimation = true;
@@ -147,6 +150,10 @@ static bool repeatAnimation = true;
 const char* eventItems[] = {"","","","",""};
 const char* levelItems[] = {"","","","",""};
 const char* animationTypes[] = {"","","","",""};
+const char* animationIds[] = {"","",""};
+
+// TODO set huge amount of character IDs in the array -> how to improve this ???
+// Textures::CharacterID::
 
 static sf::Vector2i sheetPosition{};
 
@@ -591,6 +598,8 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
 {
     if(frameDetailsVisible)
     {
+        if(ImGui::Combo("AnimationId:", &currentAnimationId, animationIds, IM_ARRAYSIZE(animationIds)));
+        ImGui::Separator();
         //auto ani = sheet.second.at(selectedAni);
         ImGui::Text("Frame: %d", frameNumber);
         ImGui::Checkbox("Repeat", &repeatAnimation);
