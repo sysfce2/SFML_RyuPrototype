@@ -104,6 +104,7 @@ namespace AnimationSpec {
                {"AnimationId", std::visit( // as animationId is a std::variant with different datatypes we need to use visit
                        [](auto&& cId){return cId._to_string();},
                        ani.animationId)}};
+      // TODO: how to set the animationID ? -> Gui field missing / set here animation type as well ?
     }
 } /// namespace AnimationSpec
 
@@ -127,6 +128,7 @@ Editor::Editor():
 Editor::~Editor()
 {}
 
+// GUI variables
 constexpr std::pair<float,float> frameSize{20.f,35.f}; 
 constexpr std::pair<float,float> frameAreaSize{705.f,180.f};
 constexpr std::pair<float,float> aniAreaSize{250.f,400.f};
@@ -139,14 +141,19 @@ static int currentEventItem = 0;
 static int currentLevelItem = 0;
 // standard is a character animation
 static int currentAnimationType = 1;
+static int currentAnimationId = 0;
 static int currentActiveFrame = 0;
 // standard is a cycled animation
 static bool repeatAnimation = true;
 
 // TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
-const char* eventItems[] = {"","","","",""};
-const char* levelItems[] = {"","","","",""};
-const char* animationTypes[] = {"","","","",""};
+const char* eventItems[5] = {""};
+const char* levelItems[3] = {""};
+const char* animationTypes[3] = {""};
+const char* animationIds[17] = {""};
+
+// TODO set huge amount of character IDs in the array -> how to improve this ???
+// Textures::CharacterID::
 
 static sf::Vector2i sheetPosition{};
 
@@ -172,6 +179,13 @@ Editor::initData()
     for (Textures::AnimationType aType : Textures::AnimationType::_values())
     {
         animationTypes[i] = aType._to_string();
+        ++i;
+    }
+
+    i = 0;
+    for (Textures::CharacterID cID : Textures::CharacterID::_values())
+    {
+        animationIds[i] = cID._to_string();
         ++i;
     }
 }
@@ -331,12 +345,16 @@ Editor::createEditorWidgets(bool* p_open)
             char label[128];
             sprintf(label,"%d_%s", i,ani.name.c_str());
             if(ImGui::Selectable(label, selected == i)) 
-            { 
-                  selected = i;
-                  // intDuration = 0;
-                  selectedFrame = 1;
-                  // currentEventItem = 0;
-                  editFrame(ani,selectedFrame);
+            {
+                auto aniId = std::visit( // as animationId is a std::variant with different datatypes we need to use visit
+                       [](auto&& cId){return cId._to_integral();},
+                       ani.animationId);
+                currentAnimationId = aniId;
+                selected = i;
+                // intDuration = 0;
+                selectedFrame = 1;
+                // currentEventItem = 0;
+                editFrame(ani,selectedFrame);
             }
             i++;
           }
@@ -591,6 +609,11 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
 {
     if(frameDetailsVisible)
     {
+        if(ImGui::Combo("AnimationId:", &currentAnimationId, animationIds, IM_ARRAYSIZE(animationIds)))
+        {
+            ani.animationId = Textures::CharacterID::_from_integral(currentAnimationId);
+        }
+        ImGui::Separator();
         //auto ani = sheet.second.at(selectedAni);
         ImGui::Text("Frame: %d", frameNumber);
         ImGui::Checkbox("Repeat", &repeatAnimation);
