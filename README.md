@@ -35,6 +35,7 @@ See [License.txt]. in 02_SFML_GD_BOOK.
     - git clone git@github.com:fmtlib/fmt.git
     - mkdir build, cd build && cmake -DBUILD_SHARED_LIBS=on ..
     - sudo make install
+9. (imgui-filebrowser: https://github.com/AirGuanZ/imgui-filebrowser.git) IN EVALUATION
 # building Ryu
 - in Ryu project:
     - (mkdir build && cd build)

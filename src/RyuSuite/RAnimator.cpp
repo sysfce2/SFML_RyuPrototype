@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <imgui.h>
 #include <imgui-SFML.h>
+#include <Thirdparty/imgui-filebrowser/imfilebrowser.h>
 #include <nlohmann/json.hpp>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -209,9 +210,14 @@ Editor::update(sf::Time dt)
 void
 Editor::parseJsonData()
 {
+
+    // avoid appending animations of multiple spritesheets
+    animations.clear();
     
     // TODO: later we select the path / from an openFiledialog / we can load multiple spritesheets
     std::string spriteSheet("ichi_spritesheet_level1");
+
+
     std::string path("assets/spritesheets/ichi/");
     std::string format("json");
     std::ifstream f(path+spriteSheet+"."+format);
@@ -321,7 +327,43 @@ Editor::createEditorWidgets(bool* p_open)
               ImGui::MenuItem("Menu", NULL, false, false);
               if (ImGui::MenuItem("Read JSON (Aseprite)")) {
                 // TODO: here later something like open a dialog window
-                parseJsonData();
+
+                /*Begin imbrowser example*/
+                // TODO: encapsulate this in wrapperclass and set here only which event is thrown (which fileexplorer should open ...)
+                // create a file browser instance
+                ImGui::FileBrowser fileDialog;
+                // (optional) set browser properties
+                fileDialog.SetTitle("Open Json");
+                fileDialog.SetTypeFilters({ ".json"});
+                // mainloop
+                //while(continueRendering)
+                {
+                //...do other stuff like ImGui::NewFrame();
+
+                if(ImGui::Begin("dummy window"))
+                {
+                    // open file dialog when user clicks this button
+                    if(ImGui::Button("open file dialog"))
+                        fileDialog.Open();
+                }
+                ImGui::End();
+
+                fileDialog.Display();
+
+                if(fileDialog.HasSelected())
+                {
+                    std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
+                    fileDialog.ClearSelected();
+                }
+
+                //...do other stuff like ImGui::Render();
+                }
+                /*END imbrowser example*/
+
+
+
+
+                //parseJsonData();
               }
               if (ImGui::MenuItem("Open Json ...")){
                 parseJsonFile();

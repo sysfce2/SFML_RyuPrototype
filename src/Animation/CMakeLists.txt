@@ -7,6 +7,7 @@ set (SRC
 set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Animation/AnimationManager.h"
      "${RyuPrototype_SOURCE_DIR}/include/RyuSuite/RAnimator.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Thirdparty/imgui-filebrowser/imfilebrowser.h"
 )
 
 add_library(ryuanimationlib SHARED "${SRC}" "${HEADER}")

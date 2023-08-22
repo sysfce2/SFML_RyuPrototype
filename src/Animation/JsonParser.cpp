@@ -163,6 +163,7 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         j.at("Path").get_to(JsonAnimations.spritesheetPath);
         json anis = j["Animations"];
 
+
         for(auto& ani : anis)
         {
             auto vecAni = ani.get<Animation>();
@@ -184,6 +185,7 @@ JsonParser::getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis)
             // std::string jsonString = jsonData.dump();
             // fmt::print("JSON-OUTPUT: {}\n\n\n",jsonString);
             // convert json object to struct with animations
+
             jsonAnis = jsonData;
         }
         catch(const std::exception& e)
