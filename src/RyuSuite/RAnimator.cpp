@@ -194,7 +194,41 @@ Editor::initData()
 void
 Editor::update(sf::Time dt)
 {
-    if(aniIsPlaying)
+        //fmt::print("update editor");
+
+    if (fileBrowserActive)
+    {
+                // mainloop
+                //while(continueRendering)
+                {
+                //...do other stuff like ImGui::NewFrame();
+                /*
+                if((_fileBrowser != nullptr )&& ImGui::Begin("dummy window"))
+                {
+                    // open file dialog when user clicks this button
+                    if(ImGui::Button("open file dialog"))
+                        _fileBrowser->Open();
+                }
+                ImGui::End();
+                */
+                _fileBrowser->Display();
+
+                if(_fileBrowser->HasSelected())
+                {
+
+                    std::cout << "Selected filename" << _fileBrowser->GetSelected().string() << std::endl;
+                    fileBrowserActive = false;
+                    parseJsonData(_fileBrowser->GetSelected().string());
+                    _fileBrowser->ClearSelected();
+                }
+
+                //...do other stuff like ImGui::Render();
+                }
+                /*END imbrowser example*/
+    }
+
+
+    if(parsedSpritesheet && aniIsPlaying)
     {
         spritesheetAnimation.update(dt);
     }
@@ -208,20 +242,27 @@ Editor::update(sf::Time dt)
 *          We only would be interested in the child animations !
 */
 void
-Editor::parseJsonData()
+Editor::parseJsonData(std::string path)
 {
-
+    fmt::print("Opening {} to read spritesheet.", path);
     // avoid appending animations of multiple spritesheets
     animations.clear();
     
     // TODO: later we select the path / from an openFiledialog / we can load multiple spritesheets
+
     std::string spriteSheet("ichi_spritesheet_level1");
+/*
 
-
-    std::string path("assets/spritesheets/ichi/");
+    std::string path2("assets/spritesheets/ichi/");
     std::string format("json");
-    std::ifstream f(path+spriteSheet+"."+format);
-    
+    std::ifstream f(path2+spriteSheet+"."+format);
+*/
+
+    // splitshizzle ... std::string spriteSheet;
+
+    //RyuParser::JsonParser::splitStrings(path,'/', spriteSheet);
+
+    std::ifstream f(path);
     std::cout << "Open JSON...\n";
     try
     {
@@ -331,39 +372,20 @@ Editor::createEditorWidgets(bool* p_open)
                 /*Begin imbrowser example*/
                 // TODO: encapsulate this in wrapperclass and set here only which event is thrown (which fileexplorer should open ...)
                 // create a file browser instance
-                ImGui::FileBrowser fileDialog;
+                  std::unique_ptr<ImGui::FileBrowser> fileDialog;
+                  fileDialog = std::make_unique<ImGui::FileBrowser>();
                 // (optional) set browser properties
-                fileDialog.SetTitle("Open Json");
-                fileDialog.SetTypeFilters({ ".json"});
-                // mainloop
-                //while(continueRendering)
-                {
-                //...do other stuff like ImGui::NewFrame();
+                fileDialog->SetTitle("Open Json");
+                fileDialog->SetTypeFilters({ ".json"});
 
-                if(ImGui::Begin("dummy window"))
-                {
-                    // open file dialog when user clicks this button
-                    if(ImGui::Button("open file dialog"))
-                        fileDialog.Open();
-                }
-                ImGui::End();
+                _fileBrowser = std::move(fileDialog);
 
-                fileDialog.Display();
+                fileBrowserActive = true;
 
-                if(fileDialog.HasSelected())
-                {
-                    std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
-                    fileDialog.ClearSelected();
-                }
-
-                //...do other stuff like ImGui::Render();
-                }
-                /*END imbrowser example*/
+                _fileBrowser->Open();
 
 
 
-
-                //parseJsonData();
               }
               if (ImGui::MenuItem("Open Json ...")){
                 parseJsonFile();

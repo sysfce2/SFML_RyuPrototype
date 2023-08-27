@@ -2,6 +2,7 @@
 #include <Ryu/Animation/EditorEnums.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Core/AssetIdentifiers.h>
+//#include <Ryu/Core/Utilities.h>
 #include <exception>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -37,13 +38,14 @@
     //   sf::Time animationDuration;
     //   bool repeat;
     //   Textures::CharacterID animationId;
-  
+
 
 
 namespace RyuParser {
 // namespace RyuAnimator::AnimationSpec {
 
-void splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
+void
+splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
 {
     // sould work in c++20 but cant output wit fmt ...
     // auto splitStrings = std::string_view{timeDur} | std::ranges::views::split(' ');
@@ -105,7 +107,8 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
         j.at("animationDuration").get_to(timeDur);
 
         std::vector<std::string> v;
-        splitStrings(timeDur,' ', v);
+       //RyuUtils::splitStrings(timeDur,' ', v);
+       splitStrings(timeDur,' ', v);
 
         // atm we only support ms and s
         if(v.at(1) == "ms")
@@ -175,6 +178,7 @@ void splitStrings(std::string& s, char delimiter, std::vector<std::string>& outp
 JsonParser::JsonParser(){}
 
 JsonParser::~JsonParser(){}
+
 
 
 void

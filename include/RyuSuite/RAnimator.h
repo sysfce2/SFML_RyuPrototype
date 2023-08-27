@@ -6,6 +6,9 @@
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Animation/EditorEnums.h>
 
+#include <imgui.h>
+#include <Thirdparty/imgui-filebrowser/imfilebrowser.h>
+
 #include <bits/stdint-intn.h>
 #include <cstdint>
 #include <map>
@@ -78,7 +81,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
   
       void createEditorWidgets(bool* p_open);
 
-      void parseJsonData();
+      void parseJsonData(std::string path);
       void parseJsonFile();
       bool showAnimationEditor;
   
@@ -94,6 +97,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       // key: spritesheetname, value: vector of animations
       std::map<std::string, std::vector<AnimationSpec::Animation> > animations;
       bool parsedSpritesheet;
+      bool fileBrowserActive;
       bool textureSet;
       std::string selectedSpritesheet;
       std::string selectedSpritesheetPath;
@@ -112,6 +116,8 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       std::vector<AnimationSpec::Animation> animationSpecs;
 
       std::map<std::string, bool> preferences;
+
+      std::unique_ptr<ImGui::FileBrowser> _fileBrowser;
       bool aniIsPlaying;
   };
 }

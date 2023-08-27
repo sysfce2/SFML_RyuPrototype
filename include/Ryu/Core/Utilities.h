@@ -40,3 +40,9 @@ namespace RyuPhysics
   RayCastClosest createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
   
 }
+/*
+namespace RyuUtils
+{
+    void splitStrings(std::string& s, char delimiter, std::vector<std::string>& output);
+}
+*/

@@ -81,7 +81,6 @@ class JsonParser
     public:
         JsonParser();
         ~JsonParser();
-
         void getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis);
 
     private:
