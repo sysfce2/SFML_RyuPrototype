@@ -102,6 +102,7 @@ namespace AnimationSpec {
                 {{"height", ani.frameSize.y}, {"width", ani.frameSize.x}}},
                {"animationDuration", timeInMs},
                {"repeat", ani.repeat},
+               {"AnimationType", ani.animationType._to_string()},
                {"AnimationId", std::visit( // as animationId is a std::variant with different datatypes we need to use visit
                        [](auto&& cId){return cId._to_string();},
                        ani.animationId)}};
@@ -367,13 +368,10 @@ Editor::createEditorWidgets(bool* p_open)
             if (ImGui::BeginMenu("File")) {
               ImGui::MenuItem("Menu", NULL, false, false);
               if (ImGui::MenuItem("Read JSON (Aseprite)")) {
-                // TODO: here later something like open a dialog window
-
-                /*Begin imbrowser example*/
                 // TODO: encapsulate this in wrapperclass and set here only which event is thrown (which fileexplorer should open ...)
                 // create a file browser instance
-                  std::unique_ptr<ImGui::FileBrowser> fileDialog;
-                  fileDialog = std::make_unique<ImGui::FileBrowser>();
+                std::unique_ptr<ImGui::FileBrowser> fileDialog;
+                fileDialog = std::make_unique<ImGui::FileBrowser>();
                 // (optional) set browser properties
                 fileDialog->SetTitle("Open Json");
                 fileDialog->SetTypeFilters({ ".json"});
@@ -383,9 +381,6 @@ Editor::createEditorWidgets(bool* p_open)
                 fileBrowserActive = true;
 
                 _fileBrowser->Open();
-
-
-
               }
               if (ImGui::MenuItem("Open Json ...")){
                 parseJsonFile();
