@@ -76,7 +76,7 @@ CharacterStateFalling::enter(CharacterBase& character)
            ,.numFrames=4
            ,.duration = sf::milliseconds(1000)
            ,.repeat = true
-           ,.animationId = Textures::CharacterID::IchiFallingLow});
+           ,.animationId = Textures::CharacterID::IchiFallingLoop});
     character.setCharacterStateEnum(ECharacterState::Falling);
 }
 

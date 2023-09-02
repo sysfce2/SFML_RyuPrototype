@@ -152,7 +152,7 @@ static bool repeatAnimation = true;
 const char* eventItems[5] = {""};
 const char* levelItems[3] = {""};
 const char* animationTypes[3] = {""};
-const char* animationIds[17] = {""};
+const char* animationIds[18] = {""};
 
 // TODO set huge amount of character IDs in the array -> how to improve this ???
 // Textures::CharacterID::
@@ -536,7 +536,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
                ,.numFrames= ani.numFrames
                ,.duration = ani.animationDuration
                ,.repeat = true ///  TODO from editor ui: entered by user
-               ,.animationId = Textures::CharacterID::IchiIdleRun}, ani.animationDuration,  ani.frames);///  TODO from editor ui: entered by user    
+               ,.animationId = Textures::CharacterID::_from_integral(currentAnimationId)}, ani.animationDuration,  ani.frames);///  TODO from editor ui: entered by user
     ImGui::Image(spritesheetAnimation.getSprite()/*guiCharTextureManager.getResource(Textures::LevelID::Level1)*/);
     currentActiveFrame =  spritesheetAnimation.getCurrentFrame()+1;
     // std::cout << currentActiveFrame << " set AniPrefs(dur in ms):" << spritesheetAnimation.getDuration().asMilliseconds() << "\n" ;
