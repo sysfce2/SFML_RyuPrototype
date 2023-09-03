@@ -65,26 +65,6 @@ namespace AnimationSpec {
                 
         };
     }
-/*
-    struct Animation
-    {
-      std::string name;
-      int16_t fromFrame; /// Frame Startposition in spritesheet
-      int16_t toFrame; /// Frame Endposition in spritresheet
-      std::string direction;
-      std::vector<Frame> frames;
-      std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
-      sf::Vector2i frameSize;
-      sf::Time animationDuration;
-      bool repeat;
-      Textures::CharacterID animationId;
-    };
-    struct Spec{
-      std::string specName;
-      std::string spritesheetName;
-      std::vector<Animation> animations; 
-    }; 
-*/
 
     void to_json(json& j, const Animation& ani) {
     // TODO: fill some fields with corect values / add somehoe lienbreaks to the json file ?

@@ -131,6 +131,9 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
         // TODO: this is ugly but it seems to work, its because animationId can hold dioffernet tyoes (variant)
         Textures::AnimationType aType = Textures::AnimationType::_from_string(aniType.c_str());
 
+        // set animationType
+        ani.animationType = aType;
+
         try{
          switch(aType)
          {

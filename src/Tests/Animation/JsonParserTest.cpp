@@ -72,13 +72,13 @@ TEST_F(JsonParserTest, CheckJsonFieldsCharacter) {
         "Path" : "assets/spritesheets/ichi/ichi_spritesheet_level1.png",
         "Animations" : 
         [
-          {"AnimationDirection":"forward","AnimationId":"IchiDuckIdle", "Type" : "Character",
+          {"AnimationDirection":"forward","AnimationId":"IchiDuckIdle","AnimationType": "Character", "Type" : "Character",
             "FrameSize": {"height":96,"width":80},
             "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
             "Name":"idle","Sheet_begin":3,"Sheet_end":3,
             "animationDuration":"666 ms",
             "numFrames":1,"repeat":false},
-          {"AnimationDirection":"backward","AnimationId":"IchiDuckWalk", "Type" : "Character",
+          {"AnimationDirection":"backward","AnimationId":"IchiDuckWalk", "AnimationType": "Character", "Type" : "Character",
             "FrameSize": {"height":96,"width":80},
             "Frames":[{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2},{"duration":100,"event":"CharacterSpeedChanged","height":96,"width":80,"x_sheet":3,"y_sheet":2}],
             "Name":"walkBack","Sheet_begin":4,"Sheet_end":5,
@@ -141,6 +141,10 @@ TEST_F(JsonParserTest, CheckJsonFieldsCharacter) {
   auto animationId = jsonAnis.animations.at(CharId::IchiDuckIdle).animationId;
   EXPECT_EQ(aniId._to_integral(),std::get<CharId>(animationId));
 
+  // animationType
+  Textures::AnimationType aniType = Textures::AnimationType::Character;
+  auto animationType = jsonAnis.animations.at(CharId::IchiDuckIdle).animationType;
+  EXPECT_EQ(aniType/*._to_integral()*/, animationType);
   /* Debug
   for(auto& i : jsonAnis.animations)
   {
