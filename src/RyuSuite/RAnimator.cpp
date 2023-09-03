@@ -10,6 +10,7 @@
 #include <bits/stdint-intn.h>
 #include <bits/stdint-uintn.h>
 #include <cstddef>
+#include <exception>
 #include <imgui.h>
 #include <imgui-SFML.h>
 #include <Thirdparty/imgui-filebrowser/imfilebrowser.h>
@@ -359,6 +360,7 @@ Editor::createEditorWidgets(bool* p_open)
     
     if(showAnimationEditor)
     {
+
         if(ImGui::Begin("Ryu Animation Editor",p_open, window_flags))
         {
 
@@ -405,15 +407,23 @@ Editor::createEditorWidgets(bool* p_open)
             sprintf(label,"%d_%s", i,ani.name.c_str());
             if(ImGui::Selectable(label, selected == i)) 
             {
-                auto aniId = std::visit( // as animationId is a std::variant with different datatypes we need to use visit
-                       [](auto&& cId){return cId._to_integral();},
-                       ani.animationId);
-                currentAnimationId = aniId;
-                selected = i;
-                // intDuration = 0;
-                selectedFrame = 1;
-                // currentEventItem = 0;
-                editFrame(ani,selectedFrame);
+                try
+                {
+                    fmt::print("choose animation {}\n",ani.name);
+                    auto aniId = std::visit( // as animationId is a std::variant with different datatypes we need to use visit
+                        [](auto&& cId){return cId._to_integral();},
+                        ani.animationId);
+                    currentAnimationId = aniId;
+                    selected = i;
+                    // intDuration = 0;
+                    selectedFrame = 1;
+                    // currentEventItem = 0;
+                    editFrame(ani,selectedFrame);
+                }
+                catch(std::exception e)
+                {
+                    fmt::print("Exception thrown when selecting animation {}: {}",ani.name,e.what());
+                }
             }
             i++;
           }
@@ -427,6 +437,8 @@ Editor::createEditorWidgets(bool* p_open)
         ImGui::BeginGroup();
         if(ImGui::BeginTabBar("SpriteSheets"))
         {
+            //try
+            {
             for (auto& sheet : animations)
             {
                  if(sheet.first == "") continue; /// otherwise we create an empty tab
@@ -438,14 +450,22 @@ Editor::createEditorWidgets(bool* p_open)
                      ImGui::EndTabItem();
                  }
             }
+        }
+        /*
+         catch(std::exception e)
+         {
+             fmt::print("createEditorWidgets exception: {}", e.what());
+         }
+         */
+
             EndTabBar();
         }
 
         ImGui::EndGroup();
 
       }
-      ImGui::End();
     }
+      ImGui::End();
 }
 
 void
@@ -511,6 +531,7 @@ Editor::calculateAnimationDuration(AnimationSpec::Animation& ani)
 void 
 Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
 {
+
     auto ani = sheet.second.at(selectedAni);
     ImGui::Text((std::to_string(selectedAni)+": "+ani.name+", ").c_str());
     ImGui::SameLine();
@@ -544,6 +565,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     
     setFrameDetails(selectedAni,sheet,selectedFrame,sheet.second.at(selectedAni));
 
+    // exc start
     ImGui::EndChild();
 
     
@@ -557,13 +579,14 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
 
     // std::cout << "Pos_ori: " << pos.x << "|" << pos.y << "\n";
 
-    if(currentActiveFrame-1 <= ani.frames.size())
+    try {
+    if(currentActiveFrame-1 < ani.frames.size())
     {
         pos.x = pos.x + ani.frames.at(currentActiveFrame-1).x;
         pos.y = pos.y + ani.frames.at(currentActiveFrame-1).y;
     }
+    // exception end
 
-    
     // std::cout << "Pos_new: " << pos.x << "|" << pos.y << "\n";
     
     // ImGui::GetWindowDrawList()->AddImage((void*)texture, pos,ImVec2(pos.x+80,pos.y+96)/* ImVec2(800, 600),ImVec2(880, 696)*/, ImVec2(0,0), ImVec2(1,1),IM_COL32_A_MASK);
@@ -661,6 +684,11 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
      ImGui::EndChild();
 
     ImGui::EndChild();
+    }
+    catch(std::exception e)
+         {
+             fmt::print("createEditorWidgets exception: {}", e.what());
+         }
 }
 
 void
@@ -708,10 +736,10 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
 void
 Editor::editFrame(AnimationSpec::Animation& ani, size_t frame )
 {
-    std::cout << ani.name << "," << std::to_string(frame) << "\n";
+    // std::cout << ani.name << "," << std::to_string(frame) << "\n";
     intDuration = ani.frames.at(frame-1).duration;
     currentEventItem = (ani.frames.at(frame-1).event)._to_integral(); 
-    std::cout << "FrameDetail(event): " << currentEventItem << ", ani-map: " << ani.frames.at(frame-1).event._to_string() << "\n";
+    // std::cout << "FrameDetail(event): " << currentEventItem << ", ani-map: " << ani.frames.at(frame-1).event._to_string() << "\n";
     //frameDetailsVisible =! frameDetailsVisible;
     ani.frameSize.x = (ani.frames.at(frame-1)).height;
     ani.frameSize.y = (ani.frames.at(frame-1)).width;

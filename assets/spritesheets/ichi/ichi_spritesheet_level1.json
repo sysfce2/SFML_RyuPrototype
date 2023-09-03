@@ -971,35 +971,28 @@
  "meta": {
   "app": "http://www.aseprite.org/",
   "version": "1.2.34.1-x64",
-  "image": "ichi_spritesheet_level1.png",
   "format": "RGBA8888",
   "size": { "w": 1040, "h": 960 },
   "scale": "1",
   "frameTags": [
    { "name": "idle", "from": 0, "to": 0, "direction": "forward" },
    { "name": "run", "from": 1, "to": 8, "direction": "forward" },
-   { "name": "falling", "from": 9, "to": 45, "direction": "forward" },
-   { "name": "loop", "from": 13, "to": 17, "direction": "forward" },
+   { "name": "falling_enter", "from": 9, "to": 12, "direction": "forward" },
+   { "name": "fallng_loop", "from": 13, "to": 17, "direction": "forward" },
+   { "name": "falling_land_enter", "from": 18, "to": 19, "direction": "forward" },
    { "name": "land_low", "from": 20, "to": 31, "direction": "forward" },
    { "name": "land_hard", "from": 32, "to": 45, "direction": "forward" },
-   { "name": "duck", "from": 46, "to": 56, "direction": "forward" },
-   { "name": "enter", "from": 46, "to": 48, "direction": "forward" },
-   { "name": "loop", "from": 50, "to": 56, "direction": "forward" },
-   { "name": "LadderClimb", "from": 57, "to": 75, "direction": "forward" },
-   { "name": "Back", "from": 57, "to": 57, "direction": "forward" },
-   { "name": "enter", "from": 58, "to": 62, "direction": "forward" },
-   { "name": "loop", "from": 63, "to": 75, "direction": "forward" },
+   { "name": "duck_enter", "from": 46, "to": 48, "direction": "forward" },
+   { "name": "duck_idle", "from": 49, "to": 49, "direction": "forward" },
+   { "name": "duck_walk", "from": 50, "to": 56, "direction": "forward" },
+   { "name": "ladder_back", "from": 57, "to": 57, "direction": "forward" },
+   { "name": "ladder_enter", "from": 58, "to": 62, "direction": "forward" },
+   { "name": "ladder_climb_loop", "from": 63, "to": 75, "direction": "forward" },
    { "name": "jump up", "from": 76, "to": 94, "direction": "forward" },
    { "name": "Jump_nrml", "from": 95, "to": 107, "direction": "forward" },
-   { "name": "sword_stance1", "from": 108, "to": 114, "direction": "forward" },
-   { "name": "idle", "from": 108, "to": 108, "direction": "forward" },
-   { "name": "walk", "from": 109, "to": 114, "direction": "forward" },
+   { "name": "sword_idle", "from": 108, "to": 108, "direction": "forward" },
+   { "name": "sword_walk", "from": 109, "to": 114, "direction": "forward" },
    { "name": "walk", "from": 115, "to": 120, "direction": "forward" }
-  ],
-  "layers": [
-   { "name": "merged", "opacity": 255, "blendMode": "normal" }
-  ],
-  "slices": [
   ]
  }
 }
