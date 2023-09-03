@@ -2,6 +2,7 @@
 
 // #include <Ryu/Animation/Animation.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
+#include "Ryu/Animation/AnimationManager.h"
 #include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/AssetIdentifiers.h>
@@ -53,6 +54,7 @@ struct AnimationConfiguration
     Textures::CharacterID animationId;
 };
 
+class AnimationManager;
 
 class CharacterBase : public SceneNode , public Subject
 {
@@ -66,7 +68,9 @@ class CharacterBase : public SceneNode , public Subject
         
         float getCharacterSpeed() {return mCharacterSpeed;}
         void setCharacterSpeed(float speed) {mCharacterSpeed = speed;};
-        
+
+        void setupAnimation(Textures::CharacterID aniId);
+
         std::unique_ptr<CharacterState>& getCurrentCharacterState();
 
         virtual void setTextureOnCharacter(Textures::LevelID textureId);
@@ -128,6 +132,7 @@ class CharacterBase : public SceneNode , public Subject
         BaseTextureManager baseTextureManager;
 
     protected:
+        std::unique_ptr<AnimationManager> mAnimationManager;
         EMoveDirection mMoveDirection;
         EActionHeight mActionHeight;
     

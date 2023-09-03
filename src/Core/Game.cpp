@@ -1,4 +1,3 @@
-#include <Ryu/Animation/AnimationManager.h>
 #include <Ryu/Core/Game.h>
 #include <Ryu/Core/World.h>
 #include <Ryu/Core/AssetManager.h>
@@ -26,7 +25,6 @@ Game::Game()
 ,mWindow(sf::VideoMode(1200, 800), "SFML Application")
 ,mWorld(mWindow)
 ,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
-,mAnimationManager(std::make_unique<AnimationManager>())
 ,mIsPaused(false)
 ,mAnimator()
 {

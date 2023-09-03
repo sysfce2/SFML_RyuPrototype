@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Ryu/Animation/AnimationManager.h"
 #include <SFML/Graphics.hpp>
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/PlayerController.h>
@@ -10,7 +9,6 @@
 
 #include <memory>
 
-class AnimationManager;
 class CharacterIchi;
 class PlayerController;
 class CommandQueue;
@@ -35,7 +33,6 @@ class Game : public Observer
 	  sf::RenderWindow mWindow;
 	  World mWorld;
     RyuAnimator::Editor mAnimator;
-    std::unique_ptr<AnimationManager> mAnimationManager;
 	  bool mIsPaused;
 	  std::unique_ptr<PlayerController> mPlayerController;
 	//ryu::AssetManager<sf::Font,std::string> fontManager;

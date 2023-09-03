@@ -59,6 +59,7 @@ CharacterStateRun::update(CharacterBase& character)
 void
 CharacterStateRun::enter(CharacterBase& character)
 {
+    /*
     character.setupAnimation({
                 .frameSize={80,96}
                ,.startFrame={1,0}
@@ -66,11 +67,14 @@ CharacterStateRun::enter(CharacterBase& character)
                ,.duration = sf::seconds(1)
                ,.repeat = true
                ,.animationId = Textures::CharacterID::IchiRun});
+    */
+    character.setupAnimation(Textures::CharacterID::IchiRun);
 
     mLastCharacterSpeed = character.getCharacterSpeed();
     character.setCharacterSpeed(mRunCharacterSpeed);
     character.notifyObservers(Ryu::EEvent::CharacterSpeedChanged);
     character.setCharacterStateEnum(ECharacterState::Run);
+
 }
 
 void

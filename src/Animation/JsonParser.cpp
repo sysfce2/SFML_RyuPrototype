@@ -14,33 +14,6 @@
 #include <iostream>
 #include <vector>
 
-
-    // struct Frame 
-    // {
-    //   int16_t duration;
-    //   int16_t height;
-    //   int16_t width;
-    //   int16_t x; /// x-position in spritesheet
-    //   int16_t y; /// y-position in spritesheet
-    //   EEvent event;
-    // };
-
-    // struct Animation
-    // {
-
-    //   std::string name;
-    //   int16_t fromFrame; /// Frame Startposition in spritesheet
-    //   int16_t toFrame; /// Frame Endposition in spritresheet
-    //   std::string direction;
-    //   std::vector<Frame> frames;
-    //   std::size_t numFrames; // == TaggedAnimation::toFrame - TaggedAnimation::fromFrame
-    //   sf::Vector2i frameSize;
-    //   sf::Time animationDuration;
-    //   bool repeat;
-    //   Textures::CharacterID animationId;
-
-
-
 namespace RyuParser {
 // namespace RyuAnimator::AnimationSpec {
 
@@ -110,6 +83,7 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
        //RyuUtils::splitStrings(timeDur,' ', v);
        splitStrings(timeDur,' ', v);
 
+       // FIXME: as this should be a summary of duration of the frames it makes no sense to switch to s for now, duration in frames is always ms
         // atm we only support ms and s
         if(v.at(1) == "ms")
         {

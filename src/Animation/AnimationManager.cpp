@@ -23,7 +23,6 @@ AnimationManager::~AnimationManager()
 const RyuParser::Animation &
 AnimationManager::getCharacterAnimationConfig(Textures::LevelID level, Textures::CharacterID aniId)
 {
-    // fiXME: use a map,
     return spritesheetConfigs.at(level).animations.at(aniId);
 }
 
@@ -45,6 +44,7 @@ AnimationManager::readAnimationConfigs()
             std::make_pair(jAnis.spritesheetId, jAnis)
         );
     }
+    fmt::print("Reading configs done.");
 }
 
 // TODO: extend ?

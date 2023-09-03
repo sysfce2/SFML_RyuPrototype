@@ -1,10 +1,15 @@
+#include "Ryu/Animation/JsonParser.h"
+#include "Ryu/Core/AssetIdentifiers.h"
+#include <Ryu/Animation/AnimationManager.h>
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Statemachine/CharacterStateFalling.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/Utilities.h>
 
+#include <SFML/System/Time.hpp>
 #include <Thirdparty/glm/glm.hpp>
+#include <fmt/core.h>
 
 #include <box2d/box2d.h>
 
@@ -37,6 +42,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,mCurrentLevel(Textures::LevelID::Level1)
     ,rayCastPoints()
     ,mECharacterState(ECharacterState::None)
+    ,mAnimationManager(std::make_unique<AnimationManager>())
 {
     loadTextures();
 }
@@ -54,6 +60,7 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,baseTextureManager()
     ,mCharSettings()
     ,mCurrentLevel(Textures::LevelID::Level1)
+    ,mAnimationManager(std::make_unique<AnimationManager>())
 {
     // TODO: check if its needable&possible to start character from a certain state
    loadTextures();
@@ -269,7 +276,7 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     getSpriteAnimation().setNumFrames(config.numFrames);
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);
-    
+
     setTextureOnCharacter(mCurrentLevel);
 
     // set origin of texture to center
@@ -277,14 +284,54 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 
     // std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
-    
+
     // the first time we need to init physics-body etc
     if(not physicsInitialized)
     {
         initPhysics();
     }
 }
-    
+
+//TODO/FIXME: do not work properly atm -> check startFrameValues correctly / see characterstaterun
+void
+CharacterBase::setupAnimation(Textures::CharacterID aniId)
+{
+    RyuParser::Animation aniConfig;
+    aniConfig = mAnimationManager->getCharacterAnimationConfig(mCurrentLevel, aniId);
+    fmt::print("startF(x): {}, startD(y): {}","bla","bla");
+               AnimationConfiguration config{
+                .frameSize=aniConfig.frameSize
+                ,.startFrame= {aniConfig.frames.at(0).width,aniConfig.frames.at(0).height}
+               ,.numFrames=aniConfig.numFrames
+               ,.duration = aniConfig.animationDuration
+               ,.repeat = true //aniConfig.repeat
+               ,.animationId = aniId};
+
+    //setupAnimation(config);
+    getSpriteAnimation().setFrameSize(config.frameSize);
+    //getSpriteAnimation().setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
+    getSpriteAnimation().setStartFrame({config.frameSize.x, config.frameSize.y});
+    getSpriteAnimation().setNumFrames(config.numFrames);
+    getSpriteAnimation().setDuration(config.duration);
+    getSpriteAnimation().setRepeating(config.repeat);
+
+    setTextureOnCharacter(mCurrentLevel);
+
+    // set origin of texture to center
+    sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
+    getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+
+    // std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
+
+    // the first time we need to init physics-body etc
+    if(not physicsInitialized)
+    {
+        initPhysics();
+    }
+
+}
+
+
 
 void
 CharacterBase::updateCharacterState(sf::Time deltaTime)
