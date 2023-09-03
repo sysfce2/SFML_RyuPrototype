@@ -153,7 +153,7 @@ static bool repeatAnimation = true;
 const char* eventItems[5] = {""};
 const char* levelItems[3] = {""};
 const char* animationTypes[3] = {""};
-const char* animationIds[18] = {""};
+const char* animationIds[20] = {""};
 
 // TODO set huge amount of character IDs in the array -> how to improve this ???
 // Textures::CharacterID::

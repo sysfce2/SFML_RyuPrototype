@@ -45,26 +45,28 @@ namespace Textures
   // Rename ? to CharacterAnimationId
     BETTER_ENUM(CharacterID, char ,
         None=0,
-				IchiIdle,
-                IchiRun,
-				IchiJump,
-				IchiKatanaWalk,
-				IchiStartFalling,
-				IchiFallingLoop,
-				IchiEndFallingLow,
-				IchiEndFallingHigh,
-				IchiDuckEnter,
-				IchiDuckIdle,
-				IchiDuckWalk,
-				IchiLadderIdle,
-				IchiLadderClimb,
-				IchiJumpUp,
-				IchiJumpForward,
-				IchiSword1Idle,
-				IchiSword1Walk,
-				IchiWalk
+		IchiIdle, //
+        IchiRun, //
+		IchiStartFalling, //
+		IchiFallingLoop, //
+        IchiLandEnter, //                 //
+		IchiLandLow, //
+		IchiLandHigh, //
+		IchiDuckEnter, //
+		IchiDuckIdle, //
+		IchiDuckWalk, //
+        IchiLadderEnter, //
+        IchiLadderBack, //
+        IchiLadderIdle,
+		IchiLadderClimbLoop, //
+		IchiJumpUp, //
+		IchiJumpForwardNrml, //
+		IchiSword1Idle, //
+		IchiSword1Walk, //
+		IchiWalk, //
+        Length = 20 //
 		// ... Spritesheets
-                );
+    );
 
     BETTER_ENUM(SceneBGAni, char,
                 // TODO: fill for SceneBackgroundAnimationIds

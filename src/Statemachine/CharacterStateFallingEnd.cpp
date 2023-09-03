@@ -59,7 +59,7 @@ CharacterStateFallingEnd::enter(CharacterBase& character)
            ,.numFrames=14
            ,.duration = sf::milliseconds(1350)
            ,.repeat = false
-           ,.animationId = Textures::CharacterID::IchiEndFallingLow});
+           ,.animationId = Textures::CharacterID::IchiLandLow});
     }
     
     if(character.getActionHeight() == EActionHeight::High)
@@ -70,7 +70,7 @@ CharacterStateFallingEnd::enter(CharacterBase& character)
            ,.numFrames=14
            ,.duration = sf::milliseconds(1550)
            ,.repeat = false
-           ,.animationId = Textures::CharacterID::IchiEndFallingHigh});
+           ,.animationId = Textures::CharacterID::IchiLandHigh});
     }
     
     character.setCharacterStateEnum(ECharacterState::FallingEnd);
