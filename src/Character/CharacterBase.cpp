@@ -271,6 +271,8 @@ CharacterBase::changeState(std::unique_ptr<CharacterState> toState)
 void
 CharacterBase::setupAnimation(AnimationConfiguration config)
 {
+    fmt::print("setupAnimation from CharacterId: StartFrame {}/{} \n "
+               ,config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y);
     getSpriteAnimation().setFrameSize(config.frameSize);
     getSpriteAnimation().setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
     getSpriteAnimation().setNumFrames(config.numFrames);
@@ -298,19 +300,22 @@ CharacterBase::setupAnimation(Textures::CharacterID aniId)
 {
     RyuParser::Animation aniConfig;
     aniConfig = mAnimationManager->getCharacterAnimationConfig(mCurrentLevel, aniId);
-    fmt::print("startF(x): {}, startD(y): {}","bla","bla");
-               AnimationConfiguration config{
-                .frameSize=aniConfig.frameSize
-                ,.startFrame= {aniConfig.frames.at(0).width,aniConfig.frames.at(0).height}
+    //fmt::print("startF(x): {}, startD(y): {}","bla","bla");
+    AnimationConfiguration config{
+               // TODO: check if x/y are in correct order for later spritesheets
+               .frameSize={aniConfig.frameSize.y,aniConfig.frameSize.x}
+                ,.startFrame= {aniConfig.frames.at(0).x,aniConfig.frames.at(0).y}
                ,.numFrames=aniConfig.numFrames
                ,.duration = aniConfig.animationDuration
                ,.repeat = true //aniConfig.repeat
                ,.animationId = aniId};
 
+    fmt::print("setupAnimation from CharacterId: StartFrame {}/{} \n "
+                          ,aniConfig.frames.at(0).x,aniConfig.frames.at(0).y);
     //setupAnimation(config);
     getSpriteAnimation().setFrameSize(config.frameSize);
     //getSpriteAnimation().setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
-    getSpriteAnimation().setStartFrame({config.frameSize.x, config.frameSize.y});
+    getSpriteAnimation().setStartFrame({config.startFrame.x, config.startFrame.y});
     getSpriteAnimation().setNumFrames(config.numFrames);
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);

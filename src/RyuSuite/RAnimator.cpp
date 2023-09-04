@@ -60,7 +60,7 @@ namespace AnimationSpec {
             {"height",frame.height},
             {"width",frame.width},
             {"x_sheet",frame.x},
-            {"y_sheet",frame.x},
+            {"y_sheet",frame.y},
             {"event",frame.event._to_string()}
                 
         };
@@ -80,7 +80,7 @@ namespace AnimationSpec {
                {"numFrames", ani.numFrames},
                {"Frames", jFrames},
                {"FrameSize",
-                {{"height", ani.frameSize.y}, {"width", ani.frameSize.x}}},
+                {{"height", ani.frameSize.x}, {"width", ani.frameSize.y}}},
                {"animationDuration", timeInMs},
                {"repeat", ani.repeat},
                {"AnimationType", ani.animationType._to_string()},

@@ -59,8 +59,7 @@ CharacterStateRun::update(CharacterBase& character)
 void
 CharacterStateRun::enter(CharacterBase& character)
 {
-    /*
-    character.setupAnimation({
+    /*character.setupAnimation({
                 .frameSize={80,96}
                ,.startFrame={1,0}
                ,.numFrames=8
