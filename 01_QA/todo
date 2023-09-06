@@ -1,7 +1,12 @@
+6/9/23
+- pause input when Animator is open
+- read animation config files and set preferences in Animator, to continue work ...
+  - use file browser to parse config file
+
 28/11/22
-- !!! debugdraw right no tirdparty, include it directly and either with SFML or opengl !!! very important for box2d debugging
-- remove thirdparty debug stuff from cmakelists
-- make cmakelists easier
+x !!! debugdraw right no tirdparty, include it directly and either with SFML or opengl !!! very important for box2d debugging
+x remove thirdparty debug stuff from cmakelists
+x make cmakelists easier
 
 
 4/11/22:
@@ -9,7 +14,7 @@
 - physics boxes destructable
 - physics for character only falling, collision
 - try transparent textures with light outlines for physicbodies (debug)
-- move physcsbody when character moves
+x move physcsbody when character moves
 
 12/10/22:
 - set position of player (spawnposition)

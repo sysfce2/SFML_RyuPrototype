@@ -364,6 +364,7 @@ Editor::createEditorWidgets(bool* p_open)
 
                 _fileBrowser->Open();
               }
+
               if (ImGui::MenuItem("Open Json ...")){
                 parseJsonFile();
               }
@@ -438,14 +439,12 @@ Editor::createEditorWidgets(bool* p_open)
          }
          */
 
-            EndTabBar();
+         EndTabBar();
         }
-
         ImGui::EndGroup();
-
       }
+    ImGui::End();
     }
-      ImGui::End();
 }
 
 void

@@ -90,12 +90,12 @@ void Game::run()
       ImGui::SFML::Update(mWindow, timeSinceLastUpdate);
 			mPlayerController->handleRealtimeInput(commands);
 			
-			if (!mIsPaused)
+			if (!mIsPaused )
 			{
 				update(TimePerFrame);
 				RyuDebug::CreateDebugGui();
-				mAnimator.createEditorWidgets(&mAnimator.showAnimationEditor);		
-			}
+			}//!mAnimator.showAnimationEditor
+			mAnimator.createEditorWidgets(&mAnimator.showAnimationEditor);
 		  render();
 		}	
 	}

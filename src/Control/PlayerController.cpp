@@ -190,7 +190,7 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 notify(*playerCharacter,RyuEvent::ImGuiDemoToggle);
                 break;
             }
-            case sf::Keyboard::Num1:
+            case sf::Keyboard::Comma:
             {
                  notify(*playerCharacter,RyuEvent::RyuAnimatorToggle);
                  break;
