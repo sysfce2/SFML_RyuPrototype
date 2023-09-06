@@ -684,6 +684,7 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
         //auto ani = sheet.second.at(selectedAni);
         ImGui::Text("Frame: %d", frameNumber);
         ImGui::Checkbox("Repeat", &repeatAnimation);
+        ani.repeat = repeatAnimation;
         if(ImGui::Combo("AnimationType",&currentAnimationType, animationTypes, IM_ARRAYSIZE(animationTypes))) //;
         {
             ani.animationType = Textures::AnimationType::_from_integral(currentAnimationType);
@@ -723,6 +724,7 @@ Editor::editFrame(AnimationSpec::Animation& ani, size_t frame )
     //frameDetailsVisible =! frameDetailsVisible;
     ani.frameSize.x = (ani.frames.at(frame-1)).height;
     ani.frameSize.y = (ani.frames.at(frame-1)).width;
+    repeatAnimation = ani.repeat;
 }
 
 void

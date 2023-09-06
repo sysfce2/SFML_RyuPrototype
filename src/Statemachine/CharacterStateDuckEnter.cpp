@@ -45,15 +45,7 @@ CharacterStateDuckEnter::update(CharacterBase& character)
 void
 CharacterStateDuckEnter::enter(CharacterBase& character)
 {
-    
-    character.setupAnimation({
-                .frameSize={80,96}
-                ,.startFrame={7,3}
-                ,.numFrames=3
-                ,.duration = sf::milliseconds(1000)
-                ,.repeat = false
-                ,.animationId = Textures::CharacterID::IchiDuckEnter});
-
+    character.setupAnimation(Textures::CharacterID::IchiDuckEnter);
     character.setCharacterStateEnum(ECharacterState::DuckEnter);
     // character.destroyPhysics();
     // character.initPhysics();

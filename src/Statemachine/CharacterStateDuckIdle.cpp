@@ -51,14 +51,7 @@ CharacterStateDuckIdle::update(CharacterBase& character)
 void
 CharacterStateDuckIdle::enter(CharacterBase& character)
 {
-    character.setupAnimation({
-                .frameSize={80,96}
-               ,.startFrame={9,3}
-               ,.numFrames=1
-               ,.duration = sf::milliseconds(500)
-               ,.repeat = true
-               ,.animationId = Textures::CharacterID::IchiDuckIdle});
-
+    character.setupAnimation(Textures::CharacterID::IchiDuckIdle);
     character.setCharacterStateEnum(ECharacterState::DuckIdle);
 }
 

@@ -47,15 +47,7 @@ CharacterStateDuckWalk::update(CharacterBase& character)
 void
 CharacterStateDuckWalk::enter(CharacterBase& character)
 {
-    
-    character.setupAnimation({
-                .frameSize={80,96}
-                ,.startFrame={10,3}
-                ,.numFrames=7
-                ,.duration = sf::seconds(1)
-                ,.repeat = true
-                ,.animationId = Textures::CharacterID::IchiDuckWalk});
-
+    character.setupAnimation(Textures::CharacterID::IchiDuckWalk);
     character.setCharacterStateEnum(ECharacterState::DuckWalk);
 }
 

@@ -52,14 +52,7 @@ CharacterStateJumpUp::update(CharacterBase& character)
 void
 CharacterStateJumpUp::enter(CharacterBase& character)
 {
-    character.setupAnimation({
-                .frameSize={80,96}
-               ,.startFrame={10,5}
-               ,.numFrames=14
-               ,.duration = sf::seconds(1)
-               ,.repeat = false
-               ,.animationId = Textures::CharacterID::IchiJumpUp});
-
+    character.setupAnimation(Textures::CharacterID::IchiJumpUp);
     character.setCharacterStateEnum(ECharacterState::JumpUp);
     character.jumpUp();
 }

@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <memory>
+#include <fmt/core.h>
 
 
 //namespace ryu{
@@ -41,6 +42,7 @@ CharacterStateFallingEnd::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateFallingEnd::update(CharacterBase& character)
 {
+    //fmt::print("Repeat: {}\n", character.getSpriteAnimation().isRepeating());
     if(character.getSpriteAnimation().isFinished())
     {
        std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
@@ -53,6 +55,8 @@ CharacterStateFallingEnd::enter(CharacterBase& character)
 {
     if(character.getActionHeight() == EActionHeight::Low)
     {
+        character.setupAnimation(Textures::CharacterID::IchiLandLow);
+        /*
         character.setupAnimation({
             .frameSize={80,96}
            ,.startFrame={4,1}
@@ -60,17 +64,20 @@ CharacterStateFallingEnd::enter(CharacterBase& character)
            ,.duration = sf::milliseconds(1350)
            ,.repeat = false
            ,.animationId = Textures::CharacterID::IchiLandLow});
+*/
     }
     
     if(character.getActionHeight() == EActionHeight::High)
     {
-        character.setupAnimation({
+    character.setupAnimation(Textures::CharacterID::IchiLandHigh);
+    /*    character.setupAnimation({
             .frameSize={80,96}
            ,.startFrame={5,2}
            ,.numFrames=14
            ,.duration = sf::milliseconds(1550)
            ,.repeat = false
            ,.animationId = Textures::CharacterID::IchiLandHigh});
+*/
     }
     
     character.setCharacterStateEnum(ECharacterState::FallingEnd);

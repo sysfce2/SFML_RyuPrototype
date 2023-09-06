@@ -48,21 +48,13 @@ CharacterStateIdle::handleInput(CharacterBase& character,EInput input)
 void 
 CharacterStateIdle::update(CharacterBase& character)
 {
-    //std::cout << "IDLE"<< std::endl;
 }
 
 
 void
 CharacterStateIdle::enter(CharacterBase& character)
 {
-    character.setupAnimation({
-                .frameSize={80,96}
-               ,.startFrame={0,0}
-               ,.numFrames=1
-               ,.duration = sf::seconds(1)
-               ,.repeat = true
-               ,.animationId = Textures::CharacterID::IchiIdle});
-
+    character.setupAnimation(Textures::CharacterID::IchiIdle);
     character.setCharacterStateEnum(ECharacterState::Idle);
 }
 

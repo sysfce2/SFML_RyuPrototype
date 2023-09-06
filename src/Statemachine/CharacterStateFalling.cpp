@@ -70,13 +70,7 @@ CharacterStateFalling::update(CharacterBase& character)
 void
 CharacterStateFalling::enter(CharacterBase& character)
 {
-    character.setupAnimation({
-            .frameSize={80,96}
-           ,.startFrame={0,1}
-           ,.numFrames=4
-           ,.duration = sf::milliseconds(1000)
-           ,.repeat = true
-           ,.animationId = Textures::CharacterID::IchiFallingLoop});
+    character.setupAnimation(Textures::CharacterID::IchiFallingLoop);
     character.setCharacterStateEnum(ECharacterState::Falling);
 }
 

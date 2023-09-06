@@ -294,7 +294,6 @@ CharacterBase::setupAnimation(AnimationConfiguration config)
     }
 }
 
-//TODO/FIXME: do not work properly atm -> check startFrameValues correctly / see characterstaterun
 void
 CharacterBase::setupAnimation(Textures::CharacterID aniId)
 {
@@ -304,10 +303,10 @@ CharacterBase::setupAnimation(Textures::CharacterID aniId)
     AnimationConfiguration config{
                // TODO: check if x/y are in correct order for later spritesheets
                .frameSize={aniConfig.frameSize.y,aniConfig.frameSize.x}
-                ,.startFrame= {aniConfig.frames.at(0).x,aniConfig.frames.at(0).y}
+               ,.startFrame= {aniConfig.frames.at(0).x,aniConfig.frames.at(0).y}
                ,.numFrames=aniConfig.numFrames
                ,.duration = aniConfig.animationDuration
-               ,.repeat = true //aniConfig.repeat
+               ,.repeat = aniConfig.repeat
                ,.animationId = aniId};
 
     fmt::print("setupAnimation from CharacterId: StartFrame {}/{} \n "
