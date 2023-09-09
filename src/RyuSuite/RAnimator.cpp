@@ -34,7 +34,6 @@ using json = nlohmann::json;
 using EEvent = Ryu::EEvent;
 
 
-
 // namespace RyuParser {
 namespace AnimationSpec {
     void from_json(const json& j, Animation& ani) {
@@ -103,6 +102,7 @@ Editor::Editor():
     ,aniIsPlaying(false)
     ,textureSet(false)
     ,preferences()
+    ,fileBrowserState(EFileBrowserState::None)
 {
     initTextures();
     initData();
@@ -178,7 +178,7 @@ Editor::update(sf::Time dt)
 {
         //fmt::print("update editor");
 
-    if (fileBrowserActive)
+    if (fileBrowserState != EFileBrowserState::None)
     {
                 // mainloop
                 //while(continueRendering)
@@ -199,9 +199,27 @@ Editor::update(sf::Time dt)
                 {
 
                     std::cout << "Selected filename" << _fileBrowser->GetSelected().string() << std::endl;
-                    fileBrowserActive = false;
-                    parseJsonData(_fileBrowser->GetSelected().string());
+
+                    switch (fileBrowserState)
+                    {
+                        case EFileBrowserState::SpriteSheetJson:
+                        {
+                            parseJsonData(_fileBrowser->GetSelected().string());
+                            break;
+                        }
+                        case EFileBrowserState::AnimationConfigJson:
+                        {
+                            fmt::print("Configure {}\n","Animation");
+                            break;
+
+                        }
+
+                        default:
+                            fileBrowserState = EFileBrowserState::None;
+                    }
+
                     _fileBrowser->ClearSelected();
+                    fileBrowserState = EFileBrowserState::None;
                 }
 
                 //...do other stuff like ImGui::Render();
@@ -315,6 +333,17 @@ Editor::parseJsonFile()
     // TODO: make it a variable from EditorDialog
     std::string file("ichi.json");
 
+    // TODO: encapsulate this in wrapperclass and set here only which event is thrown (which fileexplorer should open ...)
+    // create a file browser instance
+    std::unique_ptr<ImGui::FileBrowser> fileDialog;
+    fileDialog = std::make_unique<ImGui::FileBrowser>();
+    fileDialog->SetTitle("Open Configuration Json");
+    fileDialog->SetTypeFilters({ ".json"});
+
+     _fileBrowser = std::move(fileDialog);
+     fileBrowserState = EFileBrowserState::AnimationConfigJson;
+     _fileBrowser->Open();
+/*
     std::ifstream f(file);
     fmt::print(stderr, "Open Json, {}!\n", file);
     json data;
@@ -330,6 +359,7 @@ Editor::parseJsonFile()
     
     RyuParser::JsonAnimations jsonContent;
     jParser.getAnimationsFromJson(data, jsonContent);
+    */
 }
 
 
@@ -349,23 +379,21 @@ Editor::createEditorWidgets(bool* p_open)
           if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
               ImGui::MenuItem("Menu", NULL, false, false);
-              if (ImGui::MenuItem("Read JSON (Aseprite)")) {
+              if (ImGui::MenuItem("Open Spritesheet JSON (Aseprite) ...")) {
                 // TODO: encapsulate this in wrapperclass and set here only which event is thrown (which fileexplorer should open ...)
                 // create a file browser instance
                 std::unique_ptr<ImGui::FileBrowser> fileDialog;
                 fileDialog = std::make_unique<ImGui::FileBrowser>();
                 // (optional) set browser properties
-                fileDialog->SetTitle("Open Json");
+                fileDialog->SetTitle("Open Spritesheet Json");
                 fileDialog->SetTypeFilters({ ".json"});
-
+                fileBrowserState = EFileBrowserState::SpriteSheetJson;
                 _fileBrowser = std::move(fileDialog);
-
-                fileBrowserActive = true;
 
                 _fileBrowser->Open();
               }
 
-              if (ImGui::MenuItem("Open Json ...")){
+              if (ImGui::MenuItem("Read Animation Configuration Json ...")){
                 parseJsonFile();
               }
                     

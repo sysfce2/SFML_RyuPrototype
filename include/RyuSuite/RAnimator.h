@@ -38,6 +38,13 @@ struct AnimationConfig
     Textures::CharacterID animationId;
 };
 
+enum class EFileBrowserState
+{
+  None,
+  SpriteSheetJson,
+  AnimationConfigJson
+};
+
 using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationSpec::Animation>>  ;
 
   class Editor
@@ -72,12 +79,12 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       // key: spritesheetname, value: vector of animations
       std::map<std::string, std::vector<AnimationSpec::Animation> > animations;
       bool parsedSpritesheet;
-      bool fileBrowserActive;
       bool textureSet;
       std::string selectedSpritesheet;
       std::string selectedSpritesheetPath;
       std::string selectedSpritesheetId;
       char selectedSpriteSheetPath[128] = "assets/spritesheets/ichi/ichi_spritesheet_level1.png";
+      EFileBrowserState fileBrowserState;
 
   private:
 
