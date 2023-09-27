@@ -12,6 +12,7 @@
 #include <string_view>
 #include <fstream>
 #include <iostream>
+#include <variant>
 #include <vector>
 
 namespace RyuParser {
@@ -156,6 +157,17 @@ JsonParser::JsonParser(){}
 
 JsonParser::~JsonParser(){}
 
+void
+JsonParser::printJsonParserContent(RyuParser::JsonAnimations content)
+{
+    fmt::print("Parser holds these animations:\n");
+    for(const auto& ani : content.animations)
+    {
+        fmt::print("Ani-Id: {} , Animation: {} \n",std::visit([](auto&& cId){return cId._to_string();},ani.first)
+               , ani.second.name
+                       );
+    }
+}
 
 
 void

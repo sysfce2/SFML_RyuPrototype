@@ -5,6 +5,7 @@
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Animation/EditorEnums.h>
+#include <Ryu/Animation/JsonParser.h>
 
 #include <imgui.h>
 #include <Thirdparty/imgui-filebrowser/imfilebrowser.h>
@@ -91,10 +92,15 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       void setTooltipText(const char * tooltip);
       void initTextures();
       void editFrame(AnimationSpec::Animation& ani, size_t frame);
+      void parseConfiguration(std::string configFile);
+      void updateAnimations(RyuParser::JsonAnimations& aniSource);
       GuiCharTextureManager guiCharTextureManager;
       GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;
 
+      /*
+       * map with animation specifications read from a spritesheet-2D tool (atm: Aseprite-json)
+       */
       std::vector<AnimationSpec::Animation> animationSpecs;
 
       std::map<std::string, bool> preferences;

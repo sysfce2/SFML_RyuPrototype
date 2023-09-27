@@ -210,6 +210,7 @@ Editor::update(sf::Time dt)
                         case EFileBrowserState::AnimationConfigJson:
                         {
                             fmt::print("Configure {}\n","Animation");
+                            parseConfiguration(_fileBrowser->GetSelected().string());
                             break;
 
                         }
@@ -327,11 +328,52 @@ Editor::parseJsonData(std::string path)
 }
 
 void
+Editor::parseConfiguration(std::string configFile)
+{
+    std::ifstream f(configFile);
+    fmt::print(stderr, "Open Json, {}!\n", configFile);
+    json data;
+    try
+    {
+        data = json::parse(f);
+    }
+    catch(json::exception e)
+    {
+      fmt::print("{}: {}\n",e.id,e.what());
+      fmt::print("Can't parse file, probably filestream-error. Filename correct ?\n");
+    }
+
+    RyuParser::JsonParser jParser;
+    RyuParser::JsonAnimations jsonContent;
+    jParser.getAnimationsFromJson(data, jsonContent);
+    fmt::print("Parsed Animation configuration: {}\n",jsonContent.jsonName);
+    jParser.printJsonParserContent(jsonContent);
+
+    updateAnimations(jsonContent);
+
+}
+
+void
+Editor::updateAnimations(RyuParser::JsonAnimations& aniSource)
+{
+    auto& anims = animations.at(selectedSpritesheet);
+    fmt::print("check anis from selected spritesheet: {}\n",selectedSpritesheet);
+    // ca this: assert(selectedSpritesheet == aniSource.spritesheetPath);
+    for(auto& ani : anims)
+    {
+        fmt::print("AniName from editor: {}\n",ani.name);
+
+    }
+
+    /* TODO: - ani editor has ani.name -> aniSource has key ANimation Id
+     *       a- we can create a map with key animation-name -> only unique names allowed
+     *       b- or we search for animatons everytime we load a configuration  */
+
+}
+
+void
 Editor::parseJsonFile()
 {
-    RyuParser::JsonParser jParser;
-    // TODO: make it a variable from EditorDialog
-    std::string file("ichi.json");
 
     // TODO: encapsulate this in wrapperclass and set here only which event is thrown (which fileexplorer should open ...)
     // create a file browser instance
@@ -343,23 +385,6 @@ Editor::parseJsonFile()
      _fileBrowser = std::move(fileDialog);
      fileBrowserState = EFileBrowserState::AnimationConfigJson;
      _fileBrowser->Open();
-/*
-    std::ifstream f(file);
-    fmt::print(stderr, "Open Json, {}!\n", file);
-    json data;
-    try
-    {
-        data = json::parse(f);
-    }
-    catch(json::exception e)
-    {
-      fmt::print("{}: {}\n",e.id,e.what());
-      fmt::print("Can't parse file, probably filestream-error. Filename correct ?\n");
-    }
-    
-    RyuParser::JsonAnimations jsonContent;
-    jParser.getAnimationsFromJson(data, jsonContent);
-    */
 }
 
 

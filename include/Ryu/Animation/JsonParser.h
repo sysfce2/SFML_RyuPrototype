@@ -82,6 +82,7 @@ class JsonParser
         JsonParser();
         ~JsonParser();
         void getAnimationsFromJson(json& jsonData, JsonAnimations& jsonAnis);
+        void printJsonParserContent(RyuParser::JsonAnimations content);
 
     private:
         std::map<std::string,Animation> animations;
