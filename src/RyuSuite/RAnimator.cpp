@@ -7,6 +7,7 @@
 
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <algorithm>
 #include <bits/stdint-intn.h>
 #include <bits/stdint-uintn.h>
 #include <cstddef>
@@ -359,10 +360,20 @@ Editor::updateAnimations(RyuParser::JsonAnimations& aniSource)
     auto& anims = animations.at(selectedSpritesheet);
     fmt::print("check anis from selected spritesheet: {}\n",selectedSpritesheet);
     // ca this: assert(selectedSpritesheet == aniSource.spritesheetPath);
-    for(auto& ani : anims)
+    for(auto& aniItem : anims)
     {
-        fmt::print("AniName from editor: {}\n",ani.name);
+        fmt::print("AniName from editor: {}\n",aniItem.name);
 
+        auto predicate = [&aniItem](auto& item){return aniItem.name == item.second.name;};
+        auto aniId = std::find_if(aniSource.animations.begin(),aniSource.animations.end(), predicate);
+        if(aniId != aniSource.animations.end())
+        {
+            aniItem.animationId = aniId->first;
+            fmt::print("Ani Id {} set to animation {}",
+                       std::visit([](auto&& cId){
+                          return cId._to_string();},
+                              aniItem.animationId), aniItem.name);
+        }
     }
 
     /* TODO: - ani editor has ani.name -> aniSource has key ANimation Id
