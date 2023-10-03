@@ -365,6 +365,7 @@ Editor::updateAnimations(RyuParser::JsonAnimations& aniSource)
     {
         fmt::print("No spritesheet loaded.\n");
     }
+
     for(auto& aniItem : anims)
     {
         fmt::print("AniName from editor: {}\n",aniItem.name);
@@ -375,18 +376,35 @@ Editor::updateAnimations(RyuParser::JsonAnimations& aniSource)
         {
             // set animationId from Config
             aniItem.animationId = aniId->first;
-            fmt::print("Ani Id {} set to animation {}",
+
+            fmt::print("Ani Id {} set to animation {} \n",
                        std::visit([](auto&& cId){
                           return cId._to_string();},
                            aniItem.animationId), aniItem.name);
-            //
+
+            // Frames duration and event
+            int i = 0;
+
+            try {
+                for (auto& frame : aniId->second.frames)
+                {
+                    aniItem.frames.at(i).duration = frame.duration;
+                    aniItem.frames.at(i).event = frame.event;
+                    ++i;
+                }
+                aniItem.animationDuration = aniId->second.animationDuration;
+                aniItem.direction = aniId->second.direction;
+                aniItem.repeat = aniId->second.repeat;
+            }
+            catch(std::exception e)
+            {
+                fmt::print("Something went wrong here: {} \n",e.what());
+            }
         }
     }
 
-    /* TODO: - ani editor has ani.name -> aniSource has key ANimation Id
-     *       a- we can create a map with key animation-name -> only unique names allowed
-     *       b- or we search for animatons everytime we load a configuration  */
-    editFrame(selectedAnimation, selectedFrame);
+    // FIXME: tried set the correct values the current selected animation, but the program crashes here ...
+    // editFrame(selectedAnimation, selectedFrame);
 }
 
 void
