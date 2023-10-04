@@ -236,7 +236,6 @@ CharacterBase::update(sf::Time deltaTime)
     // dummy impl. / without falling animation
     if(mBody->GetLinearVelocity().y > 0.5f )
     {   
-        std::cout << "V(y): " << mBody->GetLinearVelocity().y << "\n";
         if( allowedToFall() && not mCharacterFalling && mECharacterState._value != ECharacterState::Falling  )
         {
             mCharacterFalling = true;
@@ -309,8 +308,8 @@ CharacterBase::setupAnimation(Textures::CharacterID aniId)
                ,.repeat = aniConfig.repeat
                ,.animationId = aniId};
 
-    fmt::print("setupAnimation from CharacterId: StartFrame {}/{} \n "
-                          ,aniConfig.frames.at(0).x,aniConfig.frames.at(0).y);
+    fmt::print("setupAnimation for CharacterId '{}'': StartFrame ({}/{}) \n "
+                          ,aniId._to_string(),aniConfig.frames.at(0).x,aniConfig.frames.at(0).y);
     //setupAnimation(config);
     getSpriteAnimation().setFrameSize(config.frameSize);
     //getSpriteAnimation().setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});

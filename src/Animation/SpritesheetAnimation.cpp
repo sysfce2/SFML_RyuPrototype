@@ -1,4 +1,6 @@
 
+#include "Ryu/Control/PlayerController.h"
+#include "Ryu/Events/EventEnums.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Animation/EditorEnums.h>
 
@@ -6,7 +8,10 @@
 #include <SFML/Graphics/Texture.hpp>
 
 #include <SFML/System/Time.hpp>
+
+#include <fmt/core.h>
 #include <iostream>
+#include <string>
 #include <vector>
 
 SpritesheetAnimation::SpritesheetAnimation()
@@ -197,10 +202,10 @@ SpritesheetAnimation::update(sf::Time dt)
     // TODO: in the loop get the frametime
     while (mElapsedTime >= timePerFrame && (mCurrentFrame <= mNumFrames || mRepeat))
     {
-				if(mCurrentFrame+1 < mFrames.size())
-				{
-					timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame+1).duration);
-				}
+		if(mCurrentFrame+1 < mFrames.size())
+		{
+			timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame+1).duration);
+        }
 
         textureRect.left += textureRect.width;
         if (textureRect.left + textureRect.width > textureBounds.x)
@@ -209,6 +214,15 @@ SpritesheetAnimation::update(sf::Time dt)
             textureRect.top += textureRect.height;
         }
         mElapsedTime -= timePerFrame;
+        // fire event
+        const auto& frameEvent = mFrames.at(mCurrentFrame).event._value;
+        // TODO move to debug gui !
+        fmt::print("Event({}): {}\n",mCurrentFrame,mFrames.at(mCurrentFrame).event._to_string());
+        // TODO: check why every frame has event None !!! fire event
+        if(frameEvent != Ryu::EEvent::None)
+        {
+            fmt::print("Fire Event: {} from frame {}",frameEvent , std::to_string(mCurrentFrame));
+        }
         if (mRepeat)
         {
             mCurrentFrame = (mCurrentFrame + 1) % mNumFrames;

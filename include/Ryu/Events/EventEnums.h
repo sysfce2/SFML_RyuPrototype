@@ -6,10 +6,10 @@ namespace Ryu{
 BETTER_ENUM(EEvent, char
         ,None=0
         ,CharacterSpeedChanged
+        ,CharacterStartJump
         ,DebugToggle
         ,ImGuiDemoToggle
         ,RyuAnimatorToggle
-        
 );
 
 } // namespace Ryu
