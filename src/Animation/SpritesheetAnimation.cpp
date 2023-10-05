@@ -69,6 +69,9 @@ sf::Vector2i SpritesheetAnimation::getFrameSize() const
 void SpritesheetAnimation::setNumFrames(std::size_t numFrames) 
 // void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames) 
 {
+    // TODO: here seems to be a bug when we recreate the frames !!! (is it even needable ???)
+    // we need to use the data we got from the json config file
+    // and not setting the data hard itself here !
 	mNumFrames = numFrames;
   mFrames.clear();
 	 for(int i=0;i<numFrames;++i)
@@ -79,14 +82,15 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames)
 			.width= 80, //frameSize = {80,96},
 			.x = 0,
 			.y = 0,
-			.event = Ryu::EEvent::None
+			.event = Ryu::EEvent::DebugToggle
 		};
 			mFrames.push_back(frame);	
 	 }
 }
 
-void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame> aniFrames) 
+void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame>& aniFrames)
 {
+
   mFrames = aniFrames;
 	mNumFrames = aniFrames.size();
 	mDuration = aniDuration;
@@ -214,7 +218,7 @@ SpritesheetAnimation::update(sf::Time dt)
             textureRect.top += textureRect.height;
         }
         mElapsedTime -= timePerFrame;
-        // fire event
+        // fire event / find it be carefully not to create it !!!!
         const auto& frameEvent = mFrames.at(mCurrentFrame).event._value;
         // TODO move to debug gui !
         fmt::print("Event({}): {}\n",mCurrentFrame,mFrames.at(mCurrentFrame).event._to_string());
