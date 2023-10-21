@@ -1,5 +1,6 @@
-9/9/23
--
+21/10/23
+- for some reason we only can import configData in the AnimationEditor only for Anis of type: "Character"
+-> if there is one ANi tagged "SCene" -> wie cannot import the config correctly
 
 6/9/23
 - pause input when Animator is open

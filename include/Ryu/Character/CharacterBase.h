@@ -90,7 +90,7 @@ class CharacterBase : public SceneNode , public Subject
         void updateCharacterState(sf::Time deltaTime);
         virtual void loadTextures();
         void changeState(std::unique_ptr<CharacterState> toState);
-        void setupAnimation(AnimationConfiguration config);
+        // void setupAnimation(AnimationConfiguration config);
 
         std::unique_ptr<b2World>& getPhysicsWorldRef() {return phWorldRef;}
         void changeColor(sf::Color color);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Ryu/Animation/AnimationData.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Animation/EditorEnums.h>
@@ -26,8 +27,9 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
 		    sf::Vector2i getFrameSize() const;
 
 				/* TODO setNumFrames(numframes) == old method without the use of the AnimationEditor (later delete it) */
-		    void setNumFrames(std::size_t numFrames);
-		    void setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame>& aniFrames);
+            void setNumFrames(std::size_t numFrames);
+		    void setNumFrames(sf::Time aniDuration, std::vector<RyuParser::Frame>& aniFrames);
+            void setNumFrames(sf::Time aniDuration, std::vector<RyuParser::FrameEditor>& aniFrames);
 		    std::size_t getNumFrames() const;
 		    std::size_t getFramesCount() const {return mFrames.size();}
 
@@ -64,5 +66,5 @@ class SpritesheetAnimation : public sf::Drawable, public sf::Transformable
         sf::Time mElapsedTime;
         bool mRepeat;
         // std::vector<AnimationFrame> mFrames;
-        std::vector<RyuAnimator::AnimationSpec::Frame> mFrames;
+        std::vector<RyuParser::Frame> mFrames;
 };

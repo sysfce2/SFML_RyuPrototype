@@ -2,6 +2,7 @@
 #include "Ryu/Control/PlayerController.h"
 #include "Ryu/Events/EventEnums.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
+#include <Ryu/Animation/AnimationData.h>
 #include <Ryu/Animation/EditorEnums.h>
 
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -73,25 +74,51 @@ void SpritesheetAnimation::setNumFrames(std::size_t numFrames)
     // we need to use the data we got from the json config file
     // and not setting the data hard itself here !
 	mNumFrames = numFrames;
-  mFrames.clear();
+
+    mFrames.clear();
 	 for(int i=0;i<numFrames;++i)
 	 {
-		RyuAnimator::AnimationSpec::Frame frame{
-			.duration = 100,
-			.height = 96,
-			.width= 80, //frameSize = {80,96},
-			.x = 0,
-			.y = 0,
-			.event = Ryu::EEvent::DebugToggle
-		};
-			mFrames.push_back(frame);	
+         /*RyuAnimator::AnimationSpec*/RyuParser::Frame frame;
+        frame.duration = 100;
+		frame.height = 96;
+		frame.width= 80; //frameSize = {80,96},
+		frame.x = 0;
+		frame.y = 0;
+		frame.event = Ryu::EEvent::None;
+		mFrames.push_back(frame);
 	 }
+
 }
 
-void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuAnimator::AnimationSpec::Frame>& aniFrames)
+/*TODO: we could alternatively implement a copy constructor ?
+**
+**
+ */
+void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuParser::FrameEditor>& aniFrames)
+{
+    std::vector<RyuParser::Frame> frames;
+
+    for(auto& frame : aniFrames)
+    {
+        RyuParser::Frame f;
+        f.duration = frame.duration;
+        f.event = frame.event;
+        f.height = frame.height;
+        f.width = frame.width;
+        f.x = frame.x;
+        f.y = frame.y;
+
+        frames.emplace_back(f);
+    }
+
+
+    setNumFrames(aniDuration, frames);
+}
+
+void SpritesheetAnimation::setNumFrames(sf::Time aniDuration, std::vector<RyuParser::Frame>& aniFrames)
 {
 
-  mFrames = aniFrames;
+    mFrames = aniFrames;
 	mNumFrames = aniFrames.size();
 	mDuration = aniDuration;
 	
@@ -219,13 +246,14 @@ SpritesheetAnimation::update(sf::Time dt)
         }
         mElapsedTime -= timePerFrame;
         // fire event / find it be carefully not to create it !!!!
-        const auto& frameEvent = mFrames.at(mCurrentFrame).event._value;
+        const auto& frameEvent = mFrames.at(mCurrentFrame).event;
         // TODO move to debug gui !
-        fmt::print("Event({}): {}\n",mCurrentFrame,mFrames.at(mCurrentFrame).event._to_string());
+        //HERE-then check whats wrong in RAnimator when importing cfgs -> st wrong with saving, importing old configs works !
+        // fmt::print("Event({}): {}\n",mCurrentFrame,mFrames.at(mCurrentFrame).event._to_string());
         // TODO: check why every frame has event None !!! fire event
-        if(frameEvent != Ryu::EEvent::None)
+        if(frameEvent._value != Ryu::EEvent::None)
         {
-            fmt::print("Fire Event: {} from frame {}",frameEvent , std::to_string(mCurrentFrame));
+            fmt::print("Fire Event: {} from frame {} \n",frameEvent._to_string() , std::to_string(mCurrentFrame));
         }
         if (mRepeat)
         {

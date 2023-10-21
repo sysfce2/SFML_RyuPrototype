@@ -9,6 +9,7 @@ namespace sf
 }
 
 //namespace ryu{
+// TODO: place it in AnimationData.h !!! and use it for editor AND game !!!!
 
 namespace Textures
 {

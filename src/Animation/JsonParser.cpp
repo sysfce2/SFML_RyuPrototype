@@ -1,8 +1,10 @@
+#include <Ryu/Animation/AnimationData.h>
 #include <Ryu/Animation/JsonParser.h>
 #include <Ryu/Animation/EditorEnums.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 //#include <Ryu/Core/Utilities.h>
+#include <nlohmann/json.hpp>
 #include <exception>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -63,9 +65,9 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
         sf::Vector2i frameSize;
 
         int i=0;
-        for(auto frame : frames)
+        for(auto f : frames)
         {
-            auto vecFrame = frame.get<Frame>();
+            auto vecFrame = f.get<Frame>();
             if(i==0){
                 frameSize.x = vecFrame.height;
                 frameSize.y = vecFrame.width;            

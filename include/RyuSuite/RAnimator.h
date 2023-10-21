@@ -46,7 +46,7 @@ enum class EFileBrowserState
   AnimationConfigJson
 };
 
-using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationSpec::Animation>>  ;
+using TaggedSheetAnimation = std::pair<const std::string, std::vector<RyuParser::AnimationEditor>>  ;
 
   class Editor
   {
@@ -60,7 +60,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
 
       void initData();
   
-      void calculateAnimationDuration(AnimationSpec::Animation& ani);
+      void calculateAnimationDuration(RyuParser::AnimationEditor& ani);
   
       void createEditorWidgets(bool* p_open);
 
@@ -70,15 +70,15 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
   
       void exportAnimationDetailsToFile(char* JsonFilename);
       
-      void setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameNumber, AnimationSpec::Animation& ani);
+      void setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameNumber, RyuParser::AnimationEditor& ani);
       
       void setAnimationPreferences(std::string sheetName);
   
       void createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet );
-      void setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<AnimationSpec::Frame>& frames);
+      void setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<RyuParser::FrameEditor>& frames);
       // map with all spritesheets loaded and according animations
-      // key: spritesheetname, value: vector of animations
-      std::map<std::string, std::vector<AnimationSpec::Animation> > animations;
+      // key: spritesheetname, value: vector of animationsN
+      std::map<std::string, std::vector<RyuParser::AnimationEditor> > animations;
       bool parsedSpritesheet;
       bool textureSet;
       std::string selectedSpritesheet;
@@ -91,7 +91,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
 
       void setTooltipText(const char * tooltip);
       void initTextures();
-      void editFrame(AnimationSpec::Animation& ani, size_t frame);
+      void editFrame(RyuParser::AnimationEditor& ani, size_t frame);
       void parseConfiguration(std::string configFile);
       void updateAnimations(RyuParser::JsonAnimations& aniSource);
       GuiCharTextureManager guiCharTextureManager;
@@ -101,7 +101,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<AnimationS
       /*
        * map with animation specifications read from a spritesheet-2D tool (atm: Aseprite-json)
        */
-      std::vector<AnimationSpec::Animation> animationSpecs;
+      std::vector<RyuParser::AnimationEditor> animationSpecs;
 
       std::map<std::string, bool> preferences;
 

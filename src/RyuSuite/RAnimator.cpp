@@ -1,5 +1,6 @@
 #include "Ryu/Core/AssetIdentifiers.h"
 #include <RyuSuite/RAnimator.h>
+#include <Ryu/Animation/AnimationData.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Animation/EditorEnums.h>
@@ -27,24 +28,24 @@
 #include <vector>
 #include <utility> /// std::pair
 
-namespace RyuAnimator {
+//namespace RyuAnimator {
 using ImGui::EndTabBar;
 
 using namespace ImGui;
 using json = nlohmann::json;
-using EEvent = Ryu::EEvent;
+using RyuEvent = Ryu::EEvent;
 
 
-// namespace RyuParser {
-namespace AnimationSpec {
-    void from_json(const json& j, Animation& ani) {
+namespace RyuParser {
+
+    void from_json(const json& j, RyuParser::AnimationEditor& ani) {
         j.at("name").get_to(ani.name);
         j.at("from").get_to(ani.fromFrame);
         j.at("to").get_to(ani.toFrame);
         j.at("direction").get_to(ani.direction);
     }
 
-    void from_json(const json& j, Frame& frame) {
+    void from_json(const json& j, RyuParser::FrameEditor& frame) {
         j.at("frame").at("x").get_to(frame.x);
         j.at("frame").at("y").get_to(frame.y);
         j.at("frame").at("w").get_to(frame.width);
@@ -53,7 +54,7 @@ namespace AnimationSpec {
     }
 
 
-    void to_json(json& j, const Frame& frame){
+    void to_json(json& j, const RyuParser::FrameEditor& frame){
         // json jEvent = frame.event;
         j = json{
             {"duration",frame.duration},
@@ -66,13 +67,11 @@ namespace AnimationSpec {
         };
     }
 
-    void to_json(json& j, const Animation& ani) {
-    // TODO: fill some fields with corect values / add somehoe lienbreaks to the json file ?
+    void to_json(json& j, const RyuParser::AnimationEditor& ani) {
       std::string timeInMs{
           std::to_string(ani.animationDuration.asMilliseconds()) + " ms"};
-
-      // TODO: implement animationType / animationId !
-      json jFrames = ani.frames; 
+      fmt::print("TO_JSON-anitype: {} \n",ani.animationType._to_string());
+      json jFrames = ani.frames;
       j = json{{"Name", ani.name},
                {"Sheet_begin", ani.fromFrame},
                {"Sheet_end", ani.toFrame},
@@ -87,12 +86,12 @@ namespace AnimationSpec {
                {"AnimationId", std::visit( // as animationId is a std::variant with different datatypes we need to use visit
                        [](auto&& cId){return cId._to_string();},
                        ani.animationId)}};
-      // TODO: how to set the animationID ? -> Gui field missing / set here animation type as well ?
     }
-} /// namespace AnimationSpec
+
+} /// namespace RyuParser
 
 
-// namespace RyuAnimator{
+ namespace RyuAnimator{
 
 Editor::Editor():
      parsedSpritesheet(false)
@@ -127,7 +126,7 @@ static int currentLevelItem = 0;
 static int currentAnimationType = 1;
 static int currentAnimationId = 0;
 static int currentActiveFrame = 0;
-AnimationSpec::Animation selectedAnimation;
+RyuParser::AnimationEditor selectedAnimation;
 // standard is a cycled animation
 static bool repeatAnimation = true;
 
@@ -147,7 +146,7 @@ void
 Editor::initData()
 {
     int i = 0;
-    for (EEvent evt : EEvent::_values())
+    for (RyuEvent evt : RyuEvent::_values())
     {
         eventItems[i] = evt._to_string();
         ++i;
@@ -251,19 +250,11 @@ Editor::parseJsonData(std::string path)
     // avoid appending animations of multiple spritesheets
     animations.clear();
     
-    // TODO: later we select the path / from an openFiledialog / we can load multiple spritesheets
+    auto found = path.find_last_of("/\\");
 
-    std::string spriteSheet("ichi_spritesheet_level1");
-/*
-
-    std::string path2("assets/spritesheets/ichi/");
-    std::string format("json");
-    std::ifstream f(path2+spriteSheet+"."+format);
-*/
-
-    // splitshizzle ... std::string spriteSheet;
-
-    //RyuParser::JsonParser::splitStrings(path,'/', spriteSheet);
+    std::string spriteSheet = path.substr(found+1);  // name of the spritesheet should be st like "ichi_spritesheet_level1");
+    auto foundExt = spriteSheet.find_last_of(".json");
+    spriteSheet = spriteSheet.substr(0, foundExt-4);
 
     std::ifstream f(path);
     std::cout << "Open JSON...\n";
@@ -278,11 +269,11 @@ Editor::parseJsonData(std::string path)
         {
             auto anis = data["meta"]["frameTags"];
             
-            std::vector<AnimationSpec::Animation> aniVector;
+            std::vector<RyuParser::AnimationEditor> aniVector;
             
             for(const auto& a : anis)
             {
-                auto ani = a.get<AnimationSpec::Animation>();
+                auto ani = a.get<RyuParser::AnimationEditor>();
                 aniVector.emplace_back(ani);
             }
             
@@ -299,16 +290,17 @@ Editor::parseJsonData(std::string path)
                 for(int i = ani.fromFrame;i<=ani.toFrame;i++)
                 {
                     std::string framePosition = selectedSpritesheet+" "+std::to_string(i)+".aseprite";
-                    AnimationSpec::Frame frame{
-                        .duration = data["frames"][framePosition]["duration"],
-                        .height = data["frames"][framePosition]["frame"]["h"], 
-                        .width = data["frames"][framePosition]["frame"]["w"],
-                        .x = data["frames"][framePosition]["frame"]["x"],
-                        .y = data["frames"][framePosition]["frame"]["y"],
-                        .event = EEvent::None,
-                    };
+                    RyuParser::FrameEditor frame;
+                        frame.duration = data["frames"][framePosition]["duration"];
+                        frame.height = data["frames"][framePosition]["frame"]["h"];
+                        frame.width = data["frames"][framePosition]["frame"]["w"];
+                        frame.x = data["frames"][framePosition]["frame"]["x"];
+                        frame.y = data["frames"][framePosition]["frame"]["y"];
+                        frame.event = RyuEvent::None;
+
                     ani.frames.push_back(frame);
                 }
+                ani.animationType = Textures::AnimationType::Character;
             }
             
             setAnimationPreferences(selectedSpritesheet);
@@ -508,8 +500,6 @@ Editor::createEditorWidgets(bool* p_open)
         ImGui::BeginGroup();
         if(ImGui::BeginTabBar("SpriteSheets"))
         {
-            //try
-            {
             for (auto& sheet : animations)
             {
                  if(sheet.first == "") continue; /// otherwise we create an empty tab
@@ -521,13 +511,6 @@ Editor::createEditorWidgets(bool* p_open)
                      ImGui::EndTabItem();
                  }
             }
-        }
-        /*
-         catch(std::exception e)
-         {
-             fmt::print("createEditorWidgets exception: {}", e.what());
-         }
-         */
 
          EndTabBar();
         }
@@ -581,7 +564,7 @@ Editor::setAnimationPreferences(std::string sheetName)
 }
 
 void
-Editor::calculateAnimationDuration(AnimationSpec::Animation& ani)
+Editor::calculateAnimationDuration(RyuParser::AnimationEditor& ani)
 {
     int32_t overallDuration = 0;
     for(const auto frame : ani.frames)
@@ -620,6 +603,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     int16_t startY = ani.frames.at(0).y / frameHeight;// for the spritesheetAnimationDetails
 
     // TODO: here dynamic anis due selection from the right side
+    RyuParser::Frame f;
     setSpritesheetAnimationDetails({
                 .frameSize={frameWidth,frameHeight}
                ,.startFrame={startX,startY}
@@ -763,7 +747,7 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
 }
 
 void
-Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameNumber, AnimationSpec::Animation& ani)
+Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameNumber, RyuParser::AnimationEditor& ani)
 {
     if(frameDetailsVisible)
     {
@@ -793,9 +777,9 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
         {
             if(selectedFrame != 0)
             {
-               std::cout << "Event : " << std::to_string(currentEventItem) << "(" << EEvent::_from_integral(currentEventItem)._to_string()  << ") saved to Frame: " << std::to_string(frameNumber) <<" \n";
+               std::cout << "Event : " << std::to_string(currentEventItem) << "(" << RyuEvent::_from_integral(currentEventItem)._to_string()  << ") saved to Frame: " << std::to_string(frameNumber) <<" \n";
                //auto ani = sheet.second.at(selectedAni);
-               ani.frames.at(frameNumber-1).event = EEvent::_from_integral(currentEventItem);
+               ani.frames.at(frameNumber-1).event = RyuEvent::_from_integral(currentEventItem);
                std::cout << "From ani-map: " << ani.frames.at(frameNumber-1).event._to_string() << "\n";  
             }
         }
@@ -806,7 +790,7 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
 }
 
 void
-Editor::editFrame(AnimationSpec::Animation& ani, size_t frame )
+Editor::editFrame(RyuParser::AnimationEditor& ani, size_t frame )
 {
     // std::cout << ani.name << "," << std::to_string(frame) << "\n";
     intDuration = ani.frames.at(frame-1).duration;
@@ -821,7 +805,7 @@ Editor::editFrame(AnimationSpec::Animation& ani, size_t frame )
 void
 Editor::initTextures()
 {
-    // TODO: this could also be done when oping the spritesheet through a dialog ... whe the size of the spritesheets become bigger this will be a memory killer
+    // TODO: still valid ?: this could also be done when opeing the spritesheet through a dialog ... whe the size of the spritesheets become bigger this will be a memory killer
     guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
     guiTextureManager.load(Textures::GuiID::ForwardFrame,"assets/gui/animator/06_nextFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::BackwardFrame,"assets/gui/animator/03_previousFrame.jpeg");
@@ -836,7 +820,7 @@ Editor::initTextures()
 }
 
 void
-Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<AnimationSpec::Frame>& frames)
+Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time aniDuration, std::vector<RyuParser::FrameEditor>& frames)
 {   
     // std::cout << "OverallDuration: " << aniDuration.asMilliseconds() << " ms, config-dur: " << config.duration.asMilliseconds() << "ms\n";
     spritesheetAnimation.setFrameSize(config.frameSize);
@@ -857,7 +841,7 @@ Editor::setSpritesheetAnimationDetails(const AnimationConfig& config, sf::Time a
 void
 Editor::exportAnimationDetailsToFile(char* JsonFilename)
 {
-    std::vector<AnimationSpec::Animation> aniSpecs;
+    std::vector<RyuParser::AnimationEditor> aniSpecs;
     // TODO: no filename entered ? what then -> standard name but: HOW 
     std::ofstream oJson(sizeof(JsonFilename) == 0 ? "output.txt" : JsonFilename);
     
@@ -886,8 +870,8 @@ Editor::exportAnimationDetailsToFile(char* JsonFilename)
     }
 
     oJson << R"(])" << "\n}";
-
-    fmt::print("saved to {}\n", (sizeof(JsonFilename) == 0 ? "output.txt" : JsonFilename));
+    std::string pathName(/*selectedSpriteSheetPath); pathName.append(*/JsonFilename);
+    fmt::print("saved to {}\n", (sizeof(JsonFilename) == 0 ? "output.txt" : pathName ));
 
     // json j()
     /* 

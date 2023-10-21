@@ -1,3 +1,4 @@
+#include "Ryu/Animation/AnimationData.h"
 #include "Ryu/Animation/JsonParser.h"
 #include "Ryu/Core/AssetIdentifiers.h"
 #include <Ryu/Animation/AnimationManager.h>
@@ -33,7 +34,7 @@ AnimationManager::readAnimationConfigs()
     {
         fmt::print("AnimationConfigFile {} found: \n",dir.path().c_str());
 
-        json configJson = json::parse(readFile(dir.path()));
+        json configJson = json::parse(readFile(dir.path())); // TODO: Hm whats wrong here ??? cannot parse because  to/fromjson were overwritten ??
         RyuParser::JsonAnimations jAnis;
         jParser.getAnimationsFromJson(configJson, jAnis);
 

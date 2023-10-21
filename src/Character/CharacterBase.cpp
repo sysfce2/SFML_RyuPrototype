@@ -268,32 +268,6 @@ CharacterBase::changeState(std::unique_ptr<CharacterState> toState)
 }
 
 void
-CharacterBase::setupAnimation(AnimationConfiguration config)
-{
-    fmt::print("setupAnimation from CharacterId: StartFrame {}/{} \n "
-               ,config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y);
-    getSpriteAnimation().setFrameSize(config.frameSize);
-    getSpriteAnimation().setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
-    getSpriteAnimation().setNumFrames(config.numFrames);
-    getSpriteAnimation().setDuration(config.duration);
-    getSpriteAnimation().setRepeating(config.repeat);
-
-    setTextureOnCharacter(mCurrentLevel);
-
-    // set origin of texture to center
-    sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
-    getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-
-    // std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
-
-    // the first time we need to init physics-body etc
-    if(not physicsInitialized)
-    {
-        initPhysics();
-    }
-}
-
-void
 CharacterBase::setupAnimation(Textures::CharacterID aniId)
 {
     RyuParser::Animation aniConfig;
@@ -310,11 +284,11 @@ CharacterBase::setupAnimation(Textures::CharacterID aniId)
 
     fmt::print("setupAnimation for CharacterId '{}'': StartFrame ({}/{}) \n "
                           ,aniId._to_string(),aniConfig.frames.at(0).x,aniConfig.frames.at(0).y);
-    //setupAnimation(config);
+
+
     getSpriteAnimation().setFrameSize(config.frameSize);
-    //getSpriteAnimation().setStartFrame({config.frameSize.x * config.startFrame.x, config.frameSize.y * config.startFrame.y});
     getSpriteAnimation().setStartFrame({config.startFrame.x, config.startFrame.y});
-    getSpriteAnimation().setNumFrames(config.numFrames);
+    getSpriteAnimation().setNumFrames(config.duration, aniConfig.frames);
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);
 
@@ -323,8 +297,6 @@ CharacterBase::setupAnimation(Textures::CharacterID aniId)
     // set origin of texture to center
     sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
     getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-
-    // std::cout << "Boundswidth: " << bounds.width << "Boundsheight: " << bounds.height << "\n";
 
     // the first time we need to init physics-body etc
     if(not physicsInitialized)
