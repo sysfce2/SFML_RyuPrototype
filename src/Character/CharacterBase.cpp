@@ -31,7 +31,7 @@ template <typename T>
 
 CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,  
                             const sf::Vector2f &position) 
-    :mCharacterAnimation()
+    :Observer("CharacterBase")
     ,mCharacterState(std::make_unique<CharacterStateIdle>())
     ,movement(0.f,0.f)
     ,mMoveDirection(EMoveDirection::Right)
@@ -41,6 +41,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,mCharSettings()
     ,mCurrentLevel(Textures::LevelID::Level1)
     ,rayCastPoints()
+    ,mCharacterAnimation(this)
     ,mECharacterState(ECharacterState::None)
     ,mAnimationManager(std::make_unique<AnimationManager>())
 {
@@ -51,7 +52,8 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
 CharacterBase::CharacterBase(ECharacterState startState, 
                             std::unique_ptr<b2World>& phWorld,  
                             const sf::Vector2f &position)
-    :mECharacterState(startState)
+    :Observer("CharacterBase")
+    ,mECharacterState(startState)
     ,mCharacterState(std::make_unique<CharacterStateIdle>())
     ,mCharacterSpeed(55.0f) // startvalue playerspeed
     ,mMoveDirection(EMoveDirection::Right)
@@ -60,6 +62,7 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,baseTextureManager()
     ,mCharSettings()
     ,mCurrentLevel(Textures::LevelID::Level1)
+    ,mCharacterAnimation(this)
     ,mAnimationManager(std::make_unique<AnimationManager>())
 {
     // TODO: check if its needable&possible to start character from a certain state

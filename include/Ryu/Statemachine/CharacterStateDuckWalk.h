@@ -13,5 +13,6 @@ class CharacterStateDuckWalk : public CharacterState
 
         void enter(CharacterBase& character) override;
         void exit(CharacterBase& character) override;
+        void onNotify(CharacterBase &character, Ryu::EEvent event) override {};
 
 };

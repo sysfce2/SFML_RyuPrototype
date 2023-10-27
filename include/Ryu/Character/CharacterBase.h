@@ -8,6 +8,7 @@
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Events/Subject.h>
+#include <Ryu/Events/Observer.h>
 #include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Statemachine/CharacterState.h>
 
@@ -52,7 +53,7 @@ struct AnimationConfiguration {
 
 class AnimationManager;
 
-class CharacterBase : public SceneNode, public Subject {
+class CharacterBase : public SceneNode, public Subject, public Observer {
 
 public:
   // TODO: implement rule of 5 !
@@ -110,6 +111,7 @@ public:
   b2Vec2 getLinearVelocity() { return mBody->GetLinearVelocity(); }
   bool allowedToFall();
   void jumpUp();
+  virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
 
 protected:
   /***

@@ -15,6 +15,7 @@ class CharacterStateFalling : public CharacterState
     
         void enter(CharacterBase& character) override;
         void exit(CharacterBase& character) override;
+        void onNotify(CharacterBase &character, Ryu::EEvent event) override {};
     private:
         bool touchedFloor;
         const float fallingTreshhold = 20.0f;

@@ -1,64 +1,65 @@
 #include <Ryu/Character/CharacterBase.h>
-#include <Ryu/Statemachine/CharacterStateJumpUp.h>
+#include <Ryu/Events/EventEnums.h>
+#include <Ryu/Statemachine/CharacterState.h>
 #include <Ryu/Statemachine/CharacterStateDuckEnter.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
-#include <Ryu/Statemachine/CharacterState.h>
+#include <Ryu/Statemachine/CharacterStateJumpUp.h>
+
+#include <fmt/core.h>
 
 #include <iostream>
 #include <memory>
-#include <type_traits>
-#include <typeinfo>
 
-
-//namespace ryu{
+// namespace ryu{
 
 CharacterStateJumpUp::CharacterStateJumpUp()
-{}
+    {}
 
-CharacterStateJumpUp::~CharacterStateJumpUp(){}
+CharacterStateJumpUp::~CharacterStateJumpUp() {}
 
 std::unique_ptr<CharacterState>
-CharacterStateJumpUp::handleInput(CharacterBase& character,EInput input)
-{
-    switch (input)
-    {
-       case EInput::PressLeft:
-       case EInput::PressRight:
-       case EInput::PressUp:
-       case EInput::PressDown:
-       {
-                
-           return nullptr;
-       }
+CharacterStateJumpUp::handleInput(CharacterBase &character, EInput input) {
+    switch (input) {
+    case EInput::PressLeft:
+    case EInput::PressRight:
+    case EInput::PressUp:
+    case EInput::PressDown: {
+
+        return nullptr;
+    }
     default:
         break;
     }
 
     return nullptr;
 }
-     
-void 
-CharacterStateJumpUp::update(CharacterBase& character)
-{
 
-    if(character.getSpriteAnimation().isFinished())
-    {
-        std::unique_ptr<CharacterStateIdle> state = std::make_unique<CharacterStateIdle>();
+void CharacterStateJumpUp::onNotify(CharacterBase &character,
+                                    Ryu::EEvent event) {
+    fmt::print("onNotify\n");
+    switch (event._value) {
+    case Ryu::EEvent::CharacterStartJump: {
+        character.jumpUp();
+        break;
+    }
+    }
+}
+
+void CharacterStateJumpUp::update(CharacterBase &character) {
+
+    if (character.getSpriteAnimation().isFinished()) {
+        std::unique_ptr<CharacterStateIdle> state =
+            std::make_unique<CharacterStateIdle>();
         character.changeState(std::move(state));
     }
 }
 
-
-void
-CharacterStateJumpUp::enter(CharacterBase& character)
-{
+void CharacterStateJumpUp::enter(CharacterBase &character) {
     character.setupAnimation(Textures::CharacterID::IchiJumpUp);
     character.setCharacterStateEnum(ECharacterState::JumpUp);
-    character.jumpUp();
 }
 
-void
-CharacterStateJumpUp::exit(CharacterBase& character)
+void CharacterStateJumpUp::exit(CharacterBase &character)
 
 {
     character.getSpriteAnimation().restart();

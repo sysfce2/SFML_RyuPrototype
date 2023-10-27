@@ -11,6 +11,8 @@ set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Thirdparty/imgui-filebrowser/imfilebrowser.h"
 )
 
-add_library(ryuanimationlib SHARED "${SRC}" "${HEADER}")
+add_library(ryuanimationlib SHARED "${SRC}" "${HEADER}" )
+
+target_link_libraries(ryuanimationlib PUBLIC ryueventslib) # we fire events from spritesheetanimation
 
 target_include_directories(ryuanimationlib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
