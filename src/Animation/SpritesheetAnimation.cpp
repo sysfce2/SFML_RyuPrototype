@@ -1,6 +1,6 @@
-
-#include "Ryu/Control/PlayerController.h"
-#include "Ryu/Events/EventEnums.h"
+#include <Ryu/Character/CharacterBase.h>
+#include <Ryu/Control/PlayerController.h>
+#include <Ryu/Events/EventEnums.h>
 #include <Ryu/Animation/AnimationData.h>
 #include <Ryu/Animation/EditorEnums.h>
 #include <Ryu/Animation/SpritesheetAnimation.h>
@@ -25,14 +25,14 @@ SpritesheetAnimation::SpritesheetAnimation()
 SpritesheetAnimation::SpritesheetAnimation(baseCharPtr owner)
     : mSprite(), mFrameSize(), mNumFrames(0), mCurrentFrame(0),
       mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),
-      mStartFrame({0, 0}), mFrames({}), mOwner(std::make_shared<CharacterBase>(owner)) {}
+      mStartFrame({0, 0}), mFrames({}), mOwner(owner) {}
 
 SpritesheetAnimation::SpritesheetAnimation(const sf::Texture &texture,
                                            baseCharPtr owner)
     : mSprite(texture), mFrameSize(), mNumFrames(0), mCurrentFrame(0),
       mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),
       mStartFrame({0, 0}), mFrames({}),
-      mOwner(std::make_shared<CharacterBase>(owner)) { // set origin of texture to center
+      mOwner(owner) { // set origin of texture to center
     sf::FloatRect bounds = mSprite.getLocalBounds();
     mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
     std::cout << "Boundswidth: " << bounds.width
@@ -213,7 +213,7 @@ void SpritesheetAnimation::update(sf::Time dt) {
             fmt::print("Fire Event: {} from frame {} \n",
                        frameEvent._to_string(), std::to_string(mCurrentFrame));
            // make pointer to owner -> use sharedPointer ?
-           // notify(mOwner, frameEvent); TODO: scenenode ?
+           mOwner->notifyObservers( frameEvent); //TODO: scenenode ?
         }
         if (mRepeat) {
             mCurrentFrame = (mCurrentFrame + 1) % mNumFrames;

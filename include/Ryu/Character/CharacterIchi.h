@@ -21,6 +21,7 @@ class CharacterIchi : public CharacterBase
         void moveCharacter(sf::Vector2f velocity);
         unsigned int getCategory() const override;
         void update(sf::Time deltaTime) override;
+        void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
     private:
         void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
         //void createRaycast(std::string type,std::pair<double,double> startPoint, float angle, float length);

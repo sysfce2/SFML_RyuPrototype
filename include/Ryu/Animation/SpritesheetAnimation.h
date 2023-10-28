@@ -7,10 +7,12 @@
 #include <Ryu/Events/Subject.h>
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 class CharacterBase;
 
-using baseCharPtr = std::shared_ptr<CharacterBase>;
+//using baseCharPtr = std::shared_ptr<CharacterBase>;
+using baseCharPtr = CharacterBase*;
 
 struct AnimationFrame {
     float duration; // in seconds
@@ -78,5 +80,5 @@ class SpritesheetAnimation : public sf::Drawable,
     // std::vector<AnimationFrame> mFrames;
     std::vector<RyuParser::Frame> mFrames;
 
-    std::shared_ptr<CharacterBase> mOwner;
+    CharacterBase* mOwner;
 };

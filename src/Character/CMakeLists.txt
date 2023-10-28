@@ -8,6 +8,10 @@ set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Character/CharacterIchi.h"
 )
 
-add_library(ryucharacterlib SHARED "${SRC}" "${HEADER}")
+
+add_library(ryucharacterlib STATIC "${SRC}" "${HEADER}")
+
+target_link_libraries(ryucharacterlib PUBLIC ryuscenelib ryustateslib ryudebuglib ryucorelib box2d  )
+
 
 target_include_directories(ryucharacterlib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")

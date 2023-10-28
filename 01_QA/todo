@@ -1,3 +1,8 @@
+28/10/23
+- at some point we have cyclic dependencies and we needed to add to certain libs other libs to CMakeLists
+- to avoid these cyclic deps we had to make some libs static -> is this good or bad or can we organize the
+libs better ?
+
 21/10/23
 - for some reason we only can import configData in the AnimationEditor only for Anis of type: "Character"
 -> if there is one ANi tagged "SCene" -> wie cannot import the config correctly

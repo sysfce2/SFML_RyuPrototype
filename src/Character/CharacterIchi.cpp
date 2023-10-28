@@ -7,6 +7,7 @@
 #include <Ryu/Core/World.h>
 
 #include <SFML/System/Vector2.hpp>
+#include <fmt/core.h>
 #include <box2d/b2_common.h>
 #include <box2d/b2_math.h>
 #include <box2d/box2d.h>
@@ -32,6 +33,11 @@ void
 CharacterIchi::setTextureOnCharacter(Textures::LevelID textureId)
 {
     setTexture(ichiTextureManager, textureId);
+}
+
+void CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event) {
+    CharacterBase::onNotify(*this, event);
+    fmt::print("Called onNotify in CharacterIchi\n");
 }
 
 void

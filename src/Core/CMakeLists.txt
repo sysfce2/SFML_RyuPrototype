@@ -20,6 +20,9 @@ set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Core/World.h"
 )
 
-add_library(ryucorelib SHARED "${SRC}" "${HEADER}")
+add_library(ryucorelib STATIC "${SRC}" "${HEADER}")
+
+target_link_libraries(ryucorelib PUBLIC ryuanimationlib ryucontrollib ryusuitelib  box2d
+	ImGui-SFML::ImGui-SFML)
 
 target_include_directories(ryucorelib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")

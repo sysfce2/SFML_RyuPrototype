@@ -1,4 +1,5 @@
 #include "Ryu/Animation/JsonParser.h"
+#include "Ryu/Animation/SpritesheetAnimation.h"
 #include "Ryu/Core/AssetIdentifiers.h"
 #include <Ryu/Animation/AnimationManager.h>
 #include <Ryu/Character/CharacterBase.h>
@@ -45,6 +46,8 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World>& phWorld,
     ,mECharacterState(ECharacterState::None)
     ,mAnimationManager(std::make_unique<AnimationManager>())
 {
+    //std::shared_ptr<CharacterBase> sPtr = std::make_shared<CharacterBase>(this);
+    //mCharacterAnimation = SpritesheetAnimation(std::move(sPtr));
     loadTextures();
 }
 
@@ -65,6 +68,8 @@ CharacterBase::CharacterBase(ECharacterState startState,
     ,mCharacterAnimation(this)
     ,mAnimationManager(std::make_unique<AnimationManager>())
 {
+    //std::shared_ptr<CharacterBase> sPtr = std::make_shared<CharacterBase>(this);
+    //mCharacterAnimation = SpritesheetAnimation(std::move(sPtr));
     // TODO: check if its needable&possible to start character from a certain state
    loadTextures();
 }
@@ -107,9 +112,15 @@ CharacterBase::destroyPhysics()
 void
 CharacterBase::jumpUp()
 {
+        fmt::print("JumpUp\n");
     float impulse = mBody->GetMass() * 10000;
-    mBody->ApplyLinearImpulse( b2Vec2(0,impulse), mBody->GetWorldCenter(), true);
-    // mBody->ApplyLinearImpulseToCenter(mCharSettings.JumpUpForce,true);
+    //mBody->ApplyLinearImpulse( b2Vec2(0,impulse), mBody->GetWorldCenter(), true);
+     mBody->ApplyLinearImpulseToCenter(mCharSettings.JumpUpForce,true);
+}
+
+void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
+    fmt::print("Called onNotify in CharacterBase\n");
+    mCharacterState->onNotify(*this, event); // notify the state (we dont want the states to be an observer)
 }
 
 void

@@ -22,6 +22,8 @@ set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateFallingEnd.h"
 )
 
-add_library(ryustateslib SHARED "${SRC}" "${HEADER}")
+add_library(ryustateslib STATIC "${SRC}" "${HEADER}")
+
+target_link_libraries(ryustateslib PUBLIC ryucorelib)
 
 target_include_directories(ryustateslib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")

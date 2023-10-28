@@ -61,6 +61,7 @@ Game::addObservers()
 {
 	auto player = mWorld.getPlayer();
 	player->addObserver(mPlayerController.get());
+	player->addObserver(player);
 	mPlayerController->addObserver(&mWorld);
 	mPlayerController->addObserver(this);
 }

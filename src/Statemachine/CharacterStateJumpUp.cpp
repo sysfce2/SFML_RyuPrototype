@@ -36,7 +36,7 @@ CharacterStateJumpUp::handleInput(CharacterBase &character, EInput input) {
 
 void CharacterStateJumpUp::onNotify(CharacterBase &character,
                                     Ryu::EEvent event) {
-    fmt::print("onNotify\n");
+    fmt::print("onNotify CharacterStateJumpUp\n");
     switch (event._value) {
     case Ryu::EEvent::CharacterStartJump: {
         character.jumpUp();
