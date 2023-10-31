@@ -81,7 +81,7 @@ CharacterIchi::allowedMovement(bool& xMove, bool& yMove)
         yMove = true;
     }
 */
-    
+
 }
 
 void
@@ -94,8 +94,9 @@ CharacterIchi::moveCharacter(sf::Vector2f velocity)
     bool yMove = true;
 
     allowedMovement(xMove, yMove);
-   
-    if(velocity.x == 0.f && velocity.y == 0.f)
+
+
+    if(mECharacterState._value != ECharacterState::JumpUp && velocity.x == 0.f && velocity.y == 0.f)
     {
         setMovement({0.f,0.f});
     }

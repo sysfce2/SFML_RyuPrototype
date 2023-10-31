@@ -18,6 +18,8 @@
 #include <memory>
 #include <array>
 
+const float GRAVITY = 9.81f;
+
 
 //namespace ryu{
 World::World(sf::RenderWindow& window)
@@ -37,7 +39,7 @@ World::World(sf::RenderWindow& window)
     (mWorldBounds.height - mWorldView.getSize().y))
 , mPushBox(nullptr)
 , mPlayer(nullptr)
-, phWorld(std::make_unique<b2World>(b2Vec2{0.0f,10.0f})) /// set gravity to 10 & create physics world
+, phWorld(std::make_unique<b2World>(b2Vec2{0.0f,GRAVITY})) /// set gravity to 10 & create physics world
 , phGroundBodies()
 , phDebugPhysics(false)
 , phTimeStep(1.f/60.f)

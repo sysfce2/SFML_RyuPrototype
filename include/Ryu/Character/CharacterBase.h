@@ -87,7 +87,7 @@ public:
 
   virtual void handleInput(EInput input);
   virtual void update(sf::Time deltaTime);
-  void updateCharacterState(sf::Time deltaTime);
+  void updateCharacterPosition(sf::Time deltaTime);
   virtual void loadTextures();
   void changeState(std::unique_ptr<CharacterState> toState);
   // void setupAnimation(AnimationConfiguration config);

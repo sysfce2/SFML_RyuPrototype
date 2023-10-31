@@ -1,6 +1,3 @@
-#include <iostream>
-#include <map>
-#include <SFML/Window/Keyboard.hpp>
 
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Control/CharacterEnums.h>
@@ -11,6 +8,12 @@
 #include <Ryu/Core/Command.h>
 #include <Ryu/Core/CommandQueue.h>
 #include <Ryu/Character/CharacterIchi.h>
+
+#include <SFML/Window/Keyboard.hpp>
+#include <fmt/core.h>
+#include <iostream>
+#include <map>
+
 
 class CharacterIchi;
 
@@ -25,6 +28,7 @@ struct CharacterMover
     // execute CharacterMover
 	void operator() (CharacterIchi& character, sf::Time) const
 	{
+        fmt::print("MoveCharacter\n");
        character.moveCharacter(velocity);
 	}
 
