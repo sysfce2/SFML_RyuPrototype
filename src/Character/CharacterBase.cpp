@@ -41,7 +41,8 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World> &phWorld,
       mCharSettings(), mCurrentLevel(Textures::LevelID::Level1),
       rayCastPoints(), mCharacterAnimation(this),
       mECharacterState(ECharacterState::None),
-      mAnimationManager(std::make_unique<AnimationManager>()) {
+      mAnimationManager(std::make_unique<AnimationManager>())
+{
     // std::shared_ptr<CharacterBase> sPtr =
     // std::make_shared<CharacterBase>(this); mCharacterAnimation =
     // SpritesheetAnimation(std::move(sPtr));

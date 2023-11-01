@@ -80,5 +80,5 @@ class SpritesheetAnimation : public sf::Drawable,
     // std::vector<AnimationFrame> mFrames;
     std::vector<RyuParser::Frame> mFrames;
 
-    CharacterBase* mOwner;
+    baseCharPtr mOwner;
 };

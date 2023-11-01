@@ -209,7 +209,7 @@ void SpritesheetAnimation::update(sf::Time dt) {
         // fire event / find it be carefully not to create it !!!!
         const auto &frameEvent = mFrames.at(mCurrentFrame).event;
         // TODO move to debug gui !
-        if (frameEvent._value != Ryu::EEvent::None) {
+        if(mOwner && frameEvent._value != Ryu::EEvent::None) {
             fmt::print("Fire Event: {} from frame {} \n",
                        frameEvent._to_string(), std::to_string(mCurrentFrame));
            // make pointer to owner -> use sharedPointer ?

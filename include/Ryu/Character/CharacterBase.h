@@ -153,7 +153,6 @@ protected:
   Textures::LevelID mCurrentLevel;
 
   ECharacterMovement mECharacterMovement;
-
 public:
   std::map<std::string, std::pair<b2Vec2, b2Vec2>> rayCastPoints;
   CharacterSetting mCharSettings;

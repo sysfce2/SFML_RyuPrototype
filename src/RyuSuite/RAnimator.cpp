@@ -780,7 +780,7 @@ Editor::setFrameDetails(int selectedAni, TaggedSheetAnimation& sheet, int frameN
                std::cout << "Event : " << std::to_string(currentEventItem) << "(" << RyuEvent::_from_integral(currentEventItem)._to_string()  << ") saved to Frame: " << std::to_string(frameNumber) <<" \n";
                //auto ani = sheet.second.at(selectedAni);
                ani.frames.at(frameNumber-1).event = RyuEvent::_from_integral(currentEventItem);
-               std::cout << "From ani-map: " << ani.frames.at(frameNumber-1).event._to_string() << "\n";  
+               std::cout << "From ani-map: " << ani.frames.at(frameNumber-1).event._to_string() << "\n";
             }
         }
 
