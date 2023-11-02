@@ -111,6 +111,7 @@ public:
   b2Vec2 getLinearVelocity() { return mBody->GetLinearVelocity(); }
   bool allowedToFall();
   void jumpUp();
+  void jumpForward();
   virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
 
 protected:

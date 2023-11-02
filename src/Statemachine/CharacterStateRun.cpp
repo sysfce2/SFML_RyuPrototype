@@ -1,3 +1,4 @@
+#include "Ryu/Statemachine/CharacterStateJumpNormal.h"
 #include <Ryu/Statemachine/CharacterStateRun.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Character/CharacterBase.h>
@@ -32,11 +33,13 @@ CharacterStateRun::handleInput(CharacterBase& character,EInput input)
     {
        case EInput::ReleaseLeft:
        case EInput::ReleaseRight:
-       case EInput::ReleaseUp:
-       case EInput::ReleaseDown:
        {
            return std::move(std::make_unique<CharacterStateIdle>());    
        }
+        case EInput::PressUp:
+        {
+           return std::move(std::make_unique<CharacterStateJumpNormal>());
+        }
        break;
 
      

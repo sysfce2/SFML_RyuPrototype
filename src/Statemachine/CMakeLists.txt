@@ -6,6 +6,7 @@ set (SRC
      "CharacterStateDuckWalk.cpp"
      "CharacterStateRun.cpp"
      "CharacterStateJumpUp.cpp"
+     "CharacterStateJumpNormal.cpp"
      "CharacterStateFalling.cpp"
      "CharacterStateFallingEnd.cpp"
     )
@@ -18,6 +19,7 @@ set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateDuckWalk.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateRun.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateJumpUp.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateJumpNormal.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateFalling.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateFallingEnd.h"
 )

@@ -92,6 +92,18 @@ void CharacterBase::loadTextures() {
 
 void CharacterBase::destroyPhysics() { phWorldRef->DestroyBody(mBody); }
 
+void CharacterBase::jumpForward()
+{
+    fmt::print("JumpForward\n");
+
+    setMovement({0,0});
+    b2MassData mass {.mass=18, .center={0,0}, .I=0};
+    mBody->SetMassData(&mass);
+
+    mBody->ApplyLinearImpulse( b2Vec2(100,-200), mBody->GetWorldCenter(), true);
+
+}
+
 void CharacterBase::jumpUp() {
     fmt::print("JumpUp\n");
 

@@ -28,7 +28,7 @@ struct CharacterMover
     // execute CharacterMover
 	void operator() (CharacterIchi& character, sf::Time) const
 	{
-        fmt::print("MoveCharacter\n");
+       //fmt::print("MoveCharacter\n");
        character.moveCharacter(velocity);
 	}
 
