@@ -80,6 +80,7 @@ PlayerController::setActionBindingCharacterSpeed()
             CharacterMover(characterSpeed,0.f));
     mActionBindingPress[EInput::PressUp].action = derivedEInput<CharacterIchi>(
             CharacterMover(0.f,-characterSpeed));
+            //CharacterMover(0.f,0.f));
     mActionBindingPress[EInput::PressDown].action = derivedEInput<CharacterIchi>(
             CharacterMover(0.f,characterSpeed));
 }
@@ -174,6 +175,12 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             {
                 //std::cout << "Left pressed " << std::endl;
                 playerCharacter->handleInput(EInput::PressDown);
+                break;
+            }
+            case sf::Keyboard::E:
+            {
+                //std::cout << "Left pressed " << std::endl;
+                playerCharacter->jumpForward();
                 break;
             }
             // TODO: introduce debug trigger

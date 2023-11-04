@@ -92,15 +92,20 @@ void CharacterBase::loadTextures() {
 
 void CharacterBase::destroyPhysics() { phWorldRef->DestroyBody(mBody); }
 
+float CharacterBase::getDirectionMultiplier()
+{
+    return (getMoveDirection() == EMoveDirection::Left ? -1.0 : 1.0);
+}
+
 void CharacterBase::jumpForward()
 {
     fmt::print("JumpForward\n");
 
-    setMovement({0,0});
     b2MassData mass {.mass=18, .center={0,0}, .I=0};
     mBody->SetMassData(&mass);
-
-    mBody->ApplyLinearImpulse( b2Vec2(100,-200), mBody->GetWorldCenter(), true);
+    fmt::print("dirMultiplier: {}\n",getDirectionMultiplier());
+    fmt::print("dirDirectionn: {}\n",static_cast<int>(getMoveDirection()));
+    mBody->ApplyLinearImpulse( b2Vec2(100*getDirectionMultiplier(),-200), mBody->GetWorldCenter(), true);
 
 }
 
@@ -235,7 +240,7 @@ void CharacterBase::handleInput(EInput input) {
 }
 
 bool CharacterBase::allowedToFall() {
-    return (mECharacterState._value != ECharacterState::JumpUp);
+    return (mECharacterState._value != ECharacterState::JumpUp && mECharacterState._value != ECharacterState::JumpForward);
 }
 
 void CharacterBase::update(sf::Time deltaTime) {
@@ -324,6 +329,7 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
     //
     if (mECharacterState._value != ECharacterState::FallingEnd &&
         mECharacterState._value != ECharacterState::JumpUp &&
+        mECharacterState._value != ECharacterState::JumpForward &&
         not mCharacterFalling) {
 
         mCharacterAnimation.move(movement * deltaTime.asSeconds());
@@ -334,7 +340,7 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
                  Converter::pixelsToMeters<float>(movement.y)});
     }
 
-    if(mECharacterState._value == ECharacterState::JumpUp)
+    if(mECharacterState._value == ECharacterState::JumpUp ||mECharacterState._value == ECharacterState::JumpForward)
     {
         // physics body get a impulse in jump(), so here no update is needed
         auto pPosi = mBody->GetPosition();

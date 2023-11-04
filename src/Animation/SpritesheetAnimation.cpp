@@ -236,8 +236,6 @@ void SpritesheetAnimation::flipAnimationLeft() {
     if (mSprite.getScale().x != -1) {
         // do not ever use mSprite.scale({x,y}) !!!
         mSprite.setScale({-1, 1});
-        std::cout << "Flipx LEFT"
-                  << "\n";
     }
 }
 
@@ -245,8 +243,6 @@ void SpritesheetAnimation::flipAnimationRight() {
     if (mSprite.getScale().x != 1) {
         // do not ever use mSprite.scale({x,y}) !!!
         mSprite.setScale({1, 1});
-        std::cout << "Flipx Right"
-                  << "\n";
     }
 }
 

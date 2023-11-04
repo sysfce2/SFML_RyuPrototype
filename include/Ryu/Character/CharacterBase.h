@@ -112,6 +112,7 @@ public:
   bool allowedToFall();
   void jumpUp();
   void jumpForward();
+  float getDirectionMultiplier();
   virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
 
 protected:
