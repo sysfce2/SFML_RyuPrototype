@@ -131,7 +131,7 @@ RyuParser::AnimationEditor selectedAnimation;
 static bool repeatAnimation = true;
 
 // TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
-const char* eventItems[6] = {""};
+const char* eventItems[7] = {""};
 const char* levelItems[3] = {""};
 const char* animationTypes[3] = {""};
 const char* animationIds[20] = {""};

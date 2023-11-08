@@ -1,5 +1,6 @@
 set (SRC 
-      "b2DrawSFML.cpp"
+  "b2DrawSFML.cpp"
+  "imGuiDebug.cpp"
     )
 
 set(HEADER

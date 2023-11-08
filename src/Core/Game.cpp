@@ -27,8 +27,9 @@ Game::Game()
 ,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
 ,mIsPaused(false)
 ,mAnimator()
+,mDebugWidgets()
 {
-	// todo: how to load ichis tzextures at  startup ? 
+	// todo: how to load ichis tzextures at  startup ?
 	//mPlayer->loadTextures();
 	addObservers();
 }
@@ -40,12 +41,12 @@ Game::onNotify(const SceneNode& entity, RyuEvent event)
 	{
 		case RyuEvent::DebugToggle:
 		{
-				RyuDebug::activateRyuDebug == false ? RyuDebug::activateRyuDebug = true : RyuDebug::activateRyuDebug = false;
+				mDebugWidgets.debugData.activateRyuDebug == false ? mDebugWidgets.debugData.activateRyuDebug = true : mDebugWidgets.debugData.activateRyuDebug = false;
 				break;
 		}
 		case RyuEvent::ImGuiDemoToggle:
 		{
-				RyuDebug::showImGuiDemoWindow == false ? RyuDebug::showImGuiDemoWindow = true : RyuDebug::showImGuiDemoWindow = false;
+				mDebugWidgets.debugData.showImGuiDemoWindow == false ? mDebugWidgets.debugData.showImGuiDemoWindow = true : mDebugWidgets.debugData.showImGuiDemoWindow = false;
 				break;
 		}
 		case RyuEvent::RyuAnimatorToggle:
@@ -94,7 +95,7 @@ void Game::run()
 			if (!mIsPaused )
 			{
 				update(TimePerFrame);
-				RyuDebug::CreateDebugGui();
+				mDebugWidgets.CreateDebugGui();
 			}//!mAnimator.showAnimationEditor
 			mAnimator.createEditorWidgets(&mAnimator.showAnimationEditor);
 		  render();
@@ -132,11 +133,14 @@ void Game::processEvents(sf::Event& event, CommandQueue& commands)
 void
 Game::setDebugValues()
 {
-	RyuDebug::characterState = (mWorld.getPlayer()->getCharacterStateEnum())._to_string();
-	RyuDebug::characterIsFalling = mWorld.getPlayer()->isFalling();
-	RyuDebug::charJumpForce = mWorld.getPlayer()->mCharSettings.JumpUpForce;
-	RyuDebug::numFrames = mWorld.getPlayer()->getSpriteAnimation().getNumFrames();
-	RyuDebug::numFramesVector = mWorld.getPlayer()->getSpriteAnimation().getFramesCount();
+	mDebugWidgets.debugData.characterState = (mWorld.getPlayer()->getCharacterStateEnum())._to_string();
+	mDebugWidgets.debugData.characterIsFalling = mWorld.getPlayer()->isFalling();
+	mDebugWidgets.debugData.numFrames = mWorld.getPlayer()->getSpriteAnimation().getNumFrames();
+	mDebugWidgets.debugData.numFramesVector = mWorld.getPlayer()->getSpriteAnimation().getFramesCount();
+	//mDebugWidgets.jumpImpulseUp = mWorld.getPlayer()->mCharSettings.jumpUpImpulse;
+	//mDebugWidgets.jumpImpulseForward = mWorld.getPlayer()->mCharSettings.jumpForwardImpulse;
+	//mDebugWidgets.charMass = mWorld.getPlayer()->mCharSettings.bodyMass;
+	//mDebugWidgets.massCenter = mWorld.getPlayer()->mCharSettings.massCenter;
 }
 
 void Game::update(sf::Time deltaTime)

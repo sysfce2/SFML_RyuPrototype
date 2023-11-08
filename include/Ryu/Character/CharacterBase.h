@@ -39,7 +39,11 @@ struct CharacterSetting {
   // the characteranimation
   float MoveMultiplierX = 1.05f;
   float MoveMultiplierY = 1.47f;
-  b2Vec2 JumpUpForce{0, 50000};
+
+  b2Vec2 jumpForwardImpulse{150, -250};
+  b2Vec2 jumpUpImpulse{0, -200};
+  b2Vec2 massCenter{0, 0};
+  float bodyMass{18};
 };
 
 struct AnimationConfiguration {
@@ -137,6 +141,8 @@ protected:
   float mCharacterSpeed;
   bool physicsInitialized;
 
+
+
 private:
   BaseTextureManager baseTextureManager;
 
@@ -158,6 +164,7 @@ protected:
 public:
   std::map<std::string, std::pair<b2Vec2, b2Vec2>> rayCastPoints;
   CharacterSetting mCharSettings;
+
 };
 
 //} /// namespace ryu

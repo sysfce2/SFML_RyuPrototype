@@ -4,6 +4,7 @@
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/PlayerController.h>
 #include <Ryu/Core/World.h>
+#include <Ryu/Debug/imGuiDebug.h>
 #include <Ryu/Events/Observer.h>
 #include <RyuSuite/RAnimator.h>
 
@@ -35,6 +36,7 @@ class Game : public Observer
     RyuAnimator::Editor mAnimator;
 	  bool mIsPaused;
 	  std::unique_ptr<PlayerController> mPlayerController;
+    RyuDebug::DebugWidgets mDebugWidgets;
 	//ryu::AssetManager<sf::Font,std::string> fontManager;
 };
 

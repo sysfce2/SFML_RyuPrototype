@@ -1,5 +1,6 @@
 #include "Ryu/Animation/JsonParser.h"
 #include "Ryu/Animation/SpritesheetAnimation.h"
+#include "Ryu/Debug/imGuiDebug.h"
 #include "Ryu/Control/CharacterEnums.h"
 #include "Ryu/Core/AssetIdentifiers.h"
 #include <Ryu/Animation/AnimationManager.h>
@@ -97,32 +98,54 @@ float CharacterBase::getDirectionMultiplier()
     return (getMoveDirection() == EMoveDirection::Left ? -1.0 : 1.0);
 }
 
+
 void CharacterBase::jumpForward()
 {
-    fmt::print("JumpForward\n");
+    bool debugWidgetOn = false;//debugWidgetOn
 
-    b2MassData mass {.mass=18, .center={0,0}, .I=0};
+    fmt::print("JumpForward, DebugMode {}\n", debugWidgetOn ? " on " : " off" );
+
+    b2MassData mass {.mass=debugWidgetOn ? 0 /*RyuDebug::d.charMass*/ : mCharSettings.bodyMass
+    , .center=debugWidgetOn ? b2Vec2(0,0) /*RyuDebug::d.massCenter*/ : mCharSettings.massCenter, .I=0};
     mBody->SetMassData(&mass);
     fmt::print("dirMultiplier: {}\n",getDirectionMultiplier());
     fmt::print("dirDirectionn: {}\n",static_cast<int>(getMoveDirection()));
-    mBody->ApplyLinearImpulse( b2Vec2(100*getDirectionMultiplier(),-200), mBody->GetWorldCenter(), true);
-
+    mBody->ApplyLinearImpulse( b2Vec2(debugWidgetOn ? 0 /*RyuDebug::d.jumpImpulseForward.x*getDirectionMultiplier()*/ : mCharSettings.jumpForwardImpulse.x*getDirectionMultiplier()
+                                      ,debugWidgetOn ? 0 /*/RyuDebug::d.jumpImpulseForward.y*/ : mCharSettings.jumpForwardImpulse.y), mBody->GetWorldCenter(), true);
 }
 
+
 void CharacterBase::jumpUp() {
+    bool debugWidgetOn = false;//debugWidgetOn
     fmt::print("JumpUp\n");
 
     // float impulse = mBody->GetMass() * 10000;
-    b2MassData mass {.mass=18, .center={0,0}, .I=0};
+    b2MassData mass {.mass=debugWidgetOn ? 0 /*/RyuDebug::d.charMass*/ : mCharSettings.bodyMass
+    , .center=debugWidgetOn ? b2Vec2(0,0) /*RyuDebug::d.massCenter*/ : mCharSettings.massCenter, .I=0};
     mBody->SetMassData(&mass);
     //setMovement({0,-100});
     //mBody->SetLinearVelocity(v);
 
-    mBody->ApplyLinearImpulse( b2Vec2(0,-200), mBody->GetWorldCenter(), true);
+    mBody->ApplyLinearImpulse(debugWidgetOn ? b2Vec2(0,0) /*RyuDebug::d.jumpImpulseUp*/ : mCharSettings.jumpUpImpulse
+                              ,mBody->GetWorldCenter(), true);
     //mBody->ApplyLinearImpulseToCenter(mCharSettings.JumpUpForce,true);
 }
 
 void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
+    switch(event)
+    {
+        /*
+        case Ryu::EEvent::DebugValuesChanged:
+        {
+            mCharSettings.bodyMass = RyuDebug::d.charMass;
+            mCharSettings.massCenter = RyuDebug::d.massCenter;
+            mCharSettings.jumpForwardImpulse = RyuDebug::d.jumpForcecharMass;
+            mCharSettings.bodyMass = RyuDebug::d.charMass;
+        }
+        */
+        default: {}
+    }
+
     fmt::print("Called onNotify in CharacterBase\n");
     mCharacterState->onNotify(
         *this,

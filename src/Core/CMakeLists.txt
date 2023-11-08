@@ -22,7 +22,7 @@ set(HEADER
 
 add_library(ryucorelib STATIC "${SRC}" "${HEADER}")
 
-target_link_libraries(ryucorelib PUBLIC ryuanimationlib ryucontrollib ryusuitelib  box2d
+target_link_libraries(ryucorelib PUBLIC ryuanimationlib ryucontrollib ryusuitelib  ryudebuglib box2d
 	ImGui-SFML::ImGui-SFML)
 
 target_include_directories(ryucorelib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")

@@ -1,96 +1,56 @@
-#pragma once 
-
-#include <imgui.h>
+#pragma once
 
 #include <box2d/b2_math.h>
-
+#include <fmt/core.h>
+#include <imgui.h>
 #include <iostream>
 
-namespace RyuDebug{
+namespace RyuDebug {
 
-	// TODO: add the "states" to a heederfile (these are the only which are set somewhere else and used here
-	bool showImGuiDemoWindow;
-  bool activateRyuDebug;
-	const char* characterState;
-	b2Vec2  charJumpForce;
-	bool characterIsFalling;
-  size_t numFrames;
-  size_t numFramesVector;
+// TODO: add the "states" to a heederfile (these are the only which are set
+// somewhere else and used here
+/*
+static bool showImGuiDemoWindow;
+static bool activateRyuDebug;
+static const char *characterState;
+static b2Vec2 charJumpForce;
+static bool characterIsFalling;
+static size_t numFrames;
+static size_t numFramesVector;
+static b2Vec2 jumpImpulseForward, jumpImpulseUp, massCenter;
+static float charMass;
 
-  void ShowWidgets()
-  {
-    ImGuiIO& io = ImGui::GetIO();
-    ImGui::Text("Ryu Debug Viewer\n" "(right-click to change position)");
-    ImGui::Separator();
-    if(ImGui::CollapsingHeader("Basic"))
-    {
-        if (ImGui::IsMousePosValid())
-             ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
-        else
-             ImGui::Text("Mouse Position: <invalid>");
-    }
-    ImGui::Separator();
-    if(ImGui::CollapsingHeader("Character"))
-    {
-				// ImGui::Text("CharacterState: %s ",characterState);	
-				ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f),"CharacterFalling: %s",characterIsFalling ? "true" : "false");
-				ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f),"State: %s",characterState);	
-        ImGui::Text("AniFrames: %i ",numFrames);       	
-        ImGui::Text("AniFrames in Vector: %i ",numFramesVector);       	
-        ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f),"JumpForce: {%f,%f}",charJumpForce.x,charJumpForce.y);	
-        ImGui::Separator();
-    }
-    ImGui::Separator();
-  	ImGui::Text("For ImGui-Demo-Window press '-' ");	
-  }
+static float jumpImpulseForwardVec[4] = {.0f, .0f, .0f, .0f};
+static float jumpImpulseUpVec[4] = {.0f, .0f, .0f, .0f};
+static float massCenterVec[4] = {.0f, .0f, .0f, .0f};
+*/
+struct DebugData{
+ bool showImGuiDemoWindow=false;
+ bool activateRyuDebug=false;
+ const char *characterState;
+ b2Vec2 charJumpForce;
+ bool characterIsFalling;
+ size_t numFrames;
+ size_t numFramesVector;
+ b2Vec2 jumpImpulseForward, jumpImpulseUp, massCenter;
+ float charMass;
 
-  static void CreateDebugGui()
-  {
-		if(showImGuiDemoWindow) {ImGui::ShowDemoWindow(&showImGuiDemoWindow);}
-		
-		if(activateRyuDebug)
-		{
+ float jumpImpulseForwardVec[4] = {.0f, .0f, .0f, .0f};
+ float jumpImpulseUpVec[4] = {.0f, .0f, .0f, .0f};
+ float massCenterVec[4] = {.0f, .0f, .0f, .0f};
 
-		static int location = -1;
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-    if (location >= 0)
-    {
-        const float PAD = 10.0f;
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar, if any!
-        ImVec2 work_size = viewport->WorkSize;
-        ImVec2 window_pos, window_pos_pivot;
-        window_pos.x = (location & 1) ? (work_pos.x + work_size.x - PAD) : (work_pos.x + PAD);
-        window_pos.y = (location & 2) ? (work_pos.y + work_size.y - PAD) : (work_pos.y + PAD);
-        window_pos_pivot.x = (location & 1) ? 1.0f : 0.0f;
-        window_pos_pivot.y = (location & 2) ? 1.0f : 0.0f;
-        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-        window_flags |= ImGuiWindowFlags_NoMove;
-    }
-    else if (location == -2)
-    {
-        // Center window                                                                                             
-        ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-        window_flags |= ImGuiWindowFlags_NoMove;
-    }
-    ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-		if (ImGui::Begin("RyuDebugOverlay", &activateRyuDebug, window_flags))
-    {
-        ShowWidgets();
-		    if (ImGui::BeginPopupContextWindow())
-        {
-            if (ImGui::MenuItem("Custom",       NULL, location == -1)) location = -1;
-            if (ImGui::MenuItem("Center",       NULL, location == -2)) location = -2;
-            if (ImGui::MenuItem("Top-left",     NULL, location == 0)) location = 0;
-            if (ImGui::MenuItem("Top-right",    NULL, location == 1)) location = 1;
-            if (ImGui::MenuItem("Bottom-left",  NULL, location == 2)) location = 2;
-            if (ImGui::MenuItem("Bottom-right", NULL, location == 3)) location = 3;
-            if (activateRyuDebug && ImGui::MenuItem("Close")) activateRyuDebug = false;
-            ImGui::EndPopup();
-        }
-    }
-    ImGui::End();
+};
 
-		}
-  }
-}
+class DebugWidgets{
+
+    public:
+        DebugWidgets(){};
+
+        void ShowWidgets();
+        void CreateDebugGui();
+
+        DebugData debugData;
+};
+
+
+} // namespace RyuDebug
