@@ -1,6 +1,5 @@
 #include "Ryu/Animation/JsonParser.h"
 #include "Ryu/Animation/SpritesheetAnimation.h"
-#include "Ryu/Debug/imGuiDebug.h"
 #include "Ryu/Control/CharacterEnums.h"
 #include "Ryu/Core/AssetIdentifiers.h"
 #include <Ryu/Animation/AnimationManager.h>
@@ -67,6 +66,15 @@ CharacterBase::CharacterBase(ECharacterState startState,
     // TODO: check if its needable&possible to start character from a certain
     // state
     loadTextures();
+}
+
+void CharacterBase::useDebugCharacterSettings(CharacterDebugSetting settings) {
+	fmt::print("useDebugValues: JF: {}/{}, JU: {}/{}\n",
+               settings.jumpForwardImpulse.x, settings.jumpForwardImpulse.y,
+               settings.jumpUpImpulse.x, settings.jumpUpImpulse.y);
+
+    mCharSettings.jumpForwardImpulse = settings.jumpForwardImpulse;
+    mCharSettings.jumpUpImpulse = settings.jumpUpImpulse; // TODO: probably we need to convert st here;
 }
 
 void CharacterBase::updatePhysics() {

@@ -30,10 +30,22 @@ class b2World;
 class b2Body;
 class b2Vec2;
 class b2Fixture;
-
 // namespace ryu{
 
 struct CharacterSetting {
+  // due increase of gravityscale (falling is then more gamey) the physicbody
+  // needs some adustments for movement so its not behind the movement of
+  // the characteranimation
+  float MoveMultiplierX = 1.05f;
+  float MoveMultiplierY = 1.47f;
+
+  b2Vec2 jumpForwardImpulse{150, -250};
+  b2Vec2 jumpUpImpulse{0, -200};
+  b2Vec2 massCenter{0, 0};
+  float bodyMass{18};
+};
+
+struct CharacterDebugSetting {
   // due increase of gravityscale (falling is then more gamey) the physicbody
   // needs some adustments for movement so its not behind the movement of
   // the characteranimation
@@ -117,6 +129,7 @@ public:
   void jumpUp();
   void jumpForward();
   float getDirectionMultiplier();
+  void useDebugCharacterSettings(CharacterDebugSetting settings);
   virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
 
 protected:
@@ -163,7 +176,8 @@ protected:
   ECharacterMovement mECharacterMovement;
 public:
   std::map<std::string, std::pair<b2Vec2, b2Vec2>> rayCastPoints;
-  CharacterSetting mCharSettings;
+    CharacterSetting mCharSettings{};
+    CharacterDebugSetting mDebugCharSettings{};
 
 };
 

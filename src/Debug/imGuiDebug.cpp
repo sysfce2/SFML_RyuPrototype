@@ -1,4 +1,6 @@
+#include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Debug/imGuiDebug.h>
+#include <Ryu/Events/EventEnums.h>
 
 #include <box2d/b2_math.h>
 #include <fmt/core.h>
@@ -6,6 +8,10 @@
 #include <iostream>
 
 namespace RyuDebug {
+
+    DebugWidgets::DebugWidgets(CharacterIchi* character)
+        : playerCharacter(character)
+    {}
 
     void
     DebugWidgets::ShowWidgets() {
@@ -38,14 +44,17 @@ namespace RyuDebug {
             debugData.jumpImpulseForward.x = debugData.jumpImpulseForwardVec[0];
             debugData.jumpImpulseForward.y = debugData.jumpImpulseForwardVec[1];
             fmt::print("Set jumpForceForward {}/{}\n",debugData.jumpImpulseForward.x,debugData.jumpImpulseForward.y);
+            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
         }
         if (ImGui::InputFloat2("JumpForceUp", debugData.jumpImpulseUpVec)) {
             debugData.jumpImpulseUp.x = debugData.jumpImpulseUpVec[0];
             debugData.jumpImpulseUp.y = debugData.jumpImpulseUpVec[1];
             fmt::print("Set jumpForceUp\n");
+            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
         }
         if (ImGui::InputFloat2("Masscenter", debugData.massCenterVec)) {
             fmt::print("Set center of mass\n");
+            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
         }
     }
     ImGui::Separator();

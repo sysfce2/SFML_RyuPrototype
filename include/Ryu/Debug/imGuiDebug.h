@@ -1,9 +1,12 @@
 #pragma once
 
+#include <Ryu/Events/Subject.h>
 #include <box2d/b2_math.h>
 #include <fmt/core.h>
 #include <imgui.h>
 #include <iostream>
+
+class CharacterIchi;
 
 namespace RyuDebug {
 
@@ -41,15 +44,18 @@ struct DebugData{
 
 };
 
-class DebugWidgets{
+class DebugWidgets : public Subject {
 
     public:
-        DebugWidgets(){};
+        DebugWidgets(CharacterIchi* character);
 
         void ShowWidgets();
         void CreateDebugGui();
 
-        DebugData debugData;
+        DebugData debugData{};
+
+    private:
+        CharacterIchi* playerCharacter;
 };
 
 

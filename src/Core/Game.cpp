@@ -27,7 +27,7 @@ Game::Game()
 ,mPlayerController(std::make_unique<PlayerController>(mWorld.getPlayer()))
 ,mIsPaused(false)
 ,mAnimator()
-,mDebugWidgets()
+,mDebugWidgets(mWorld.getPlayer())
 {
 	// todo: how to load ichis tzextures at  startup ?
 	//mPlayer->loadTextures();
@@ -41,6 +41,7 @@ Game::onNotify(const SceneNode& entity, RyuEvent event)
 	{
 		case RyuEvent::DebugToggle:
 		{
+			fmt::print("DebugToggle in GAME\n");
 				mDebugWidgets.debugData.activateRyuDebug == false ? mDebugWidgets.debugData.activateRyuDebug = true : mDebugWidgets.debugData.activateRyuDebug = false;
 				break;
 		}
@@ -51,11 +52,27 @@ Game::onNotify(const SceneNode& entity, RyuEvent event)
 		}
 		case RyuEvent::RyuAnimatorToggle:
 		{
-				mAnimator.showAnimationEditor == false ? mAnimator.showAnimationEditor=true : mAnimator.showAnimationEditor=false;		
+			mAnimator.showAnimationEditor == false ? mAnimator.showAnimationEditor=true : mAnimator.showAnimationEditor=false;
+			break;
+		}
+		case RyuEvent::DebugValuesChanged:
+		{
+			fmt::print("DebugValues changed, notified in Game\n");
+			auto player = mWorld.getPlayer();
+			player->useDebugCharacterSettings({
+				.MoveMultiplierX = 1.05f,
+				.MoveMultiplierY = 1.47f,
+				.jumpForwardImpulse = mDebugWidgets.debugData.jumpImpulseForward,
+				.jumpUpImpulse = mDebugWidgets.debugData.jumpImpulseUp,
+				.massCenter={0,0},
+				.bodyMass={18}
+			    });
+			break;
 		}
 		default: break;
 	}
 }
+
 
 void
 Game::addObservers()
@@ -65,6 +82,7 @@ Game::addObservers()
 	player->addObserver(player);
 	mPlayerController->addObserver(&mWorld);
 	mPlayerController->addObserver(this);
+	mDebugWidgets.addObserver(/*mWorld.getPlayer()*/this);
 }
 
 void Game::run()
@@ -137,10 +155,7 @@ Game::setDebugValues()
 	mDebugWidgets.debugData.characterIsFalling = mWorld.getPlayer()->isFalling();
 	mDebugWidgets.debugData.numFrames = mWorld.getPlayer()->getSpriteAnimation().getNumFrames();
 	mDebugWidgets.debugData.numFramesVector = mWorld.getPlayer()->getSpriteAnimation().getFramesCount();
-	//mDebugWidgets.jumpImpulseUp = mWorld.getPlayer()->mCharSettings.jumpUpImpulse;
-	//mDebugWidgets.jumpImpulseForward = mWorld.getPlayer()->mCharSettings.jumpForwardImpulse;
-	//mDebugWidgets.charMass = mWorld.getPlayer()->mCharSettings.bodyMass;
-	//mDebugWidgets.massCenter = mWorld.getPlayer()->mCharSettings.massCenter;
+
 }
 
 void Game::update(sf::Time deltaTime)
