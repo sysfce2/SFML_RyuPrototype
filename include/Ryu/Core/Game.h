@@ -30,6 +30,7 @@ class Game : public Observer
 	  void handleUserInput(sf::Keyboard::Key key, bool keyPressed);
 	  void addObservers();
     void setDebugValues();
+    void useCharacterDebugSettings();
   private:
 	  sf::RenderWindow mWindow;
 	  World mWorld;
@@ -37,6 +38,7 @@ class Game : public Observer
 	  bool mIsPaused;
 	  std::unique_ptr<PlayerController> mPlayerController;
     RyuDebug::DebugWidgets mDebugWidgets;
+	  bool mDebugWidgetsActive;
 	//ryu::AssetManager<sf::Font,std::string> fontManager;
 };
 

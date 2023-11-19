@@ -68,13 +68,26 @@ CharacterBase::CharacterBase(ECharacterState startState,
     loadTextures();
 }
 
-void CharacterBase::useDebugCharacterSettings(CharacterDebugSetting settings) {
+void CharacterBase::setCharacterSettings(CharacterSetting settings) {
 	fmt::print("useDebugValues: JF: {}/{}, JU: {}/{}\n",
                settings.jumpForwardImpulse.x, settings.jumpForwardImpulse.y,
                settings.jumpUpImpulse.x, settings.jumpUpImpulse.y);
 
     mCharSettings.jumpForwardImpulse = settings.jumpForwardImpulse;
     mCharSettings.jumpUpImpulse = settings.jumpUpImpulse; // TODO: probably we need to convert st here;
+}
+
+void
+CharacterBase::resetCharacterSettings()
+{
+    fmt::print("reset Values");
+    mCharSettings.MoveMultiplierX = mFinalCharSettings.MoveMultiplierX;
+    mCharSettings.MoveMultiplierY = mFinalCharSettings.MoveMultiplierY;
+    mCharSettings.jumpUpImpulse = mFinalCharSettings.jumpUpImpulse;
+    mCharSettings.jumpForwardImpulse = mFinalCharSettings.jumpForwardImpulse;
+    mCharSettings.bodyMass = mFinalCharSettings.bodyMass;
+    mCharSettings.massCenter = mFinalCharSettings.massCenter;
+
 }
 
 void CharacterBase::updatePhysics() {

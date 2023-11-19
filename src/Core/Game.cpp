@@ -28,10 +28,26 @@ Game::Game()
 ,mIsPaused(false)
 ,mAnimator()
 ,mDebugWidgets(mWorld.getPlayer())
+,mDebugWidgetsActive(false)
 {
 	// todo: how to load ichis tzextures at  startup ?
 	//mPlayer->loadTextures();
 	addObservers();
+}
+
+void
+Game::useCharacterDebugSettings()
+{
+			auto player = mWorld.getPlayer();
+			player->setCharacterSettings({
+				.MoveMultiplierX = 1.05f,
+				.MoveMultiplierY = 1.47f,
+				.jumpForwardImpulse = mDebugWidgets.debugData.jumpImpulseForward,
+				.jumpUpImpulse = mDebugWidgets.debugData.jumpImpulseUp,
+				.massCenter={0,0},
+				.bodyMass={18}
+			    });
+
 }
 
 void
@@ -43,6 +59,8 @@ Game::onNotify(const SceneNode& entity, RyuEvent event)
 		{
 			fmt::print("DebugToggle in GAME\n");
 				mDebugWidgets.debugData.activateRyuDebug == false ? mDebugWidgets.debugData.activateRyuDebug = true : mDebugWidgets.debugData.activateRyuDebug = false;
+				mDebugWidgetsActive = mDebugWidgets.debugData.activateRyuDebug;
+				mDebugWidgetsActive ? useCharacterDebugSettings() : mWorld.getPlayer()->resetCharacterSettings();
 				break;
 		}
 		case RyuEvent::ImGuiDemoToggle:
@@ -58,15 +76,7 @@ Game::onNotify(const SceneNode& entity, RyuEvent event)
 		case RyuEvent::DebugValuesChanged:
 		{
 			fmt::print("DebugValues changed, notified in Game\n");
-			auto player = mWorld.getPlayer();
-			player->useDebugCharacterSettings({
-				.MoveMultiplierX = 1.05f,
-				.MoveMultiplierY = 1.47f,
-				.jumpForwardImpulse = mDebugWidgets.debugData.jumpImpulseForward,
-				.jumpUpImpulse = mDebugWidgets.debugData.jumpImpulseUp,
-				.massCenter={0,0},
-				.bodyMass={18}
-			    });
+			useCharacterDebugSettings();
 			break;
 		}
 		default: break;
