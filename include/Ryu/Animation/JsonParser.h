@@ -66,13 +66,15 @@ namespace RyuParser {
 
     struct JsonAnimations {
         std::string jsonName;
-        Textures::LevelID spritesheetId;
+        Textures::SpritesheetID spritesheetId;
+        Textures::LevelID levelId;
         std::string spritesheetPath;
         std::map<AnimationId,Animation> animations;
 
         JsonAnimations()
             : jsonName(),
-              spritesheetId(Textures::LevelID::Unknown),
+              spritesheetId(Textures::SpritesheetID::Unknown),
+              levelId(Textures::LevelID::Unknown),
               spritesheetPath(),
               animations({}) {}
     };

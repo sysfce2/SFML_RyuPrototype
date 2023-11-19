@@ -142,7 +142,10 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
     void from_json(const json& j, JsonAnimations& JsonAnimations) {
         j.at("Name").get_to(JsonAnimations.jsonName);
         std::string spritesheetId = j.at("Spritesheet");
-        Textures::LevelID sId = Textures::LevelID::_from_string(spritesheetId.c_str());
+        std::string levelId = j.at("Level");
+        Textures::LevelID lId = Textures::LevelID::_from_string(levelId.c_str());
+        Textures::SpritesheetID sId = Textures::SpritesheetID::_from_string(spritesheetId.c_str());
+        JsonAnimations.levelId = lId;
         JsonAnimations.spritesheetId = sId;
         j.at("Path").get_to(JsonAnimations.spritesheetPath);
         json anis = j["Animations"];

@@ -122,32 +122,27 @@ float CharacterBase::getDirectionMultiplier()
 
 void CharacterBase::jumpForward()
 {
-    bool debugWidgetOn = false;//debugWidgetOn
+    fmt::print("JumpForward: x:{} y:{}\n", mCharSettings.jumpForwardImpulse.x, mCharSettings.jumpForwardImpulse.y);
 
-    fmt::print("JumpForward, DebugMode {}\n", debugWidgetOn ? " on " : " off" );
-
-    b2MassData mass {.mass=debugWidgetOn ? 0 /*RyuDebug::d.charMass*/ : mCharSettings.bodyMass
-    , .center=debugWidgetOn ? b2Vec2(0,0) /*RyuDebug::d.massCenter*/ : mCharSettings.massCenter, .I=0};
+    b2MassData mass {.mass= mCharSettings.bodyMass
+    , .center= mCharSettings.massCenter, .I=0};
     mBody->SetMassData(&mass);
     fmt::print("dirMultiplier: {}\n",getDirectionMultiplier());
     fmt::print("dirDirectionn: {}\n",static_cast<int>(getMoveDirection()));
-    mBody->ApplyLinearImpulse( b2Vec2(debugWidgetOn ? 0 /*RyuDebug::d.jumpImpulseForward.x*getDirectionMultiplier()*/ : mCharSettings.jumpForwardImpulse.x*getDirectionMultiplier()
-                                      ,debugWidgetOn ? 0 /*/RyuDebug::d.jumpImpulseForward.y*/ : mCharSettings.jumpForwardImpulse.y), mBody->GetWorldCenter(), true);
+    mBody->ApplyLinearImpulse( b2Vec2(mCharSettings.jumpForwardImpulse.x*getDirectionMultiplier()
+                                      , mCharSettings.jumpForwardImpulse.y), mBody->GetWorldCenter(), true);
 }
 
 
 void CharacterBase::jumpUp() {
-    bool debugWidgetOn = false;//debugWidgetOn
-    fmt::print("JumpUp\n");
+    fmt::print("JumpUp x:{} y: {}\n", mCharSettings.jumpUpImpulse.x, mCharSettings.jumpUpImpulse.y);
 
     // float impulse = mBody->GetMass() * 10000;
-    b2MassData mass {.mass=debugWidgetOn ? 0 /*/RyuDebug::d.charMass*/ : mCharSettings.bodyMass
-    , .center=debugWidgetOn ? b2Vec2(0,0) /*RyuDebug::d.massCenter*/ : mCharSettings.massCenter, .I=0};
+    b2MassData mass {.mass= mCharSettings.bodyMass
+    , .center= mCharSettings.massCenter, .I=0};
     mBody->SetMassData(&mass);
-    //setMovement({0,-100});
-    //mBody->SetLinearVelocity(v);
 
-    mBody->ApplyLinearImpulse(debugWidgetOn ? b2Vec2(0,0) /*RyuDebug::d.jumpImpulseUp*/ : mCharSettings.jumpUpImpulse
+    mBody->ApplyLinearImpulse(mCharSettings.jumpUpImpulse
                               ,mBody->GetWorldCenter(), true);
     //mBody->ApplyLinearImpulseToCenter(mCharSettings.JumpUpForce,true);
 }
@@ -158,10 +153,6 @@ void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
         /*
         case Ryu::EEvent::DebugValuesChanged:
         {
-            mCharSettings.bodyMass = RyuDebug::d.charMass;
-            mCharSettings.massCenter = RyuDebug::d.massCenter;
-            mCharSettings.jumpForwardImpulse = RyuDebug::d.jumpForcecharMass;
-            mCharSettings.bodyMass = RyuDebug::d.charMass;
         }
         */
         default: {}
@@ -328,8 +319,9 @@ void CharacterBase::changeState(std::unique_ptr<CharacterState> toState) {
 
 void CharacterBase::setupAnimation(Textures::CharacterID aniId) {
     RyuParser::Animation aniConfig;
+    auto spritesheetId = AnimationToSpritesheetID.at(aniId);
     aniConfig =
-        mAnimationManager->getCharacterAnimationConfig(mCurrentLevel, aniId);
+        mAnimationManager->getCharacterAnimationConfig(spritesheetId, aniId);
     // fmt::print("startF(x): {}, startD(y): {}","bla","bla");
     AnimationConfiguration config{
         // TODO: check if x/y are in correct order for later spritesheets

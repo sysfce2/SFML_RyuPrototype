@@ -7,7 +7,6 @@ b2DrawSFML::b2DrawSFML(float scale) noexcept
     , m_circleShape {}
     , m_scale { scale }
 {
-    std::cout << "debugDraw instantiated target null" << "\n";
 }
 
 b2DrawSFML::b2DrawSFML(sf::RenderTarget& renderTarget, float scale) noexcept
@@ -16,12 +15,10 @@ b2DrawSFML::b2DrawSFML(sf::RenderTarget& renderTarget, float scale) noexcept
     , m_circleShape {}
     , m_scale { scale }
 {
-    std::cout << "debugDraw instantiated " << "\n";
 }
 
 b2DrawSFML::~b2DrawSFML()
 {
-    std::cout << "Destructor DebugDraw\n";
 }
 
 void b2DrawSFML::SetTarget(sf::RenderTarget& renderTarget)

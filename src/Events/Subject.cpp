@@ -11,18 +11,15 @@ using EEvent = Ryu::EEvent;
 Subject::Subject()
 :   numObservers_(0)
 {
-    std::cout << "Observer Ctor" << std::endl;
 }
 
 Subject::~Subject()
 {
-    std::cout << "Observer Detor" << std::endl;
 }
 
 void
 Subject::addObserver(Observer* observer)
 {
-    std::cout << "Added one observer: " << observer->getObserverName() << "\n";
     // Add to array...
     observers_[numObservers_] = observer;
     ++numObservers_;
@@ -54,7 +51,7 @@ Subject::notify(const SceneNode& entity, EEvent event)
     {
         for (int i=0;i<numObservers_;i++)
         {
-            fmt::print("Notify observer {}\n",observers_[i]->getObserverName());
+            //fmt::print("Notify observer {}\n",observers_[i]->getObserverName());
             observers_[i]->onNotify(entity, event);
         }
     }

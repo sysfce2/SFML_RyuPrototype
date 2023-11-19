@@ -196,12 +196,12 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 notify(*playerCharacter,RyuEvent::DebugToggle);
                 break;
             }
-            case sf::Keyboard::Hyphen:
+            case sf::Keyboard::F1:
             {
                 notify(*playerCharacter,RyuEvent::ImGuiDemoToggle);
                 break;
             }
-            case sf::Keyboard::Comma:
+            case sf::Keyboard::F2:
             {
                  notify(*playerCharacter,RyuEvent::RyuAnimatorToggle);
                  break;

@@ -84,6 +84,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<RyuParser:
       std::string selectedSpritesheet;
       std::string selectedSpritesheetPath;
       std::string selectedSpritesheetId;
+      std::string selectedLevelId;
       char selectedSpriteSheetPath[128] = "assets/spritesheets/ichi/ichi_spritesheet_level1.png";
       EFileBrowserState fileBrowserState;
 

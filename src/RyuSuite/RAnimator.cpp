@@ -122,6 +122,7 @@ static int intDuration;
 static int selectedFrame;
 static int currentEventItem = 0;
 static int currentLevelItem = 0;
+static int currentSpritesheetItem = 0;
 // standard is a character animation
 static int currentAnimationType = 1;
 static int currentAnimationId = 0;
@@ -133,6 +134,7 @@ static bool repeatAnimation = true;
 // TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
 const char* eventItems[7] = {""};
 const char* levelItems[3] = {""};
+const char* spritesheetItems[3] = {""};
 const char* animationTypes[3] = {""};
 const char* animationIds[20] = {""};
 
@@ -145,6 +147,7 @@ static sf::Vector2i sheetPosition{};
 void
 Editor::initData()
 {
+    // TODO: use templates and lambdas for initialization !
     int i = 0;
     for (RyuEvent evt : RyuEvent::_values())
     {
@@ -156,6 +159,13 @@ Editor::initData()
     for (Textures::LevelID level : Textures::LevelID::_values())
     {
         levelItems[i] = level._to_string();
+        ++i;
+    }
+    // spritesheet ids
+    i = 0;
+    for (Textures::SpritesheetID spritesheet : Textures::SpritesheetID::_values())
+    {
+        spritesheetItems[i] = spritesheet._to_string();
         ++i;
     }
     // LevelIds for spritesheets
@@ -205,6 +215,7 @@ Editor::update(sf::Time dt)
                     {
                         case EFileBrowserState::SpriteSheetJson:
                         {
+                            fmt::print("Path: {}\n", _fileBrowser->GetSelected().string());
                             parseJsonData(_fileBrowser->GetSelected().string());
                             break;
                         }
@@ -255,6 +266,7 @@ Editor::parseJsonData(std::string path)
     std::string spriteSheet = path.substr(found+1);  // name of the spritesheet should be st like "ichi_spritesheet_level1");
     auto foundExt = spriteSheet.find_last_of(".json");
     spriteSheet = spriteSheet.substr(0, foundExt-4);
+    guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/"+spriteSheet+".png");
 
     std::ifstream f(path);
     std::cout << "Open JSON...\n";
@@ -289,8 +301,9 @@ Editor::parseJsonData(std::string path)
             {
                 for(int i = ani.fromFrame;i<=ani.toFrame;i++)
                 {
-                    std::string framePosition = selectedSpritesheet+" "+std::to_string(i)+".aseprite";
                     RyuParser::FrameEditor frame;
+                    std::string framePosition = selectedSpritesheet+" "+std::to_string(i)+".aseprite";
+                    try {
                         frame.duration = data["frames"][framePosition]["duration"];
                         frame.height = data["frames"][framePosition]["frame"]["h"];
                         frame.width = data["frames"][framePosition]["frame"]["w"];
@@ -299,6 +312,9 @@ Editor::parseJsonData(std::string path)
                         frame.event = RyuEvent::None;
 
                     ani.frames.push_back(frame);
+                    } catch (std::exception) {
+                        fmt::print("Exception thrown: do filenames of .json, .png and .aseprite match: frameposition: {}, spritesheetname: {}?\nse check all filenames.",framePosition, selectedSpritesheet);
+                    }
                 }
                 ani.animationType = Textures::AnimationType::Character;
             }
@@ -497,6 +513,7 @@ Editor::createEditorWidgets(bool* p_open)
         ImGui::SameLine();
 
         // Right
+        // TODO: select spritesheet which is loaded as an tab / select mutlibe Tabs..
         ImGui::BeginGroup();
         if(ImGui::BeginTabBar("SpriteSheets"))
         {
@@ -643,7 +660,8 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
     // exception end
 
     // std::cout << "Pos_new: " << pos.x << "|" << pos.y << "\n";
-    
+
+    // TODO: values according to selectedSpritesheet !
     // ImGui::GetWindowDrawList()->AddImage((void*)texture, pos,ImVec2(pos.x+80,pos.y+96)/* ImVec2(800, 600),ImVec2(880, 696)*/, ImVec2(0,0), ImVec2(1,1),IM_COL32_A_MASK);
     ImGui::GetWindowDrawList()->AddRectFilled(pos,ImVec2(pos.x+80,pos.y+96),IM_COL32(127,0,0,255));//L32_WHITE);
 
@@ -726,9 +744,13 @@ Editor::createAnimationDetails(int selectedAni, TaggedSheetAnimation& sheet)
         // static char extension[6] = ".json";
         ImGui::InputTextWithHint("Filename","put Json filename here",JsonFilename,IM_ARRAYSIZE(JsonFilename));
         ImGui::InputTextWithHint("Path","put Json filename here",selectedSpriteSheetPath,IM_ARRAYSIZE(selectedSpriteSheetPath));
-        if(ImGui::Combo("Spritesheet-Id",&currentLevelItem, levelItems, IM_ARRAYSIZE(levelItems))) //;
+        if(ImGui::Combo("Spritesheet-Id",&currentSpritesheetItem, spritesheetItems, IM_ARRAYSIZE(spritesheetItems))) //;
         {
-            selectedSpritesheetId = Textures::LevelID::_from_integral(currentLevelItem)._to_string();
+            selectedSpritesheetId = Textures::SpritesheetID::_from_integral(currentSpritesheetItem)._to_string();
+        }
+        if(ImGui::Combo("Level-Id",&currentLevelItem, levelItems, IM_ARRAYSIZE(levelItems))) //;
+        {
+            selectedLevelId = Textures::LevelID::_from_integral(currentLevelItem)._to_string();
         }
         if(ImGui::Button("Save Json"))
         {
@@ -806,7 +828,7 @@ void
 Editor::initTextures()
 {
     // TODO: still valid ?: this could also be done when opeing the spritesheet through a dialog ... whe the size of the spritesheets become bigger this will be a memory killer
-    guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
+    //guiCharTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
     guiTextureManager.load(Textures::GuiID::ForwardFrame,"assets/gui/animator/06_nextFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::BackwardFrame,"assets/gui/animator/03_previousFrame.jpeg");
     guiTextureManager.load(Textures::GuiID::Play,"assets/gui/animator/04_playAni.jpeg");
@@ -853,6 +875,7 @@ Editor::exportAnimationDetailsToFile(char* JsonFilename)
     // TODO: use variables for charcter name etc.
     oJson << "{\n" << R"(  "Name" : "ichi",)" << "\n";
     oJson << R"(  "Spritesheet" : ")" << selectedSpritesheetId << R"(",)" << "\n";
+    oJson << R"(  "Level" : ")" << selectedLevelId << R"(",)" << "\n";
     oJson << R"(  "Path" : ")" << selectedSpriteSheetPath << R"(",)" << "\n";
     oJson << R"(  "Animations" : [)" << "\n    ";
 

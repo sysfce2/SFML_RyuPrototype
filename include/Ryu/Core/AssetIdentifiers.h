@@ -42,6 +42,12 @@ namespace Textures
 		Level2
 	);
 
+	BETTER_ENUM(SpritesheetID, char,
+		Unknown=0,
+		Ichi80x96,
+        Ichi128x196
+    );
+
 	// TODO: sub-spritesheetIDs in character itself ? (e.g. RUN in the states)
   // Rename ? to CharacterAnimationId
     BETTER_ENUM(CharacterID, char ,

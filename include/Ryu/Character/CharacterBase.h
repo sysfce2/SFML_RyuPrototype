@@ -79,12 +79,34 @@ struct AnimationConfiguration {
   Textures::CharacterID animationId;
 };
 
+static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSpritesheetID =
+{
+{Textures::CharacterID::IchiDuckEnter, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiDuckIdle, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiDuckWalk, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiFallingLoop, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiIdle, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiJumpForwardNrml, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiJumpUp, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiLadderBack, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiLadderClimbLoop, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiLadderEnter, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiLandHigh, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiLadderIdle, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiLandLow, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiRun, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiWalk, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiStartFalling, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiSword1Idle, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiSword1Walk, Textures::SpritesheetID::Ichi80x96},
+};
+
 class AnimationManager;
 
 class CharacterBase : public SceneNode, public Subject, public Observer {
 
 public:
-  // TODO: implement rule of 5 !
+    // TODO: implement rule of 5 !
   // (morph one character into another ^^)
   CharacterBase(std::unique_ptr<b2World> &phWorld,
                 const sf::Vector2f &position);
