@@ -2,6 +2,8 @@
 #include "Ryu/Animation/SpritesheetAnimation.h"
 #include "Ryu/Control/CharacterEnums.h"
 #include "Ryu/Core/AssetIdentifiers.h"
+#include "Ryu/Statemachine/CharacterStateLedgeClimbUp.h"
+#include "Ryu/Statemachine/CharacterStateLedgeHang.h"
 #include <Ryu/Animation/AnimationManager.h>
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Core/AssetManager.h>
@@ -321,6 +323,23 @@ void CharacterBase::update(sf::Time deltaTime) {
     }
 
     updateCharacterPosition(deltaTime);
+}
+
+void CharacterBase::toggleTestStates()
+{
+    if(testStateCurrent == testStatesCount) testStateCurrent = 0;
+
+    if(testStateCurrent == 0)
+    {
+        changeState(std::make_unique<CharacterStateLedgeHang>());
+    }
+    if(testStateCurrent == 1)
+    {
+        changeState(std::make_unique<CharacterStateLedgeClimbUp>());
+    }
+
+    testStateCurrent++;
+
 }
 
 void CharacterBase::changeState(std::unique_ptr<CharacterState> toState) {

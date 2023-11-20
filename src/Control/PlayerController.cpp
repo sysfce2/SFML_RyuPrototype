@@ -13,6 +13,7 @@
 #include <fmt/core.h>
 #include <iostream>
 #include <map>
+#include <memory>
 
 
 class CharacterIchi;
@@ -214,6 +215,11 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 std::cout << "MoveDir: " << (int)playerCharacter->getMoveDirection() << "\n";
                 notify(*playerCharacter,RyuEvent::TemporaryOutput);
 
+                break;
+            }
+            case sf::Keyboard::R:
+            {
+                playerCharacter->toggleTestStates();;
                 break;
             }
             case sf::Keyboard::U:

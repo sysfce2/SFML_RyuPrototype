@@ -9,6 +9,8 @@ set (SRC
      "CharacterStateJumpNormal.cpp"
      "CharacterStateFalling.cpp"
      "CharacterStateFallingEnd.cpp"
+     "CharacterStateLedgeHang.cpp"
+     "CharacterStateLedgeClimbUp.cpp"
     )
 
 set(HEADER
@@ -22,6 +24,8 @@ set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateJumpNormal.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateFalling.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateFallingEnd.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateLedgeHang.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Statemachine/CharacterStateLedgeClimbUp.h"
 )
 
 add_library(ryustateslib STATIC "${SRC}" "${HEADER}")

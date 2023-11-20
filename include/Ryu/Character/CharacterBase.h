@@ -172,6 +172,7 @@ public:
     void setDuckState(bool duckstate) {mDuckStateActive = duckstate;};
   virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
     void ouputAnimations() {mAnimationManager->outputStoredAnimations();}
+    void toggleTestStates();
 protected:
   /***
    * \brief   Initialized physic (body, fixtures for the character).
@@ -199,6 +200,8 @@ protected:
 private:
     BaseTextureManager baseTextureManager;
     bool mDuckStateActive;
+    int testStatesCount = 2;
+    int testStateCurrent = 0;
 
 protected:
   std::unique_ptr<AnimationManager> mAnimationManager;

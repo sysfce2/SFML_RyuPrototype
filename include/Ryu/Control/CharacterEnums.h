@@ -33,6 +33,8 @@ BETTER_ENUM(ECharacterState, char
     ,JumpForward
     ,Sword1Idle
     ,Sword1Walk
+    ,Hanging
+    ,ClimbUp
     );
 
 enum class EMoveDirection
