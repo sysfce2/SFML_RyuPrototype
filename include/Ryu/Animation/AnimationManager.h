@@ -20,6 +20,7 @@ public:
     void readAnimationConfigs();
     std::string readFile(fs::path path);
     void outputConfigs();
+    void outputStoredAnimations();
     const RyuParser::Animation& getCharacterAnimationConfig(Textures::SpritesheetID spritesheet, Textures::CharacterID aniId);
     // TODO: for some reason we have two presentationss of a FrameVector
     // (i guess this happened because of the animator uses a different datastructure -> someday we need to adjust ALL to one datastructure)

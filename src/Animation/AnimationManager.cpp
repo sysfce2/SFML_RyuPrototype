@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <variant>
 #include <utility>
 #include <fmt/core.h>
 #include <utility>
@@ -54,6 +55,20 @@ AnimationManager::outputConfigs()
     for(const auto& config : spritesheetConfigs)
     {
         fmt::print("Config {}, Name {}, Spritesheet {} \n", config.first._to_string(), config.second.jsonName, config.second.spritesheetPath);
+    }
+}
+
+void
+AnimationManager::outputStoredAnimations()
+{
+    for(const auto& spritesheet : spritesheetConfigs)
+    {
+        fmt::print("Sheet: {}\n",spritesheet.first._to_string());
+        for(const auto& ani : spritesheet.second.animations)
+        {
+            std::string aniId = std::visit([](auto&& cId){return cId._to_string();},ani.first);
+            fmt::print("    {}\n",aniId);
+        }
     }
 }
 

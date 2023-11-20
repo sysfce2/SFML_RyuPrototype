@@ -96,7 +96,7 @@ namespace RyuParser {
 Editor::Editor():
      parsedSpritesheet(false)
     ,selectedSpritesheet()
-    ,showAnimationEditor(true)
+    ,showAnimationEditor(false)
     ,guiCharTextureManager()
     ,guiTextureManager()
     ,aniIsPlaying(false)
@@ -132,11 +132,11 @@ RyuParser::AnimationEditor selectedAnimation;
 static bool repeatAnimation = true;
 
 // TODO: dynamically initialize array ? -> here elements needs to be iniatilized manually ^^
-const char* eventItems[7] = {""};
+const char* eventItems[8] = {""};
 const char* levelItems[3] = {""};
 const char* spritesheetItems[3] = {""};
 const char* animationTypes[3] = {""};
-const char* animationIds[20] = {""};
+const char* animationIds[22] = {""};
 
 // TODO set huge amount of character IDs in the array -> how to improve this ???
 // Textures::CharacterID::

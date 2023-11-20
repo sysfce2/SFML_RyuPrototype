@@ -49,7 +49,7 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
 
         std::string frameEvent = j.at("event");
         Ryu::EEvent s = Ryu::EEvent::_from_string(frameEvent.c_str());
-        fmt::print("FromJson(Event): {} \n",s._to_string());
+        //fmt::print("FromJson(Event): {} \n",s._to_string());
         frame.event = s;
     }
 

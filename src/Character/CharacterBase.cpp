@@ -41,6 +41,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World> &phWorld,
       mCharSettings(), mCurrentLevel(Textures::LevelID::Level1),
       rayCastPoints(), mCharacterAnimation(this),
       mECharacterState(ECharacterState::None),
+      mDuckStateActive(false),
       mAnimationManager(std::make_unique<AnimationManager>())
 {
     // std::shared_ptr<CharacterBase> sPtr =
@@ -58,7 +59,7 @@ CharacterBase::CharacterBase(ECharacterState startState,
       ,
       mMoveDirection(EMoveDirection::Right), phWorldRef(phWorld),
       mCharacterFalling(false), baseTextureManager(), mCharSettings(),
-      mCurrentLevel(Textures::LevelID::Level1), mCharacterAnimation(this),
+      mCurrentLevel(Textures::LevelID::Level1),mDuckStateActive(false), mCharacterAnimation(this),
       mAnimationManager(std::make_unique<AnimationManager>()) {
     // std::shared_ptr<CharacterBase> sPtr =
     // std::make_shared<CharacterBase>(this); mCharacterAnimation =
@@ -150,11 +151,12 @@ void CharacterBase::jumpUp() {
 void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
     switch(event)
     {
-        /*
-        case Ryu::EEvent::DebugValuesChanged:
+
+        case Ryu::EEvent::TemporaryOutput:
         {
+            mAnimationManager->outputStoredAnimations();
         }
-        */
+
         default: {}
     }
 
@@ -173,7 +175,7 @@ void CharacterBase::initPhysics(std::unique_ptr<b2World> &phWorld,
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody; /// TODO: or even kinematic body ?
     bodyDef.position.Set(Converter::pixelsToMeters<double>(position.x),
-                         Converter::pixelsToMeters<double>(position.y));
+                         Converter::pixelsToMeters<double>(inDuckMode() ? position.y + (DUCK_FRAME_SIZE.second / 2) : position.y));
     bodyDef.fixedRotation = true;
     bodyDef.gravityScale = 4.8f;
 
@@ -186,12 +188,10 @@ void CharacterBase::initPhysics(std::unique_ptr<b2World> &phWorld,
     // dimension.x/2.f,dimension.y/2.f */
     // polygonShape.SetAsBox(0.5,0.9);
 
-    int size_x; // mCharacterAnimation.getSprite().getTextureRect().width;
-    int size_y;
+    int size_x = 0; // mCharacterAnimation.getSprite().getTextureRect().width;
+    int size_y = 0;
 
-    if (mECharacterState._value == ECharacterState::DuckIdle ||
-        mECharacterState._value == ECharacterState::DuckWalk ||
-        mECharacterState._value == ECharacterState::DuckEnter) {
+    if (inDuckMode()){
         size_x =
             DUCK_FRAME_SIZE
                 .first; // mCharacterAnimation.getSprite().getTextureRect().width;
@@ -214,15 +214,15 @@ void CharacterBase::initPhysics(std::unique_ptr<b2World> &phWorld,
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &polygonShape;
     fixtureDef.density = 5.f;   /// for dynamic objects density needs to be > 0
-    fixtureDef.friction = 0.1f; /// recommended by b2d docu
+    fixtureDef.friction = 0.1f; /// recommended by  b2d docu
     fixtureDef.restitution = 0.1;
 
     mBody = phWorld->CreateBody(&bodyDef);
     mFixture = mBody->CreateFixture(&fixtureDef);
-
+    //fmt::print("Duckmode: {}\n", inDuckMode() ? " true " : " false ");
     sf::Shape *shape = new sf::RectangleShape(sf::Vector2f(size_x, size_y));
     shape->setOrigin(size_x / 2.0f, size_y / 2.0f);
-    shape->setPosition(sf::Vector2f(position.x, position.y));
+    shape->setPosition(sf::Vector2f(position.x, position.y ));
     shape->setTexture(
         &baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));
 
@@ -278,6 +278,14 @@ bool CharacterBase::allowedToFall() {
     return (mECharacterState._value != ECharacterState::JumpUp && mECharacterState._value != ECharacterState::JumpForward);
 }
 
+bool CharacterBase::inDuckMode() {
+    return (mECharacterState._value == ECharacterState::DuckEnter
+            || mECharacterState._value == ECharacterState::DuckEnd
+            || mECharacterState._value == ECharacterState::DuckIdle
+            || mECharacterState._value == ECharacterState::DuckWalk
+    );
+}
+
 void CharacterBase::update(sf::Time deltaTime) {
     // std::cout //<< " x(pBody): " <<
     // Converter::metersToPixels(mBody->GetPosition().x)
@@ -299,12 +307,16 @@ void CharacterBase::update(sf::Time deltaTime) {
             mCharacterState->enter(*this);
         }
 
+
+        fmt::print("In DuckMode: {}\n", inDuckMode() ? "true" : "false");
         mCharacterAnimation.setPosition(
             Converter::metersToPixels<double>(mBody->GetPosition().x),
-            Converter::metersToPixels<double>(mBody->GetPosition().y));
+            inDuckMode()
+            ? (Converter::metersToPixels<double>(mBody->GetPosition().y - (DUCK_FRAME_SIZE.second)/2))
+            : Converter::metersToPixels<double>(mBody->GetPosition().y));
     }
 
-    if (IsInBounds(mBody->GetLinearVelocity().y, 0.f, 0.01f)) {
+    if (not inDuckMode() && IsInBounds(mBody->GetLinearVelocity().y, 0.f, 0.01f)) {
         mCharacterFalling = false;
     }
 

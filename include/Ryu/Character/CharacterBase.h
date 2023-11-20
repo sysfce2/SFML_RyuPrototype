@@ -99,6 +99,8 @@ static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSprit
 {Textures::CharacterID::IchiStartFalling, Textures::SpritesheetID::Ichi80x96},
 {Textures::CharacterID::IchiSword1Idle, Textures::SpritesheetID::Ichi80x96},
 {Textures::CharacterID::IchiSword1Walk, Textures::SpritesheetID::Ichi80x96},
+{Textures::CharacterID::IchiLedgeClimbUp, Textures::SpritesheetID::Ichi128x196},
+{Textures::CharacterID::IchiLedgeHangIdle, Textures::SpritesheetID::Ichi128x196},
 };
 
 class AnimationManager;
@@ -160,13 +162,16 @@ public:
   }
   b2Vec2 getLinearVelocity() { return mBody->GetLinearVelocity(); }
   bool allowedToFall();
+  bool inDuckMode();
   void jumpUp();
   void jumpForward();
   float getDirectionMultiplier();
-    void setCharacterSettings(CharacterSetting settings);
+  void setCharacterSettings(CharacterSetting settings);
     void resetCharacterSettings();
+    bool duckStateActive() {return mDuckStateActive;};
+    void setDuckState(bool duckstate) {mDuckStateActive = duckstate;};
   virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
-
+    void ouputAnimations() {mAnimationManager->outputStoredAnimations();}
 protected:
   /***
    * \brief   Initialized physic (body, fixtures for the character).
@@ -192,7 +197,8 @@ protected:
 
 
 private:
-  BaseTextureManager baseTextureManager;
+    BaseTextureManager baseTextureManager;
+    bool mDuckStateActive;
 
 protected:
   std::unique_ptr<AnimationManager> mAnimationManager;

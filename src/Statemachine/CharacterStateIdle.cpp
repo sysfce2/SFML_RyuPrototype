@@ -56,6 +56,13 @@ CharacterStateIdle::enter(CharacterBase& character)
 {
     character.setupAnimation(Textures::CharacterID::IchiIdle);
     character.setCharacterStateEnum(ECharacterState::Idle);
+
+    if(character.duckStateActive())
+    {
+        character.destroyPhysics();
+        character.initPhysics();
+        character.setDuckState(false);
+    }
 }
 
 void

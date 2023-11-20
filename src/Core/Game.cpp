@@ -79,6 +79,12 @@ Game::onNotify(const SceneNode& entity, RyuEvent event)
 			useCharacterDebugSettings();
 			break;
 		}
+		case RyuEvent::TemporaryOutput:
+		{
+			fmt::print("TempOutput\n");
+			mWorld.getPlayer()->ouputAnimations();
+			break;
+		}
 		default: break;
 	}
 }

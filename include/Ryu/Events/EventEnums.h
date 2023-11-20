@@ -11,6 +11,7 @@ BETTER_ENUM(EEvent, char
         ,ImGuiDemoToggle
         ,RyuAnimatorToggle
         ,DebugValuesChanged
+        ,TemporaryOutput
 );
 
 } // namespace Ryu

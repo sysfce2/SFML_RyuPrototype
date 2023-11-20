@@ -212,6 +212,8 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
                 std::cout << "Scale(" << playerCharacter->getSpriteAnimation().getSprite().getScale().x << "," 
                 << playerCharacter->getSpriteAnimation().getSprite().getScale().y <<  ")\n"; //.scale({1,1});
                 std::cout << "MoveDir: " << (int)playerCharacter->getMoveDirection() << "\n";
+                notify(*playerCharacter,RyuEvent::TemporaryOutput);
+
                 break;
             }
             case sf::Keyboard::U:

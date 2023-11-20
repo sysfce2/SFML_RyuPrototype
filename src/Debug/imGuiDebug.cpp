@@ -56,6 +56,17 @@ namespace RyuDebug {
             fmt::print("Set center of mass\n");
             notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
         }
+        if (ImGui::Button("Reset Values"))
+        {
+            debugData.jumpImpulseForwardVec[0] = 150;
+            debugData.jumpImpulseForwardVec[1] = -250;
+            debugData.jumpImpulseForward = {150, -250};
+            debugData.jumpImpulseUpVec[0] = 0;
+            debugData.jumpImpulseUpVec[1] = -200;
+            debugData.jumpImpulseUp = {0, -200};
+            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
+
+        }
     }
     ImGui::Separator();
     ImGui::Text("For ImGui-Demo-Window press '-' ");

@@ -71,7 +71,9 @@ namespace Textures
 		IchiSword1Idle, //
 		IchiSword1Walk, //
 		IchiWalk, //
-        Length = 20 //
+		IchiLedgeClimbUp, //
+		IchiLedgeHangIdle, //
+        Length = 22 //
 		// ... Spritesheets
     );
 
