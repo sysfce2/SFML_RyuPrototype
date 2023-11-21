@@ -67,6 +67,11 @@ namespace RyuDebug {
             notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
 
         }
+
+        if(ImGui::InputInt2("PositionCross-Offset", debugData.positionCross))
+        {
+            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
+        }
     }
     ImGui::Separator();
     ImGui::Text("For ImGui-Demo-Window press '-' ");

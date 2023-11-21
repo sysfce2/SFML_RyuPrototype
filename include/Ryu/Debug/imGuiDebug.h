@@ -2,6 +2,7 @@
 
 #include <Ryu/Events/Subject.h>
 #include <box2d/b2_math.h>
+#include <box2d/b2_types.h>
 #include <fmt/core.h>
 #include <imgui.h>
 #include <iostream>
@@ -42,6 +43,7 @@ struct DebugData{
  float jumpImpulseUpVec[4] = {.0f, .0f, .0f, .0f};
  float massCenterVec[4] = {.0f, .0f, .0f, .0f};
 
+ int positionCross[2] = {0,0};
 };
 
 class DebugWidgets : public Subject {

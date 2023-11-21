@@ -1,3 +1,4 @@
+#include "Ryu/Core/AssetIdentifiers.h"
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Core/Category.h>
 #include <Ryu/Core/Utilities.h>
@@ -30,7 +31,7 @@ CharacterIchi::CharacterIchi(ECharacterState startState, std::unique_ptr<b2World
 }
 
 void
-CharacterIchi::setTextureOnCharacter(Textures::LevelID textureId)
+CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId)
 {
     setTexture(ichiTextureManager, textureId);
 }
@@ -40,18 +41,25 @@ void CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event) {
     fmt::print("Called onNotify in CharacterIchi\n");
 }
 
+// TODO: for the start ths will make it but its probably better to
+// 1. put this into the animationmanager
+// 2. automatize this by loading the spritesheets when the config files are loaded at startup
+// 3. also move  the texturemamager to the animationmanager ?
+static std::map<Textures::SpritesheetID, std::string> spritesheePaths = {
+    {Textures::SpritesheetID::Ichi80x96,"assets/spritesheets/ichi/ichi_spritesheet_level1.png"},
+    {Textures::SpritesheetID::Ichi128x196,"assets/spritesheets/ichi/ichi_climb_up_ledge_128x196.png"}
+};
+
 void
 CharacterIchi::loadTextures()
 {
     // At the moment we should not switch textures often on an object so we put every animatzion/level in one big spritesheet
     // and load it at the startup of the level
     // we should check what happens when we change outfits etc...
-    // case level 1:
-    ichiTextureManager.load(Textures::LevelID::Level1,"assets/spritesheets/ichi/ichi_spritesheet_level1.png");
-    /*
-    ichiTextureManager.load(Textures::CharacterID::IchiIdleRun,"assets/spritesheets/ichi/01_sheet_ichi_run.png");
-    ichiTextureManager.load(Textures::CharacterID::IchiFallingLow,"assets/spritesheets/ichi/03_sheet_ichi_fall_low.png");
-    */
+    for (const auto& id : spritesheePaths)
+    {
+        ichiTextureManager.load(id.first, id.second);
+    }
     // Outfit combat
     //ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
 }

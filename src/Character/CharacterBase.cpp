@@ -12,6 +12,7 @@
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 
 #include <SFML/System/Time.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <Thirdparty/glm/glm.hpp>
 #include <box2d/b2_math.h>
 #include <box2d/b2_shape.h>
@@ -80,6 +81,15 @@ void CharacterBase::setCharacterSettings(CharacterSetting settings) {
     mCharSettings.jumpUpImpulse = settings.jumpUpImpulse; // TODO: probably we need to convert st here;
 }
 
+sf::Vector2f charAniPos{0,0};
+
+void CharacterBase::setPositionOffset(sf::Vector2f offset) {
+    fmt::print("Offset: {},{}\n",offset.x, offset.y);
+    if (charAniPos.x == 0 && charAniPos.y == 0) charAniPos = mCharacterAnimation.getPosition();
+
+    mCharacterAnimation.setPosition({charAniPos.x+offset.x,charAniPos.y+offset.y});
+}
+
 void
 CharacterBase::resetCharacterSettings()
 {
@@ -91,6 +101,8 @@ CharacterBase::resetCharacterSettings()
     mCharSettings.bodyMass = mFinalCharSettings.bodyMass;
     mCharSettings.massCenter = mFinalCharSettings.massCenter;
 
+    charAniPos.x = 0.f;
+    charAniPos.y = 0.f;
 }
 
 void CharacterBase::updatePhysics() {
@@ -327,6 +339,9 @@ void CharacterBase::update(sf::Time deltaTime) {
 
 void CharacterBase::toggleTestStates()
 {
+    // TODO: as these are on another sritesheet we need to change the textureatlas on the character
+    // and setup fresh preferences for center/texturesize etc. / evtl. we need to change the character-
+    // position (see reference point (cross in adventures when changing outfits / animations))
     if(testStateCurrent == testStatesCount) testStateCurrent = 0;
 
     if(testStateCurrent == 0)
@@ -374,7 +389,7 @@ void CharacterBase::setupAnimation(Textures::CharacterID aniId) {
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);
 
-    setTextureOnCharacter(mCurrentLevel);
+    setTextureOnCharacter(spritesheetId);
 
     // set origin of texture to center
     sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
@@ -426,12 +441,12 @@ void CharacterBase::setMoveDirection(EMoveDirection _movementDir) {
 }
 
 void CharacterBase::setTexture(
-    AssetManager<sf::Texture, Textures::LevelID> &textureManager,
-    Textures::LevelID id) {
+    AssetManager<sf::Texture, Textures::SpritesheetID> &textureManager,
+    Textures::SpritesheetID id) {
     mCharacterAnimation.setTexture(textureManager.getResource(id));
 }
 
-void CharacterBase::setTextureOnCharacter(Textures::LevelID textureId) {
+void CharacterBase::setTextureOnCharacter(Textures::SpritesheetID textureId) {
     // TODO implement st here ?
 }
 

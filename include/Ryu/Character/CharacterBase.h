@@ -123,10 +123,10 @@ public:
 
   std::unique_ptr<CharacterState> &getCurrentCharacterState();
 
-  virtual void setTextureOnCharacter(Textures::LevelID textureId);
+  virtual void setTextureOnCharacter(Textures::SpritesheetID textureId);
   virtual void
-  setTexture(AssetManager<sf::Texture, Textures::LevelID> &textureManager,
-             Textures::LevelID id);
+  setTexture(AssetManager<sf::Texture, Textures::SpritesheetID> &textureManager,
+             Textures::SpritesheetID id);
   SpritesheetAnimation &getSpriteAnimation() { return mCharacterAnimation; }
 
   void setMovement(sf::Vector2f _movement);
@@ -173,6 +173,7 @@ public:
   virtual void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
     void ouputAnimations() {mAnimationManager->outputStoredAnimations();}
     void toggleTestStates();
+    void setPositionOffset(sf::Vector2f offset);
 protected:
   /***
    * \brief   Initialized physic (body, fixtures for the character).

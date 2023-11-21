@@ -10,6 +10,7 @@
 #include <RyuSuite/RAnimator.h>
 
 // #include <imgui.h>
+#include <SFML/System/Vector2.hpp>
 #include <imgui-SFML.h>
 
 #include <SFML/Graphics.hpp>
@@ -46,7 +47,10 @@ Game::useCharacterDebugSettings()
 				.jumpUpImpulse = mDebugWidgets.debugData.jumpImpulseUp,
 				.massCenter={0,0},
 				.bodyMass={18}
-			    });
+			});
+
+			player->setPositionOffset(sf::Vector2f(mDebugWidgets.debugData.positionCross[0],
+			mDebugWidgets.debugData.positionCross[1]));
 
 }
 
