@@ -22,6 +22,20 @@ class b2Body;
 
 static b2DrawSFML debugDrawer;
 
+
+struct PhysicsObject{
+        std::string name;
+        b2Body* pBody;
+
+        PhysicsObject():
+                name(""),
+                pBody(nullptr) {}
+
+        PhysicsObject(std::string _name, b2Body* _pBody):
+                name(_name),
+                pBody(_pBody) {}
+};
+
 //namespace ryu {
 class World : private sf::NonCopyable, public Observer
 {
@@ -82,7 +96,7 @@ class World : private sf::NonCopyable, public Observer
 
         // box2d physics
         std::unique_ptr<b2World> phWorld;
-        std::vector<b2Body*> phGroundBodies;
+        std::vector<PhysicsObject> phGroundBodies;
         std::vector<sf::Text> texts;
         b2Body* pBoxTest;
         bool phDebugPhysics;

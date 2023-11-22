@@ -7,6 +7,7 @@
 #include <box2d/box2d.h>
 #include <string>
 #include <map>
+#include <tuple>
 
 class b2World;
 

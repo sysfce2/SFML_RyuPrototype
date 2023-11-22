@@ -62,7 +62,7 @@ World::~World()
     mPushBox = nullptr;
     for(const auto& body : phGroundBodies)
     {
-        phWorld->DestroyBody(body);
+        phWorld->DestroyBody(body.pBody);
     }
 }
 
@@ -190,15 +190,15 @@ World::setPhysics()
 {
 
     // grounds
-    phGroundBodies.emplace_back(createPhysicalBox(600,780,1200,20,b2_staticBody));
-    phGroundBodies.emplace_back(createPhysicalBox(70,150,150,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(240,280,140,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(500,500,320,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(720,400,120,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(780,300,120,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(720,600,120,32,b2_staticBody,Textures::SceneID::Grass));
-    phGroundBodies.emplace_back(createPhysicalBox(780,700,120,32,b2_staticBody,Textures::SceneID::Grass));
+    phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(600,780,1200,20,b2_staticBody)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(70,150,150,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(240,280,140,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(500,500,320,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,400,120,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(780,300,120,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,600,120,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(780,700,120,32,b2_staticBody,Textures::SceneID::Grass)));
 
     pBoxTest = createPhysicalBox(300,100,50,50,b2_dynamicBody,Textures::SceneID::BoxPushable);
     //sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
@@ -265,7 +265,7 @@ World::draw()
     {
         for(const auto& body : phGroundBodies)
         {
-            mWindow.draw(*(getShapeFromPhysicsBody(body)));
+            mWindow.draw(*(getShapeFromPhysicsBody(body.pBody)));
         }
     }
     

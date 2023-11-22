@@ -81,13 +81,16 @@ void CharacterBase::setCharacterSettings(CharacterSetting settings) {
     mCharSettings.jumpUpImpulse = settings.jumpUpImpulse; // TODO: probably we need to convert st here;
 }
 
-sf::Vector2f charAniPos{0,0};
 
 void CharacterBase::setPositionOffset(sf::Vector2f offset) {
-    fmt::print("Offset: {},{}\n",offset.x, offset.y);
-    if (charAniPos.x == 0 && charAniPos.y == 0) charAniPos = mCharacterAnimation.getPosition();
+/*
+    if (positionCrossOffset.x == 0 && positionCrossOffset.y == 0) positionCrossOffset = mCharacterAnimation.getPosition();
 
-    mCharacterAnimation.setPosition({charAniPos.x+offset.x,charAniPos.y+offset.y});
+    mCharacterAnimation.setPosition({positionCrossOffset.x+offset.x,positionCrossOffset.y+offset.y});
+*/
+    positionCrossOffset.x = offset.x;
+    positionCrossOffset.y = offset.y;
+    fmt::print("PosiCross Char: {}/{} \n Offset: {}/{}\n",positionCrossOffset.x, positionCrossOffset.y, offset.x, offset.y);
 }
 
 void
@@ -101,8 +104,8 @@ CharacterBase::resetCharacterSettings()
     mCharSettings.bodyMass = mFinalCharSettings.bodyMass;
     mCharSettings.massCenter = mFinalCharSettings.massCenter;
 
-    charAniPos.x = 0.f;
-    charAniPos.y = 0.f;
+    positionCrossOffset.x = 0.f;
+    positionCrossOffset.y = 0.f;
 }
 
 void CharacterBase::updatePhysics() {
@@ -321,13 +324,11 @@ void CharacterBase::update(sf::Time deltaTime) {
             mCharacterState->enter(*this);
         }
 
-
-        fmt::print("In DuckMode: {}\n", inDuckMode() ? "true" : "false");
         mCharacterAnimation.setPosition(
-            Converter::metersToPixels<double>(mBody->GetPosition().x),
+            Converter::metersToPixels<double>(mBody->GetPosition().x) + positionCrossOffset.x,
             inDuckMode()
-            ? (Converter::metersToPixels<double>(mBody->GetPosition().y - (DUCK_FRAME_SIZE.second)/2))
-            : Converter::metersToPixels<double>(mBody->GetPosition().y));
+            ? (Converter::metersToPixels<double>(mBody->GetPosition().y  - (DUCK_FRAME_SIZE.second)/2+ positionCrossOffset.y))
+            : Converter::metersToPixels<double>(mBody->GetPosition().y) + positionCrossOffset.y);
     }
 
     if (not inDuckMode() && IsInBounds(mBody->GetLinearVelocity().y, 0.f, 0.01f)) {
@@ -426,7 +427,8 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
     {
         // physics body get a impulse in jump(), so here no update is needed
         auto pPosi = mBody->GetPosition();
-        mCharacterAnimation.setPosition(Converter::metersToPixels(pPosi.x),Converter::metersToPixels(pPosi.y));
+        mCharacterAnimation.setPosition(Converter::metersToPixels(pPosi.x) + positionCrossOffset.x,
+                                        Converter::metersToPixels(pPosi.y) + positionCrossOffset.y);
     }
 
     mCharacterState->update(*this);

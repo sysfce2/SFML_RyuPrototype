@@ -203,6 +203,7 @@ private:
     bool mDuckStateActive;
     int testStatesCount = 2;
     int testStateCurrent = 0;
+    sf::Vector2f positionCrossOffset{0,0};
 
 protected:
   std::unique_ptr<AnimationManager> mAnimationManager;

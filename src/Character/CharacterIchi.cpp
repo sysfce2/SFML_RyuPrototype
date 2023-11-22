@@ -1,38 +1,35 @@
 #include "Ryu/Core/AssetIdentifiers.h"
 #include <Ryu/Character/CharacterIchi.h>
+#include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Core/Category.h>
 #include <Ryu/Core/Utilities.h>
 #include <Ryu/Physics/Raycast.h>
-#include <Ryu/Control/CharacterEnums.h>
 // test
 #include <Ryu/Core/World.h>
 
+#include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <fmt/core.h>
 #include <box2d/b2_common.h>
 #include <box2d/b2_math.h>
 #include <box2d/box2d.h>
-#include <SFML/Graphics.hpp>
+#include <fmt/core.h>
 
 #include <iostream>
 #include <math.h>
 #include <string>
-//namespace ryu {
+// namespace ryu {
 
-CharacterIchi::CharacterIchi(ECharacterState startState, std::unique_ptr<b2World>& phWorld,  const sf::Vector2f &position)
-: CharacterBase(startState, phWorld, position)
- , ichiTextureManager()
-{
+CharacterIchi::CharacterIchi(ECharacterState startState,
+                             std::unique_ptr<b2World> &phWorld,
+                             const sf::Vector2f &position)
+    : CharacterBase(startState, phWorld, position), ichiTextureManager() {
     loadTextures();
 
-    //mCharacterAnimation.setPosition({100.f,50.f});
+    // mCharacterAnimation.setPosition({100.f,50.f});
     mCharacterState->enter(*this);
-      
 }
 
-void
-CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId)
-{
+void CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId) {
     setTexture(ichiTextureManager, textureId);
 }
 
@@ -43,59 +40,50 @@ void CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event) {
 
 // TODO: for the start ths will make it but its probably better to
 // 1. put this into the animationmanager
-// 2. automatize this by loading the spritesheets when the config files are loaded at startup
+// 2. automatize this by loading the spritesheets when the config files are
+// loaded at startup
 // 3. also move  the texturemamager to the animationmanager ?
 static std::map<Textures::SpritesheetID, std::string> spritesheePaths = {
-    {Textures::SpritesheetID::Ichi80x96,"assets/spritesheets/ichi/ichi_spritesheet_level1.png"},
-    {Textures::SpritesheetID::Ichi128x196,"assets/spritesheets/ichi/ichi_climb_up_ledge_128x196.png"}
-};
+    {Textures::SpritesheetID::Ichi80x96,
+     "assets/spritesheets/ichi/ichi_spritesheet_level1.png"},
+    {Textures::SpritesheetID::Ichi128x196,
+     "assets/spritesheets/ichi/ichi_climb_up_ledge_128x196.png"}};
 
-void
-CharacterIchi::loadTextures()
-{
-    // At the moment we should not switch textures often on an object so we put every animatzion/level in one big spritesheet
-    // and load it at the startup of the level
-    // we should check what happens when we change outfits etc...
-    for (const auto& id : spritesheePaths)
-    {
+void CharacterIchi::loadTextures() {
+    // At the moment we should not switch textures often on an object so we put
+    // every animatzion/level in one big spritesheet and load it at the startup
+    // of the level we should check what happens when we change outfits etc...
+    for (const auto &id : spritesheePaths) {
         ichiTextureManager.load(id.first, id.second);
     }
     // Outfit combat
-    //ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
+    // ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
 }
 
-unsigned int 
-CharacterIchi::getCategory() const
-{
+unsigned int CharacterIchi::getCategory() const {
     return static_cast<unsigned>(Category::Type::Player);
 }
 
-void
-CharacterIchi::allowedMovement(bool& xMove, bool& yMove)
-{
-  
-    if((mECharacterState._value == ECharacterState::DuckIdle
-        || mECharacterState._value == ECharacterState::DuckEnter
-        || mECharacterState._value == ECharacterState::DuckEnd
-        || mECharacterState._value == ECharacterState::DuckWalk)
-        || mECharacterMovement !=  ECharacterMovement::CanClimb)
-    {
+void CharacterIchi::allowedMovement(bool &xMove, bool &yMove) {
+
+    if ((mECharacterState._value == ECharacterState::DuckIdle ||
+         mECharacterState._value == ECharacterState::DuckEnter ||
+         mECharacterState._value == ECharacterState::DuckEnd ||
+         mECharacterState._value == ECharacterState::DuckWalk) ||
+        mECharacterMovement != ECharacterMovement::CanClimb) {
         yMove = false;
     }
 
-/*
-    if(mECharacterState._value == ECharacterState::JumpUp)
-    {
-        yMove = true;
-    }
-*/
-
+    /*
+        if(mECharacterState._value == ECharacterState::JumpUp)
+        {
+            yMove = true;
+        }
+    */
 }
 
-void
-CharacterIchi::moveCharacter(sf::Vector2f velocity)
-{
-    //std::cout << "MOVE CHAR " << velocity.x << "," << velocity.y << "\n";
+void CharacterIchi::moveCharacter(sf::Vector2f velocity) {
+    // std::cout << "MOVE CHAR " << velocity.x << "," << velocity.y << "\n";
     /* TODO: tmp here/constran movement*/
 
     bool xMove = true;
@@ -103,38 +91,52 @@ CharacterIchi::moveCharacter(sf::Vector2f velocity)
 
     allowedMovement(xMove, yMove);
 
-
-    if(mECharacterState._value != ECharacterState::JumpUp && velocity.x == 0.f && velocity.y == 0.f)
-    {
-        setMovement({0.f,0.f});
+    if (mECharacterState._value != ECharacterState::JumpUp &&
+        velocity.x == 0.f && velocity.y == 0.f) {
+        setMovement({0.f, 0.f});
     }
 
-    // TODO: here we need to check if movement in the wanted direction is allowed
-    if((xMove && velocity.x != 0.f) || (yMove && velocity.y != 0.f))
-    {
+    // TODO: here we need to check if movement in the wanted direction is
+    // allowed
+    if ((xMove && velocity.x != 0.f) || (yMove && velocity.y != 0.f)) {
         setMovement(velocity);
     }
     // std::cout << "move: " << (int)getMoveDirection() << "\n";
-
 }
 
-void
-CharacterIchi::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
-{
+void CharacterIchi::drawCurrent(sf::RenderTarget &target,
+                                sf::RenderStates states) const {
     // t.b.c
-    CharacterBase::drawCurrent(target,states);
+    CharacterBase::drawCurrent(target, states);
     // draw PlayerSprite
     target.draw(mCharacterAnimation);
 }
 
+RayCastClosest rc1, rc2, rc3;
 
-void 
-CharacterIchi::update(sf::Time deltaTime)
-{
+void CharacterIchi::update(sf::Time deltaTime) {
     CharacterBase::update(deltaTime);
-    RyuPhysics::createRaycast("up",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y-RyuPhysics::raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
-    RyuPhysics::createRaycast("mid",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
-    RyuPhysics::createRaycast("down",std::make_pair(mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset),0,40.0f,getMoveDirection(),getPhysicsWorldRef(),rayCastPoints);
+    rc1 = RyuPhysics::createRaycast(
+        "up",
+        std::make_pair(mCharacterAnimation.getPosition().x,
+                       mCharacterAnimation.getPosition().y -
+                           RyuPhysics::raycastOffset),
+        0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
+    rc2 = RyuPhysics::createRaycast(
+        "mid",
+        std::make_pair(mCharacterAnimation.getPosition().x,
+                       mCharacterAnimation.getPosition().y),
+        0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
+    rc3 = RyuPhysics::createRaycast(
+       "down",
+        std::make_pair(mCharacterAnimation.getPosition().x,
+                       mCharacterAnimation.getPosition().y +
+                           RyuPhysics::raycastOffset),
+        0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
+
+
+    if(rc1.m_Hit) fmt::print("Up: RayCastHit at b2D {}/{} and \n sfml {}/{}\n", rc1.m_Point.x ,rc1.m_Point.y
+                 ,Converter::metersToPixels<double>(rc1.m_Point.x), Converter::metersToPixels<double>(rc1.m_Point.y));
 }
 
 //} /// namespace ryu

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <Ryu/Core/Utilities.h>
 #include <Ryu/Events/Subject.h>
 
 #include <box2d/b2_world_callbacks.h>
 #include <box2d/b2_math.h>
+#include <fmt/core.h>
 
 #include <iostream>
 #include <memory>
@@ -27,7 +29,6 @@ class RayCastClosest : public b2RayCastCallback
     {
       // TODO: check if fixture with index 1 needs to be ignored like in the testbed test, see fr details [b2d_testbed]tests/ray_cast.cpp
 
-      std::cout << "RayCast at " << point.x << "," << point.y << "\n";
       m_Hit = true;
       m_Point = point;
       m_Normal = normal;
@@ -45,6 +46,8 @@ class RayCastClosest : public b2RayCastCallback
     }
 
     float getFraction() {return m_fraction;}
+
+    b2Vec2 getHitPoint() {return m_Point;}
 
     void setOwner(std::unique_ptr<SceneNode> raycastOwner)
     {
