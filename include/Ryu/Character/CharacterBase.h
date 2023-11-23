@@ -176,6 +176,8 @@ public:
     void ouputAnimations() {mAnimationManager->outputStoredAnimations();}
     void toggleTestStates();
     void setPositionOffset(sf::Vector2f offset);
+    void setOffset(bool state) {mSetOffset = state;};
+    bool getOffsetState() { return mSetOffset;};
 protected:
   /***
    * \brief   Initialized physic (body, fixtures for the character).
@@ -206,6 +208,9 @@ private:
     int testStatesCount = 2;
     int testStateCurrent = 0;
     sf::Vector2f positionCrossOffset{0,0};
+    sf::Vector2f lastPositionCrossOffset{0,0};
+    bool mSetOffset;
+    b2Vec2 mLastBodyPosition;
 
 protected:
   std::unique_ptr<AnimationManager> mAnimationManager;

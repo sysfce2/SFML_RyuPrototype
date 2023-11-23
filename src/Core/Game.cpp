@@ -50,7 +50,8 @@ Game::useCharacterDebugSettings()
 			});
 
 			player->setPositionOffset(sf::Vector2f(mDebugWidgets.debugData.positionCross[0],
-			mDebugWidgets.debugData.positionCross[1]));
+												   mDebugWidgets.debugData.positionCross[1]));
+			player->setOffset(true);
 
 }
 

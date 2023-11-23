@@ -54,6 +54,7 @@ struct FrameBase
       bool repeat;
       Textures::AnimationType animationType;
       AnimationId animationId;
+      sf::Vector2i positionCross;
 
       AnimationBase() :
            name("name")
@@ -66,8 +67,8 @@ struct FrameBase
           ,animationDuration()
           ,repeat(false)
           ,animationType(Textures::AnimationType::None)
-          ,animationId(Textures::CharacterID::None) {}
-
+          ,animationId(Textures::CharacterID::None)
+          ,positionCross({0,0}) {}
   };
 
   struct Animation : AnimationBase {};

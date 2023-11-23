@@ -74,6 +74,13 @@ CharacterStateFalling::enter(CharacterBase& character)
 {
     character.setupAnimation(Textures::CharacterID::IchiFallingLoop);
     character.setCharacterStateEnum(ECharacterState::Falling);
+
+    if(character.duckStateActive())
+    {
+        character.destroyPhysics();
+        character.initPhysics();
+        character.setDuckState(false);
+    }
 }
 
 void

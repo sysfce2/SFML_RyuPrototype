@@ -45,7 +45,8 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World> &phWorld,
       rayCastPoints(), mCharacterAnimation(this),
       mECharacterState(ECharacterState::None),
       mDuckStateActive(false),
-      mAnimationManager(std::make_unique<AnimationManager>())
+      mAnimationManager(std::make_unique<AnimationManager>()),
+      mSetOffset(false)
 {
     // std::shared_ptr<CharacterBase> sPtr =
     // std::make_shared<CharacterBase>(this); mCharacterAnimation =
@@ -63,7 +64,9 @@ CharacterBase::CharacterBase(ECharacterState startState,
       mMoveDirection(EMoveDirection::Right), phWorldRef(phWorld),
       mCharacterFalling(false), baseTextureManager(), mCharSettings(),
       mCurrentLevel(Textures::LevelID::Level1),mDuckStateActive(false), mCharacterAnimation(this),
-      mAnimationManager(std::make_unique<AnimationManager>()) {
+      mAnimationManager(std::make_unique<AnimationManager>()),
+      mSetOffset(false)
+{
     // std::shared_ptr<CharacterBase> sPtr =
     // std::make_shared<CharacterBase>(this); mCharacterAnimation =
     // SpritesheetAnimation(std::move(sPtr));
@@ -82,12 +85,13 @@ void CharacterBase::setCharacterSettings(CharacterSetting settings) {
 }
 
 
-void CharacterBase::setPositionOffset(sf::Vector2f offset) {
+void CharacterBase:: setPositionOffset(sf::Vector2f offset) {
 /*
     if (positionCrossOffset.x == 0 && positionCrossOffset.y == 0) positionCrossOffset = mCharacterAnimation.getPosition();
 
     mCharacterAnimation.setPosition({positionCrossOffset.x+offset.x,positionCrossOffset.y+offset.y});
 */
+    lastPositionCrossOffset = positionCrossOffset;
     positionCrossOffset.x = offset.x;
     positionCrossOffset.y = offset.y;
     fmt::print("PosiCross Char: {}/{} \n Offset: {}/{}\n",positionCrossOffset.x, positionCrossOffset.y, offset.x, offset.y);
@@ -172,7 +176,7 @@ void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
         case Ryu::EEvent::TemporaryOutput:
         {
             mAnimationManager->outputStoredAnimations();
-        eraseRaycast("below");
+        mCharacterAnimation.setPosition(mCharacterAnimation.getPosition() + positionCrossOffset);
         }
 
         default: {}
@@ -325,11 +329,14 @@ void CharacterBase::update(sf::Time deltaTime) {
             mCharacterState->enter(*this);
         }
 
+        fmt::print("CharAniPosition before: {}/{} PosiCross: {}/{}\n",  mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y, positionCrossOffset.x, positionCrossOffset.y);
         mCharacterAnimation.setPosition(
             Converter::metersToPixels<double>(mBody->GetPosition().x) + positionCrossOffset.x,
             inDuckMode()
             ? (Converter::metersToPixels<double>(mBody->GetPosition().y  - (DUCK_FRAME_SIZE.second)/2+ positionCrossOffset.y))
             : Converter::metersToPixels<double>(mBody->GetPosition().y) + positionCrossOffset.y);
+
+        fmt::print("CharAniPosition: after {}/{} PosiCross: {}/{}\n",  mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y,positionCrossOffset.x, positionCrossOffset.y);
     }
 
     if (not inDuckMode() && IsInBounds(mBody->GetLinearVelocity().y, 0.f, 0.01f)) {
@@ -422,12 +429,24 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
         mECharacterState._value != ECharacterState::JumpForward &&
         not mCharacterFalling) {
 
-        mCharacterAnimation.move(movement * deltaTime.asSeconds());
-        mBody->SetLinearVelocity(
+        if(not mSetOffset)
+        {
+            if(not IsInBounds(mLastBodyPosition.Length() - mBody->GetPosition().Length(),0.f, 0.01f))
+            {
+                mCharacterAnimation.move(movement * deltaTime.asSeconds());
+            }
+        }
+        else
+        {
+            mCharacterAnimation.setPosition(mCharacterAnimation.getPosition()-lastPositionCrossOffset+positionCrossOffset);
+            mSetOffset = false;
+        }
+            mBody->SetLinearVelocity(
             {mCharSettings.MoveMultiplierX *
                  Converter::pixelsToMeters<float>(movement.x),
              mCharSettings.MoveMultiplierY *
-                 Converter::pixelsToMeters<float>(movement.y)});
+             Converter::pixelsToMeters<float>(movement.y)});
+            mLastBodyPosition = mBody->GetPosition();
     }
 
     if(mECharacterState._value == ECharacterState::JumpUp ||mECharacterState._value == ECharacterState::JumpForward)
