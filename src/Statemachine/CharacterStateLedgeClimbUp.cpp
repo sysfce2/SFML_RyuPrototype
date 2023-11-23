@@ -53,6 +53,8 @@ CharacterStateLedgeClimbUp::update(CharacterBase& character)
 void
 CharacterStateLedgeClimbUp::enter(CharacterBase& character)
 {
+    // TODO: tmp:
+    character.getSpriteAnimation().setOrigin(9,88);
     character.setupAnimation(Textures::CharacterID::IchiLedgeClimbUp);
     character.setCharacterStateEnum(ECharacterState::ClimbUp);
 }
