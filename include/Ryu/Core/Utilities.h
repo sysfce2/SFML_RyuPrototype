@@ -2,15 +2,15 @@
 
 //#include <box2d/b2_math.h>
 #include <Ryu/Control/CharacterEnums.h>
-#include <Ryu/Physics/Raycast.h>
 
 #include <box2d/box2d.h>
 #include <string>
 #include <map>
 #include <tuple>
+#include <memory>
 
 class b2World;
-
+class RayCastClosest;
 /*
 * box2D uses MSR - meter-seconds-radians - unities
 */

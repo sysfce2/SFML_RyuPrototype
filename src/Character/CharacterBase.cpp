@@ -172,6 +172,7 @@ void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
         case Ryu::EEvent::TemporaryOutput:
         {
             mAnimationManager->outputStoredAnimations();
+        eraseRaycast("below");
         }
 
         default: {}
@@ -336,6 +337,12 @@ void CharacterBase::update(sf::Time deltaTime) {
     }
 
     updateCharacterPosition(deltaTime);
+}
+
+void
+CharacterBase::eraseRaycast(std::string rcName)
+{
+ rayCastPoints.erase(rcName);
 }
 
 void CharacterBase::toggleTestStates()

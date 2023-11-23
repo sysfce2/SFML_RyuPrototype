@@ -22,7 +22,7 @@
 CharacterIchi::CharacterIchi(ECharacterState startState,
                              std::unique_ptr<b2World> &phWorld,
                              const sf::Vector2f &position)
-    : CharacterBase(startState, phWorld, position), ichiTextureManager() {
+    : CharacterBase(startState, phWorld, position), ichiTextureManager(), rayCastCallbacks() {
     loadTextures();
 
     // mCharacterAnimation.setPosition({100.f,50.f});
@@ -112,31 +112,60 @@ void CharacterIchi::drawCurrent(sf::RenderTarget &target,
     target.draw(mCharacterAnimation);
 }
 
-RayCastClosest rc1, rc2, rc3;
+bool
+CharacterIchi::getHit(std::string rcName)
+{
+    if(rayCastCallbacks.find(rcName) != rayCastCallbacks.end()) return rayCastCallbacks.at(rcName).m_Hit;
+
+    return false;
+}
+
+void
+CharacterIchi::eraseRaycast(std::string rcName)
+{
+    CharacterBase::eraseRaycast(rcName);
+    rayCastCallbacks.erase(rcName);
+}
 
 void CharacterIchi::update(sf::Time deltaTime) {
     CharacterBase::update(deltaTime);
-    rc1 = RyuPhysics::createRaycast(
+    rayCastCallbacks["up"] = RyuPhysics::createRaycast(
         "up",
         std::make_pair(mCharacterAnimation.getPosition().x,
                        mCharacterAnimation.getPosition().y -
                            RyuPhysics::raycastOffset),
         0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
-    rc2 = RyuPhysics::createRaycast(
+    rayCastCallbacks["mid"] = RyuPhysics::createRaycast(
         "mid",
         std::make_pair(mCharacterAnimation.getPosition().x,
                        mCharacterAnimation.getPosition().y),
         0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
-    rc3 = RyuPhysics::createRaycast(
+    rayCastCallbacks["down"] = RyuPhysics::createRaycast(
        "down",
         std::make_pair(mCharacterAnimation.getPosition().x,
                        mCharacterAnimation.getPosition().y +
                            RyuPhysics::raycastOffset),
         0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
 
+    if(isFalling())
+    {
+        rayCastCallbacks["below"] = RyuPhysics::createRaycast(
+            "below"
+            ,std::make_pair(mCharacterAnimation.getPosition().x
+            ,mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset)
+            ,90,55.0f /// angle, length
+            ,getMoveDirection()
+            ,getPhysicsWorldRef()
+            ,rayCastPoints
+            );
+    }
+    else{
+       if(rayCastCallbacks.find("below") != rayCastCallbacks.end()) eraseRaycast("below");
+    }
 
-    if(rc1.m_Hit) fmt::print("Up: RayCastHit at b2D {}/{} and \n sfml {}/{}\n", rc1.m_Point.x ,rc1.m_Point.y
-                 ,Converter::metersToPixels<double>(rc1.m_Point.x), Converter::metersToPixels<double>(rc1.m_Point.y));
+
+    if(rayCastCallbacks.at("up").m_Hit) fmt::print("Up: RayCastHit at b2D {}/{} and \n sfml {}/{}\n", rayCastCallbacks.at("up").m_Point.x ,rayCastCallbacks.at("up").m_Point.y
+                 ,Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.x), Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.y));
 }
 
 //} /// namespace ryu

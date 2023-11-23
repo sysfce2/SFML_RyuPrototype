@@ -138,7 +138,9 @@ public:
   void updatePhysics(const sf::Vector2f &position);
 
   virtual void handleInput(EInput input);
-  virtual void update(sf::Time deltaTime);
+    virtual void update(sf::Time deltaTime);
+    virtual bool getHit(std::string rcName) = 0;
+    virtual void eraseRaycast(std::string rcName);
   void updateCharacterPosition(sf::Time deltaTime);
   virtual void loadTextures();
   void changeState(std::unique_ptr<CharacterState> toState);

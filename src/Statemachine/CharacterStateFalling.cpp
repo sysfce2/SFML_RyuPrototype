@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <typeinfo>
 
+class RayCastClosest;
 
 //namespace ryu{
 
@@ -46,6 +47,7 @@ CharacterStateFalling::update(CharacterBase& character)
 {
     if(not touchedFloor)
     {
+      /*
       auto rc = RyuPhysics::createRaycast(
             "below"
             ,std::make_pair(character.getSpriteAnimation().getPosition().x
@@ -55,12 +57,12 @@ CharacterStateFalling::update(CharacterBase& character)
             ,character.getPhysicsWorldRef()
             ,character.rayCastPoints
             );
-      
-      if(rc.m_Hit)
+      */
+      if(character.getHit("below"))
       {
         std::cout << "Boom\n";
         touchedFloor = true;
-        character.rayCastPoints.erase("below");
+        character.eraseRaycast("below");
         std::unique_ptr<CharacterStateFallingEnd> state = std::make_unique<CharacterStateFallingEnd>();
         character.changeState(std::move(state));
       }
