@@ -13,6 +13,7 @@
 #include <Ryu/Statemachine/CharacterState.h>
 
 #include <SFML/Graphics.hpp>
+#include <fmt/core.h>
 #include <Thirdparty/glm/glm.hpp>
 #include <box2d/b2_math.h>
 #include <box2d/box2d.h>
@@ -42,7 +43,7 @@ struct CharacterSetting {
   b2Vec2 jumpForwardImpulse{150, -250};
   b2Vec2 jumpUpImpulse{0, -200};
   b2Vec2 massCenter{0, 0};
-  float bodyMass{18};
+  float bodyMass{25};
 };
 
 struct CharacterFinalSetting {
@@ -65,7 +66,7 @@ struct CharacterFinalSetting {
     jumpForwardImpulse = {150, -250};
     jumpUpImpulse = {0, -200};
     massCenter= {0, 0};
-    bodyMass=18;
+    bodyMass=25;
 
   }
 };
@@ -105,6 +106,18 @@ static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSprit
 
 class AnimationManager;
 
+class RyuContactListener : public b2ContactListener
+{
+
+  public:
+    void BeginContact(b2Contact* contact)
+    {
+      fmt::print("Get Contact\n");
+    }
+
+
+};
+
 class CharacterBase : public SceneNode, public Subject, public Observer {
 
 public:
@@ -136,6 +149,7 @@ public:
   void destroyPhysics();
   void updatePhysics();
   void updatePhysics(const sf::Vector2f &position);
+  void checkClimbingState();
 
   virtual void handleInput(EInput input);
     virtual void update(sf::Time deltaTime);
@@ -178,6 +192,7 @@ public:
     void setPositionOffset(sf::Vector2f offset);
     void setOffset(bool state) {mSetOffset = state;};
     bool getOffsetState() { return mSetOffset;};
+    sf::Vector2f getPositionCross() { return positionCrossOffset;}
 protected:
   /***
    * \brief   Initialized physic (body, fixtures for the character).
@@ -211,6 +226,7 @@ private:
     sf::Vector2f lastPositionCrossOffset{0,0};
     bool mSetOffset;
     b2Vec2 mLastBodyPosition;
+    RyuContactListener contactListener;
 
 protected:
   std::unique_ptr<AnimationManager> mAnimationManager;

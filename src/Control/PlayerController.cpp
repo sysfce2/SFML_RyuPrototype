@@ -149,6 +149,7 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::D:
             case sf::Keyboard::Right:
             {
+                fmt::print("D PRESSED\n");
                 playerCharacter->handleInput(EInput::PressRight);
                 playerCharacter->getSpriteAnimation().flipAnimationRight();
                 playerCharacter->setMoveDirection(EMoveDirection::Right);
@@ -158,6 +159,7 @@ PlayerController::handleEvent(const sf::Event& event, CommandQueue& commands)
             case sf::Keyboard::A:
             case sf::Keyboard::Left:
             {
+                fmt::print("A PRESSED\n");
                 playerCharacter->handleInput(EInput::PressLeft);
                 playerCharacter->getSpriteAnimation().flipAnimationLeft();
                 playerCharacter->setMoveDirection(EMoveDirection::Left);

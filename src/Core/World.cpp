@@ -195,7 +195,7 @@ World::setPhysics()
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(240,280,140,32,b2_staticBody,Textures::SceneID::Grass)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(500,500,320,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,400,120,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,420,120,32,b2_staticBody,Textures::SceneID::Grass)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(780,300,120,32,b2_staticBody,Textures::SceneID::Grass)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,600,120,32,b2_staticBody,Textures::SceneID::Grass)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(780,700,120,32,b2_staticBody,Textures::SceneID::Grass)));

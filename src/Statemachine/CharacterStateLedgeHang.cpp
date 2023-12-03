@@ -8,7 +8,7 @@
 
 #include <SFML/System/Vector2.hpp>
 #include <memory>
-
+#include <fmt/core.h>
 
 //namespace ryu{
 
@@ -47,6 +47,7 @@ CharacterStateLedgeHang::handleInput(CharacterBase& character,EInput input)
 void
 CharacterStateLedgeHang::update(CharacterBase& character)
 {
+        fmt::print("GravityScaleHang: {}\n",  character.getBody()->GetGravityScale());
 }
 
 
@@ -55,6 +56,7 @@ CharacterStateLedgeHang::enter(CharacterBase& character)
 {
     //TODO: temporary -> this should be automatically added !
     character.getSpriteAnimation().setOrigin(9,88);
+    character.getBody()->SetGravityScale(0); // "flymode"
     character.setupAnimation(Textures::CharacterID::IchiLedgeHangIdle);
     character.setCharacterStateEnum(ECharacterState::Hanging);
 }
@@ -63,6 +65,7 @@ void
 CharacterStateLedgeHang::exit(CharacterBase& character)
 {
     character.getSpriteAnimation().restart();
+    character.getBody()->SetGravityScale(4.8);
 }
 
 //} /// namespace ryu

@@ -46,12 +46,14 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World> &phWorld,
       mECharacterState(ECharacterState::None),
       mDuckStateActive(false),
       mAnimationManager(std::make_unique<AnimationManager>()),
-      mSetOffset(false)
+      mSetOffset(false),
+      contactListener()
 {
     // std::shared_ptr<CharacterBase> sPtr =
     // std::make_shared<CharacterBase>(this); mCharacterAnimation =
     // SpritesheetAnimation(std::move(sPtr));
     loadTextures();
+    phWorldRef->SetContactListener(&contactListener);
 }
 
 CharacterBase::CharacterBase(ECharacterState startState,
@@ -65,7 +67,8 @@ CharacterBase::CharacterBase(ECharacterState startState,
       mCharacterFalling(false), baseTextureManager(), mCharSettings(),
       mCurrentLevel(Textures::LevelID::Level1),mDuckStateActive(false), mCharacterAnimation(this),
       mAnimationManager(std::make_unique<AnimationManager>()),
-      mSetOffset(false)
+      mSetOffset(false),
+      contactListener()
 {
     // std::shared_ptr<CharacterBase> sPtr =
     // std::make_shared<CharacterBase>(this); mCharacterAnimation =
@@ -73,6 +76,7 @@ CharacterBase::CharacterBase(ECharacterState startState,
     // TODO: check if its needable&possible to start character from a certain
     // state
     loadTextures();
+    phWorldRef->SetContactListener(&contactListener);
 }
 
 void CharacterBase::setCharacterSettings(CharacterSetting settings) {
@@ -151,8 +155,8 @@ void CharacterBase::jumpForward()
     mBody->SetMassData(&mass);
     fmt::print("dirMultiplier: {}\n",getDirectionMultiplier());
     fmt::print("dirDirectionn: {}\n",static_cast<int>(getMoveDirection()));
-    mBody->ApplyLinearImpulse( b2Vec2(mCharSettings.jumpForwardImpulse.x*getDirectionMultiplier()
-                                      , mCharSettings.jumpForwardImpulse.y), mBody->GetWorldCenter(), true);
+    mBody->ApplyLinearImpulseToCenter( b2Vec2(mCharSettings.jumpForwardImpulse.x*getDirectionMultiplier()
+                                      , mCharSettings.jumpForwardImpulse.y), true);
 }
 
 
@@ -164,8 +168,8 @@ void CharacterBase::jumpUp() {
     , .center= mCharSettings.massCenter, .I=0};
     mBody->SetMassData(&mass);
 
-    mBody->ApplyLinearImpulse(mCharSettings.jumpUpImpulse
-                              ,mBody->GetWorldCenter(), true);
+    mBody->ApplyLinearImpulseToCenter(mCharSettings.jumpUpImpulse
+                              , true);
     //mBody->ApplyLinearImpulseToCenter(mCharSettings.JumpUpForce,true);
 }
 
@@ -329,21 +333,33 @@ void CharacterBase::update(sf::Time deltaTime) {
             mCharacterState->enter(*this);
         }
 
-        fmt::print("CharAniPosition before: {}/{} PosiCross: {}/{}\n",  mCharacterAnimation.getPosition().x,mCharacterAnimation.getPosition().y, positionCrossOffset.x, positionCrossOffset.y);
         mCharacterAnimation.setPosition(
-            Converter::metersToPixels<double>(mBody->GetPosition().x) + positionCrossOffset.x,
+            Converter::metersToPixels<double>(mBody->GetPosition().x),
             inDuckMode()
-            ? (Converter::metersToPixels<double>(mBody->GetPosition().y  - (DUCK_FRAME_SIZE.second)/2+ positionCrossOffset.y))
-            : Converter::metersToPixels<double>(mBody->GetPosition().y) + positionCrossOffset.y);
+            ? (Converter::metersToPixels<double>(mBody->GetPosition().y  - (DUCK_FRAME_SIZE.second)/2))
+            : Converter::metersToPixels<double>(mBody->GetPosition().y));
 
-        fmt::print("CharAniPosition: after {}/{} PosiCross: {}/{}\n",  mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y,positionCrossOffset.x, positionCrossOffset.y);
     }
-
+    /*
+        fmt::print("GravityScale: {}\n",  mBody->GetGravityScale());;
+        fmt::print("Inertia: {}\n",  mBody->GetInertia());
+        fmt::print("Mass: {}\n",  mBody->GetMass());
+    */
     if (not inDuckMode() && IsInBounds(mBody->GetLinearVelocity().y, 0.f, 0.01f)) {
         mCharacterFalling = false;
     }
 
     updateCharacterPosition(deltaTime);
+
+    checkClimbingState();
+}
+
+void
+CharacterBase::checkClimbingState()
+{
+    auto contacts = mBody->GetContactList();
+
+
 }
 
 void
@@ -369,6 +385,8 @@ void CharacterBase::toggleTestStates()
     }
 
     testStateCurrent++;
+
+    mBody->Dump();
 
 }
 
@@ -438,7 +456,7 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
         }
         else
         {
-            mCharacterAnimation.setPosition(mCharacterAnimation.getPosition()-lastPositionCrossOffset+positionCrossOffset);
+            mCharacterAnimation.setPosition(mCharacterAnimation.getPosition());
             mSetOffset = false;
         }
             mBody->SetLinearVelocity(
@@ -453,8 +471,8 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
     {
         // physics body get a impulse in jump(), so here no update is needed
         auto pPosi = mBody->GetPosition();
-        mCharacterAnimation.setPosition(Converter::metersToPixels(pPosi.x) + positionCrossOffset.x,
-                                        Converter::metersToPixels(pPosi.y) + positionCrossOffset.y);
+        mCharacterAnimation.setPosition(Converter::metersToPixels(pPosi.x),
+                                        Converter::metersToPixels(pPosi.y));
     }
 
     mCharacterState->update(*this);

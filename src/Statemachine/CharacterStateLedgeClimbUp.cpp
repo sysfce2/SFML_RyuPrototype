@@ -1,9 +1,12 @@
+#include "Ryu/Core/Utilities.h"
 #include <Ryu/Statemachine/CharacterStateLedgeClimbUp.h>
 
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 #include <Ryu/Statemachine/CharacterState.h>
 
+#include <SFML/System/Vector2.hpp>
+#include <box2d/b2_math.h>
 #include <memory>
 
 
@@ -43,6 +46,9 @@ void
 CharacterStateLedgeClimbUp::update(CharacterBase& character)
 {
     if (character.getSpriteAnimation().isFinished()) {
+        b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(character.getPositionCross().x),
+                          Converter::pixelsToMeters<float>(character.getPositionCross().y)};
+        character.getBody()->SetTransform((character.getBody()->GetPosition() + newBodyPos), 0.f);
         std::unique_ptr<CharacterStateIdle> state =
             std::make_unique<CharacterStateIdle>();
         character.changeState(std::move(state));
@@ -54,7 +60,7 @@ void
 CharacterStateLedgeClimbUp::enter(CharacterBase& character)
 {
     // TODO: tmp:
-    character.getSpriteAnimation().setOrigin(9,88);
+    character.getSpriteAnimation().setOrigin(0,40);
     character.setupAnimation(Textures::CharacterID::IchiLedgeClimbUp);
     character.setCharacterStateEnum(ECharacterState::ClimbUp);
 }
