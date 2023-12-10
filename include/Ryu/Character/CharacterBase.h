@@ -10,6 +10,7 @@
 #include <Ryu/Events/Subject.h>
 #include <Ryu/Events/Observer.h>
 #include <Ryu/Scene/SceneNode.h>
+#include <Ryu/Scene/EntityStatic.h>
 #include <Ryu/Statemachine/CharacterState.h>
 
 #include <SFML/Graphics.hpp>
@@ -112,7 +113,9 @@ class RyuContactListener : public b2ContactListener
   public:
     void BeginContact(b2Contact* contact)
     {
-      fmt::print("Get Contact\n");
+      auto userData = contact->GetFixtureA()->GetBody()->GetUserData();
+      EntityStatic* entity = reinterpret_cast<EntityStatic*>(userData.pointer);
+      fmt::print("Get Contact with {}, climbable: {}\n", userData.pointer, entity->getEntityType() == EntityType::Climbable ? "Yes" : "No" );
     }
 
 

@@ -1,3 +1,4 @@
+#include "Ryu/Scene/Entity.h"
 #include <Ryu/Core/World.h>
 #include <Ryu/Core/SpriteNode.h>
 #include <Ryu/Core/Utilities.h>
@@ -6,10 +7,13 @@
 #include <Ryu/Physics/DebugDraw.h>
 #include <Ryu/Physics/Raycast.h>
 #include <Ryu/Scene/Crate.h>
+#include <Ryu/Scene/EntityStatic.h>
 
 #include <Ryu/Debug/b2DrawSFML.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include <SFML/Graphics/Shape.hpp>
 #include <box2d/b2_world.h>
 #include <box2d/b2_body.h>
 #include <box2d/b2_draw.h>
@@ -19,6 +23,13 @@
 #include <array>
 
 const float GRAVITY = 9.81f;
+
+
+class ClimbableObject : public EntityStatic
+{
+    public:
+        std::string entity{"Climb"};
+};
 
 
 //namespace ryu{
@@ -142,10 +153,12 @@ World::buildScene()
     //texts.emplace_back(createText("TEST"));
     setDebugDrawer(mWindow);
 }
-
+// TODO: overthink how to story the physic body ! (in the Entityclass ?)
+// whats with multiple levels .... we need at least a map
 b2Body*
 World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
-                         b2BodyType type = b2_dynamicBody, Textures::SceneID texture = Textures::SceneID::Unknown)
+                         b2BodyType type = b2_dynamicBody, Textures::SceneID texture = Textures::SceneID::Unknown,
+                         EntityType entityType=EntityType::None)
 {
         b2BodyDef bodyDef;
         bodyDef.position.Set(Converter::pixelsToMeters<double>(pos_x)
@@ -165,10 +178,17 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
         b2Body* res = phWorld->CreateBody(&bodyDef);                                                                                                                                             
         res->CreateFixture(&fixtureDef);                                                                                                                                                      
                                                                                                                                                                                               
-        sf::Shape* shape = new sf::RectangleShape(sf::Vector2f(size_x,size_y));                                                                                                               
-        shape->setOrigin(size_x/2.0,size_y/2.0);                                                                                                                                              
-        shape->setPosition(sf::Vector2f(pos_x,pos_y));                                                                                                                                        
-                                                                                                                                                                                              
+        sf::Shape* shape = new sf::RectangleShape(sf::Vector2f(size_x,size_y));
+        //sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
+        //TODO howto smartptr ? std::shared_ptr<sf::Shape> shape = std::make_shared<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
+        shape->setOrigin(size_x/2.0,size_y/2.0);
+        shape->setPosition(sf::Vector2f(pos_x,pos_y));
+
+        EntityStatic* sfShape = new EntityStatic(entityType);
+        //std::shared_ptr<EntityStatic> sfShape = std::make_shared<EntityStatic>();
+        sfShape->setShape(shape);
+
+
         if(texture != Textures::SceneID::Unknown)
         {
             //shape->setFillColor(sf::Color::Red);
@@ -177,10 +197,12 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
             shape->setTexture(&mSceneTextures.getResource(texture));
         }                                                                                                                                                            
         else                                                                                                                                                                                  
-            shape->setFillColor(sf::Color::Green);                                                                                                                                            
+            shape->setFillColor(sf::Color::Green);
 
-        res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);                                                                                                                                                              
-                                                                                                                                                                                              
+        //res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);
+        res->GetUserData().pointer = (uintptr_t)sfShape; ///OLD stalye: res->SetUserData(shape);
+
+        // Dangling pointer for EntityStatic ?
         return res;
 
 }
@@ -192,8 +214,8 @@ World::setPhysics()
     // grounds
     phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(600,780,1200,20,b2_staticBody)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(70,150,150,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(240,280,140,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(240,280,140,32,b2_staticBody,Textures::SceneID::Grass, EntityType::Climbable)));
+    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass, EntityType::Climbable)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(500,500,320,32,b2_staticBody,Textures::SceneID::Grass)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,420,120,32,b2_staticBody,Textures::SceneID::Grass)));
     phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(780,300,120,32,b2_staticBody,Textures::SceneID::Grass)));
@@ -235,7 +257,9 @@ sf::Shape*
 World::getShapeFromPhysicsBody(b2Body* physicsBody)
 {
     b2BodyUserData& data = physicsBody->GetUserData();
-    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
+    //sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
+    EntityStatic* entity = reinterpret_cast<EntityStatic*>(data.pointer);
+    sf::Shape* shape = entity->getShape();
 
     shape->setPosition(Converter::metersToPixels(physicsBody->GetPosition().x),
                        Converter::metersToPixels(physicsBody->GetPosition().y));

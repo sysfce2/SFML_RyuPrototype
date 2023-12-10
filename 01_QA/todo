@@ -4,6 +4,9 @@
 - at some point we have cyclic dependencies and we needed to add to certain libs other libs to CMakeLists
 - to avoid these cyclic deps we had to make some libs static -> is this good or bad or can we organize the
 libs better ?
+10/12/23
+- use cmake presets for test/build/package/CI ....
+-->https://www.youtube.com/watch?v=UI_QayAb9U0&t=1663s "How to start a modern c++ project"
 
 21/10/23
 - for some reason we only can import configData in the AnimationEditor only for Anis of type: "Character"

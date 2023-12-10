@@ -163,9 +163,10 @@ void CharacterIchi::update(sf::Time deltaTime) {
        if(rayCastCallbacks.find("below") != rayCastCallbacks.end()) eraseRaycast("below");
     }
 
-
+/*
     if(rayCastCallbacks.at("up").m_Hit) fmt::print("Up: RayCastHit at b2D {}/{} and \n sfml {}/{}\n", rayCastCallbacks.at("up").m_Point.x ,rayCastCallbacks.at("up").m_Point.y
                  ,Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.x), Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.y));
+*/
 }
 
 //} /// namespace ryu

@@ -9,6 +9,7 @@
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Scene/Box.h>
 #include <Ryu/Scene/Crate.h>
+#include <Ryu/Scene/EntityStatic.h>
 
 #include <array>
 #include <box2d/b2_math.h>
@@ -78,7 +79,7 @@ class World : private sf::NonCopyable, public Observer
         void loadTextures();
         void buildScene();
         void setPhysics();
-        b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type, Textures::SceneID texture);
+        b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type, Textures::SceneID texture, EntityType entityType);
         
     private:
         sf::RenderWindow& mWindow;

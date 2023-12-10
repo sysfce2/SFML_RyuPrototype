@@ -2,6 +2,7 @@ set (SRC
       "Box.cpp"
       "Crate.cpp"
       "Entity.cpp"
+      "EntityStatic.cpp"
       "SceneNode.cpp"
     )
 
@@ -9,6 +10,7 @@ set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Scene/Box.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Scene/Crate.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Scene/Entity.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Scene/EntityStatic.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Scene/SceneNode.h"
 )
 
