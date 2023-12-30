@@ -22,6 +22,7 @@
 #include <iostream>
 #include <memory>
 #include <array>
+#include <utility>
 
 const float GRAVITY = 9.81f;
 
@@ -49,7 +50,7 @@ World::World(sf::RenderWindow& window)
 , phDebugPhysics(false)
 , phTimeStep(1.f/60.f)
 , clock()
-, mStaticEntities({})
+, mStaticEntities()
 {
     loadTextures();
 
@@ -148,6 +149,10 @@ World::buildScene()
     //texts.emplace_back(createText("TEST"));
     setDebugDrawer(mWindow);
 }
+
+
+
+
 // TODO: overthink how to story the physic body ! (in the Entityclass ?)
 // whats with multiple levels .... we need at least a map
 b2Body*
@@ -171,8 +176,9 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, std::stri
         fixtureDef.restitution= 0.1;                                                                                                                                                          
         fixtureDef.shape = &b2Shape;                                                                                                                                                          
                                                                                                                                                                                               
-        b2Body* res = phWorld->CreateBody(&bodyDef);                                                                                                                                             
-        res->CreateFixture(&fixtureDef);                                                                                                                                                      
+        b2Body* res = phWorld->CreateBody(&bodyDef);
+        //std::unique_ptr<b2Body> res = std::make_unique<b2Body>(phWorld->CreateBody(&bodyDef));
+        res->CreateFixture(&fixtureDef);
                                                                                                                                                                                               
         //std::unique_ptr<sf::RectangleShape> shape = std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
         // sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
@@ -181,10 +187,11 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, std::stri
         shape->setOrigin(size_x/2.0,size_y/2.0);
         shape->setPosition(sf::Vector2f(pos_x,pos_y));
 
-        EntityStatic* sfShape = new EntityStatic(entityType);
-        //std::shared_ptr<EntityStatic> sfShape = std::make_shared<EntityStatic>();
-        sfShape->setShape(shape);
-        sfShape->setName(name);
+
+        auto staticEntity = std::make_unique<EntityStatic>(entityType);
+        //std::shared_ptr<EntityStatic> staticEntity = std::make_shared<EntityStatic>();
+        staticEntity->setShape(shape);
+        staticEntity->setName(name);
 
         auto shapePosition = shape->getGlobalBounds();
         std::vector<sf::Vector2f> cornerPoints{
@@ -194,7 +201,7 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, std::stri
         ,{shapePosition.left+shapePosition.width,shapePosition.top+shapePosition.height}
         };
 
-        sfShape->setCornerPoints(cornerPoints);
+        staticEntity->setCornerPoints(cornerPoints);
 
         if(texture != Textures::SceneID::Unknown)
         {
@@ -204,11 +211,27 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, std::stri
             shape->setTexture(&mSceneTextures.getResource(texture));
 
         }                                                                                                                                                            
-        else                                                                                                                                                                                  
+        else{
             shape->setFillColor(sf::Color::Green);
+        }
+
+
+
+        //if(mStaticEntities.find(name) == mStaticEntities.end())
+        //{
+           // mStaticEntities.emplace(std::make_pair(name, staticEntity));
+        //}
+        //else
+        //{
+        //    fmt::print("Name {} for entity exists already.\n",name);
+
+        //}
 
         //res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);
-        res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);
+        //res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);
+
+        res->GetUserData().pointer = reinterpret_cast<uintptr_t>(staticEntity.get()); ///OLD stalye: res->SetUserData(shape);
+        mStaticEntities[reinterpret_cast<uintptr_t>(res)] = std::move(staticEntity);
 
         // Dangling pointer for EntityStatic ?
         return res;
@@ -269,9 +292,6 @@ World::setDebugDrawer(sf::RenderTarget& target)
         b2Draw::e_shapeBit | b2Draw::e_pairBit
     );
 
-    
-    std::cout << "SetDebugDrawer" << "\n";
-    
 }
 
 sf::Shape*
@@ -280,10 +300,13 @@ World::getShapeFromPhysicsBody(b2Body* physicsBody)
     if (physicsBody == nullptr) return nullptr;
 
     b2BodyUserData& data = physicsBody->GetUserData();
-    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
-    //EntityStatic* entity = reinterpret_cast<EntityStatic*>(data.pointer);
-    //sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(entity->getShape());
-    //sf::Shape* shape = entity->getShape().get();
+    auto entity = reinterpret_cast<EntityStatic*>(data.pointer);
+    /*
+    auto body = reinterpret_cast<uintptr_t>(physicsBody);
+    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(mStaticEntities.at(body)->getShape());
+    */
+
+    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(entity->getShape());
 
     if(shape)
     {

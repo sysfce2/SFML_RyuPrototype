@@ -25,11 +25,11 @@ static b2DrawSFML debugDrawer;
 
 struct PhysicsObject {
     std::string name;
-    b2Body *pBody;
+    b2Body* pBody;
 
     PhysicsObject() : name(""), pBody(nullptr) {}
 
-    PhysicsObject(std::string _name, b2Body *_pBody)
+    PhysicsObject(std::string _name, b2Body* _pBody)
         : name(_name), pBody(_pBody) {}
 };
 
@@ -64,7 +64,7 @@ class World : private sf::NonCopyable, public Observer {
     void loadTextures();
     void buildScene();
     void setPhysics();
-    b2Body *createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
+    b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
                               std::string name, b2BodyType type,
                               Textures::SceneID texture, EntityType entityType);
 
@@ -75,7 +75,7 @@ class World : private sf::NonCopyable, public Observer {
     SceneNode mSceneGraph;
     std::array<SceneNode *, std::size_t(Layer::LayerCount)> mSceneLayers;
     // Shapes and MetaInfos to static physicalBodies
-    std::map<std::string, EntityStatic> mStaticEntities;
+    std::map<uintptr_t, std::unique_ptr<EntityStatic> > mStaticEntities;
 
 
     sf::FloatRect mWorldBounds;
@@ -89,7 +89,7 @@ class World : private sf::NonCopyable, public Observer {
     std::unique_ptr<b2World> phWorld;
     std::vector<PhysicsObject> phGroundBodies;
     std::vector<sf::Text> texts;
-    b2Body *pBoxTest;
+    b2Body* pBoxTest;
     bool phDebugPhysics;
     float phTimeStep;
     // b2DrawSFML debugDrawer;

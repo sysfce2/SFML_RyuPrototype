@@ -12,7 +12,7 @@ EntityStatic::~EntityStatic() {}
 void
 EntityStatic::setShape(sf::Shape* shape)
 {
-  if(mShape != nullptr) mShape = shape;
+  if(shape != nullptr) mShape = shape;
 }
 
 void
