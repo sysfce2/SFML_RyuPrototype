@@ -14,12 +14,14 @@
 #include <Ryu/Statemachine/CharacterState.h>
 
 #include <SFML/Graphics.hpp>
+#include <box2d/b2_contact.h>
 #include <fmt/core.h>
 #include <Thirdparty/glm/glm.hpp>
 #include <box2d/b2_math.h>
 #include <box2d/box2d.h>
 #include <iostream>
 #include <memory.h>
+#include <vector>
 
 using BaseTextureManager = AssetManager<sf::Texture, Textures::PhysicAssetsID>;
 
@@ -107,17 +109,42 @@ static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSprit
 
 class AnimationManager;
 
+/* move to separate file  !!! */
 class RyuContactListener : public b2ContactListener
 {
 
   public:
     void BeginContact(b2Contact* contact)
     {
+      // t.b.c
+      /*
       auto userData = contact->GetFixtureA()->GetBody()->GetUserData();
       EntityStatic* entity = reinterpret_cast<EntityStatic*>(userData.pointer);
-      fmt::print("Get Contact with {}, climbable: {}\n", userData.pointer, entity->getEntityType() == EntityType::Climbable ? "Yes" : "No" );
+
+      std::vector<sf::Vector2f> cornerPoints = entity->getCornerPoints();
+
+      fmt::print("Get Contact with {}, climbable: {}, points: A: {}/{} B: {}/{} C: {}/{} D: {}/{}\n"
+                 , entity->getName(), entity->getEntityType() == EntityType::Climbable ? "Yes" : "No"
+                 , cornerPoints.at(0).x, cornerPoints.at(0).y
+                 , cornerPoints.at(1).x, cornerPoints.at(1).y
+                 , cornerPoints.at(2).x, cornerPoints.at(2).y
+                 , cornerPoints.at(3).x, cornerPoints.at(3).y
+                 );
+
+      entity->setContact(true);
+      */
+      //entity->getShape()->
     }
 
+    void EndContact(b2Contact* contact)
+    {
+      /*
+      auto userData = contact->GetFixtureA()->GetBody()->GetUserData();
+      EntityStatic* entity = reinterpret_cast<EntityStatic*>(userData.pointer);
+      entity->setContact(false);
+      fmt::print("End Contact with {}\n",userData.pointer);
+      */
+    }
 
 };
 

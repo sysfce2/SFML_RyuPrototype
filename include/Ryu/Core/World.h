@@ -1,15 +1,15 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/CommandQueue.h>
 #include <Ryu/Debug/b2DrawSFML.hpp>
-#include <Ryu/Events/Observer.h>
 #include <Ryu/Events/EventEnums.h>
+#include <Ryu/Events/Observer.h>
 #include <Ryu/Scene/Box.h>
 #include <Ryu/Scene/Crate.h>
 #include <Ryu/Scene/EntityStatic.h>
+#include <Ryu/Scene/SceneNode.h>
+#include <SFML/Graphics.hpp>
 
 #include <array>
 #include <box2d/b2_math.h>
@@ -23,91 +23,80 @@ class b2Body;
 
 static b2DrawSFML debugDrawer;
 
+struct PhysicsObject {
+    std::string name;
+    b2Body *pBody;
 
-struct PhysicsObject{
-        std::string name;
-        b2Body* pBody;
+    PhysicsObject() : name(""), pBody(nullptr) {}
 
-        PhysicsObject():
-                name(""),
-                pBody(nullptr) {}
-
-        PhysicsObject(std::string _name, b2Body* _pBody):
-                name(_name),
-                pBody(_pBody) {}
+    PhysicsObject(std::string _name, b2Body *_pBody)
+        : name(_name), pBody(_pBody) {}
 };
 
-//namespace ryu {
-class World : private sf::NonCopyable, public Observer
-{
+// namespace ryu {
+class World : private sf::NonCopyable, public Observer {
 
-    public: 
-        explicit World(sf::RenderWindow& window);
-        ~World();
-        void update(sf::Time dt);
-        void draw();
-        CommandQueue& getActiveCommands();
-        CharacterIchi* getPlayer();
-        const sf::Drawable& getPlayerSprite();
-        // TODO: make this static ? -> access from everywhere
-        std::unique_ptr<b2World>& getPhysicsWorld(){return phWorld;};
-        sf::Shape* getShapeFromPhysicsBody(b2Body* physicsBody);
-        void debugDrawSegment(b2Vec2 const& p1, b2Vec2 const& p2, b2Color const& color)
-        {
-            if(phDebugPhysics)
-            {
-                debugDrawer.DrawSegment(p1,p2,color);
-            }
-        };
-        void toggleDrawDebug() 
-        {
-            phDebugPhysics = not phDebugPhysics;    
+  public:
+    explicit World(sf::RenderWindow &window);
+    ~World();
+    void update(sf::Time dt);
+    void draw();
+    CommandQueue &getActiveCommands();
+    CharacterIchi *getPlayer();
+    const sf::Drawable &getPlayerSprite();
+    // TODO: make this static ? -> access from everywhere
+    std::unique_ptr<b2World> &getPhysicsWorld() { return phWorld; };
+    sf::Shape *getShapeFromPhysicsBody(b2Body *physicsBody);
+    void debugDrawSegment(b2Vec2 const &p1, b2Vec2 const &p2,
+                          b2Color const &color) {
+        if (phDebugPhysics) {
+            debugDrawer.DrawSegment(p1, p2, color);
         }
-        void setDebugDrawer(sf::RenderTarget& target);
-        void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
+    };
+    void toggleDrawDebug() { phDebugPhysics = not phDebugPhysics; }
+    void setDebugDrawer(sf::RenderTarget &target);
+    void onNotify(const SceneNode &entity, Ryu::EEvent event) override;
 
-    private:
-        enum class Layer
-        {
-            Background,
-            Ground1,
-            Foreground,
-            LayerCount
-        };
+  private:
+    enum class Layer { Background, Ground1, Foreground, LayerCount };
 
-        void createText(const sf::String text, sf::Text& textToShow);
-        void loadTextures();
-        void buildScene();
-        void setPhysics();
-        b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, b2BodyType type, Textures::SceneID texture, EntityType entityType);
-        
-    private:
-        sf::RenderWindow& mWindow;
-        sf::View mWorldView;
-        SceneTextureHolder mSceneTextures;
-        SceneNode mSceneGraph;
-        std::array<SceneNode*, std::size_t(Layer::LayerCount)> mSceneLayers;
+    void createText(const sf::String text, sf::Text &textToShow);
+    void loadTextures();
+    void buildScene();
+    void setPhysics();
+    b2Body *createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
+                              std::string name, b2BodyType type,
+                              Textures::SceneID texture, EntityType entityType);
 
-        sf::FloatRect mWorldBounds;
-        sf::Vector2f mSpawnPosition;
-        Box* mPushBox;
-        CharacterIchi* mPlayer;
+  private:
+    sf::RenderWindow &mWindow;
+    sf::View mWorldView;
+    SceneTextureHolder mSceneTextures;
+    SceneNode mSceneGraph;
+    std::array<SceneNode *, std::size_t(Layer::LayerCount)> mSceneLayers;
+    // Shapes and MetaInfos to static physicalBodies
+    std::map<std::string, EntityStatic> mStaticEntities;
 
-        CommandQueue mActiveCommands;
 
-        // box2d physics
-        std::unique_ptr<b2World> phWorld;
-        std::vector<PhysicsObject> phGroundBodies;
-        std::vector<sf::Text> texts;
-        b2Body* pBoxTest;
-        bool phDebugPhysics;
-        float phTimeStep;
-        //b2DrawSFML debugDrawer;
-        
-        std::vector<Crate*> mCrates;
+    sf::FloatRect mWorldBounds;
+    sf::Vector2f mSpawnPosition;
+    Box *mPushBox;
+    CharacterIchi *mPlayer;
 
-        // Clock for calculating delta time (for physics simulation)
-        sf::Clock clock;
+    CommandQueue mActiveCommands;
 
+    // box2d physics
+    std::unique_ptr<b2World> phWorld;
+    std::vector<PhysicsObject> phGroundBodies;
+    std::vector<sf::Text> texts;
+    b2Body *pBoxTest;
+    bool phDebugPhysics;
+    float phTimeStep;
+    // b2DrawSFML debugDrawer;
+
+    std::vector<Crate *> mCrates;
+
+    // Clock for calculating delta time (for physics simulation)
+    sf::Clock clock;
 };
 //} /// namespace ryu

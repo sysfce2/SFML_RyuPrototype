@@ -59,6 +59,8 @@ public:
     ///
     void DrawPoint(b2Vec2 const& p, float size, b2Color const& color) noexcept;
 
+    void setContact(bool contacted){contact = contacted;};
+
 private:
 
     /// PRIV:
@@ -77,4 +79,6 @@ private:
     sf::ConvexShape m_convexShape;
     sf::CircleShape m_circleShape;
     float m_scale;
+
+    bool contact;
 };

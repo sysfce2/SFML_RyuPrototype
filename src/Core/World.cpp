@@ -10,6 +10,7 @@
 #include <Ryu/Scene/EntityStatic.h>
 
 #include <Ryu/Debug/b2DrawSFML.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -23,13 +24,6 @@
 #include <array>
 
 const float GRAVITY = 9.81f;
-
-
-class ClimbableObject : public EntityStatic
-{
-    public:
-        std::string entity{"Climb"};
-};
 
 
 //namespace ryu{
@@ -55,6 +49,7 @@ World::World(sf::RenderWindow& window)
 , phDebugPhysics(false)
 , phTimeStep(1.f/60.f)
 , clock()
+, mStaticEntities({})
 {
     loadTextures();
 
@@ -156,10 +151,11 @@ World::buildScene()
 // TODO: overthink how to story the physic body ! (in the Entityclass ?)
 // whats with multiple levels .... we need at least a map
 b2Body*
-World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
+World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y, std::string name = "EMPTY",
                          b2BodyType type = b2_dynamicBody, Textures::SceneID texture = Textures::SceneID::Unknown,
                          EntityType entityType=EntityType::None)
 {
+    // TODO: save all in EntityMap / save adress of physicalBody in StaticEntity !
         b2BodyDef bodyDef;
         bodyDef.position.Set(Converter::pixelsToMeters<double>(pos_x)
                             ,Converter::pixelsToMeters<double>(pos_y));
@@ -178,16 +174,27 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
         b2Body* res = phWorld->CreateBody(&bodyDef);                                                                                                                                             
         res->CreateFixture(&fixtureDef);                                                                                                                                                      
                                                                                                                                                                                               
+        //std::unique_ptr<sf::RectangleShape> shape = std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
+        // sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
+        //TODO howto smartptr ?
         sf::Shape* shape = new sf::RectangleShape(sf::Vector2f(size_x,size_y));
-        //sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
-        //TODO howto smartptr ? std::shared_ptr<sf::Shape> shape = std::make_shared<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
         shape->setOrigin(size_x/2.0,size_y/2.0);
         shape->setPosition(sf::Vector2f(pos_x,pos_y));
 
         EntityStatic* sfShape = new EntityStatic(entityType);
         //std::shared_ptr<EntityStatic> sfShape = std::make_shared<EntityStatic>();
         sfShape->setShape(shape);
+        sfShape->setName(name);
 
+        auto shapePosition = shape->getGlobalBounds();
+        std::vector<sf::Vector2f> cornerPoints{
+        {shapePosition.left,shapePosition.top}
+        ,{shapePosition.left+shapePosition.width,shapePosition.top}
+        ,{shapePosition.left,shapePosition.top+shapePosition.height}
+        ,{shapePosition.left+shapePosition.width,shapePosition.top+shapePosition.height}
+        };
+
+        sfShape->setCornerPoints(cornerPoints);
 
         if(texture != Textures::SceneID::Unknown)
         {
@@ -195,12 +202,13 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
             //shape->setOutlineColor(sf::Color::Red);                                                                                                                                             
             //shape->setOutlineThickness(2.0f);
             shape->setTexture(&mSceneTextures.getResource(texture));
+
         }                                                                                                                                                            
         else                                                                                                                                                                                  
             shape->setFillColor(sf::Color::Green);
 
         //res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);
-        res->GetUserData().pointer = (uintptr_t)sfShape; ///OLD stalye: res->SetUserData(shape);
+        res->GetUserData().pointer = (uintptr_t)shape; ///OLD stalye: res->SetUserData(shape);
 
         // Dangling pointer for EntityStatic ?
         return res;
@@ -212,17 +220,30 @@ World::setPhysics()
 {
 
     // grounds
-    phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(600,780,1200,20,b2_staticBody)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(70,150,150,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(240,280,140,32,b2_staticBody,Textures::SceneID::Grass, EntityType::Climbable)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(380,380,150,32,b2_staticBody,Textures::SceneID::Grass, EntityType::Climbable)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(500,500,320,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,420,120,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(780,300,120,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(720,600,120,32,b2_staticBody,Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject("",createPhysicalBox(780,700,120,32,b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(600,780,1200,20, "floor",b2_staticBody)));
+    phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(8,580,16,800, "left_side", b2_staticBody)));
+    phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(1190,580,16,1100, "right_side",b2_staticBody)));
+    // 1rst platform
 
-    pBoxTest = createPhysicalBox(300,100,50,50,b2_dynamicBody,Textures::SceneID::BoxPushable);
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(70,150,150,32, "platform_1", b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(240,280,140,32, "platform_2", b2_staticBody,Textures::SceneID::Grass, EntityType::Climbable)));
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(380,380,150,32,"platform_3", b2_staticBody,Textures::SceneID::Grass, EntityType::Climbable)));
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(500,500,320,32,"platform_4", b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(720,420,120,32,"platform_5", b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(780,300,120,32,"platform_6", b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(720,600,120,32,"platform_7", b2_staticBody,Textures::SceneID::Grass)));
+    phGroundBodies.emplace_back(PhysicsObject("",
+                        createPhysicalBox(780,700,120,32,"platform_8", b2_staticBody,Textures::SceneID::Grass)));
+
+    pBoxTest = createPhysicalBox(300,100,50,50,"box_pushable_1", b2_dynamicBody,Textures::SceneID::BoxPushable);
+
     //sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
     //newCrate.init(std::move(box),std::move(boxShape));
     //mCrates.push_back(std::move(&newCrate));
@@ -256,14 +277,33 @@ World::setDebugDrawer(sf::RenderTarget& target)
 sf::Shape*
 World::getShapeFromPhysicsBody(b2Body* physicsBody)
 {
-    b2BodyUserData& data = physicsBody->GetUserData();
-    //sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
-    EntityStatic* entity = reinterpret_cast<EntityStatic*>(data.pointer);
-    sf::Shape* shape = entity->getShape();
+    if (physicsBody == nullptr) return nullptr;
 
-    shape->setPosition(Converter::metersToPixels(physicsBody->GetPosition().x),
+    b2BodyUserData& data = physicsBody->GetUserData();
+    sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(data.pointer);
+    //EntityStatic* entity = reinterpret_cast<EntityStatic*>(data.pointer);
+    //sf::Shape* shape = reinterpret_cast<sf::RectangleShape*>(entity->getShape());
+    //sf::Shape* shape = entity->getShape().get();
+
+    if(shape)
+    {
+
+    try
+    {
+        shape->setPosition(Converter::metersToPixels(physicsBody->GetPosition().x),
                        Converter::metersToPixels(physicsBody->GetPosition().y));
-    shape->setRotation(Converter::radToDeg<double>(physicsBody->GetAngle()));
+        shape->setRotation(Converter::radToDeg<double>(physicsBody->GetAngle()));
+    }
+    catch(std::exception)
+    {
+        fmt::print("No shape.\n");
+    }
+    }
+    else {
+        fmt::print("shape null.\n");
+        return nullptr;
+
+    }
     return shape;
 }
 
@@ -289,7 +329,13 @@ World::draw()
     {
         for(const auto& body : phGroundBodies)
         {
-            mWindow.draw(*(getShapeFromPhysicsBody(body.pBody)));
+            auto shape = getShapeFromPhysicsBody(body.pBody);
+            if (shape == nullptr){
+                fmt::print("shape ptr seems to be null\n");
+                return;
+            }
+
+            mWindow.draw(*(shape));
         }
     }
     

@@ -96,7 +96,16 @@ void b2DrawSFML::DrawSolidPolygon(b2Vec2 const* vertices, int32 vertexCount, b2C
 
     m_convexShape.setFillColor(M_ConvertColor(color, 0.25f));/// 2nd param: alpha
     //m_convexShape.setOutlineColor(sf::Color::Transparent);
-    m_convexShape.setOutlineColor(sf::Color::Green);
+
+//    if()
+//    {
+        m_convexShape.setOutlineColor(sf::Color::Green);
+//    }
+//    else
+    {
+//        m_convexShape.setOutlineColor(sf::Color::Red);
+    }
+
     m_convexShape.setOutlineThickness(2.0f);
 
     m_renderTarget->draw(m_convexShape);

@@ -4,6 +4,7 @@
 #include <Ryu/Core/Category.h>
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <vector>
 
 enum class EntityType {
     None = 0,
@@ -18,14 +19,22 @@ class EntityStatic //: public SceneNode
         EntityStatic(EntityType type);
         virtual ~EntityStatic();
         unsigned int getCategory() const { return static_cast<unsigned>(Category::Type::None);}
-        EntityType getEntityType() {return entityType;};
+        EntityType getEntityType() {return mEntityType;};
         void setShape(sf::Shape* shape);
-        sf::Shape* getShape(){return shape;};
+        sf::Shape* getShape(){return mShape;};
+        void setContact(bool isContact) {mIsInContact = isContact;};
+        void setCornerPoints(std::vector<sf::Vector2f> points);
+        std::vector<sf::Vector2f> getCornerPoints();
+        std::string getName();
+        void setName(std::string name);
 
-    private:
+private:
+        bool mIsInContact;
         virtual void updateCurrent(sf::Time dt);
-        sf::Shape* shape;
-        EntityType entityType;
+        sf::Shape* mShape;
+        EntityType mEntityType;
+        std::vector<sf::Vector2f> mBorderPoints;
+        std::string mName;
 
 
 };

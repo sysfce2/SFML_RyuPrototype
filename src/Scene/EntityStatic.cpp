@@ -3,15 +3,16 @@
 //namespace ryu {
 
 EntityStatic::EntityStatic(EntityType type) :
-    shape(nullptr)
-    ,entityType(type)
+    mShape(nullptr)
+    ,mEntityType(type)
+    ,mIsInContact(false)
 {}
 EntityStatic::~EntityStatic() {}
 
 void
-EntityStatic::setShape(sf::Shape* _shape)
+EntityStatic::setShape(sf::Shape* shape)
 {
-  if(_shape != nullptr) shape = _shape;
+  if(mShape != nullptr) mShape = shape;
 }
 
 void
@@ -19,4 +20,27 @@ EntityStatic::updateCurrent(sf::Time dt)
 {
 }
 
+void
+EntityStatic::setCornerPoints(std::vector<sf::Vector2f> points)
+{
+  mBorderPoints = points;
+}
+
+std::vector<sf::Vector2f>
+EntityStatic::getCornerPoints()
+{
+  return mBorderPoints;
+}
+
+std::string
+EntityStatic::getName()
+{
+  return mName;
+}
+
+void
+EntityStatic::setName(std::string name)
+{
+  mName = name;
+}
 //} /// namespace ryu
