@@ -186,7 +186,7 @@ void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
         default: {}
     }
 
-    fmt::print("Called onNotify in CharacterBase\n");
+    // fmt::print("Called onNotify in CharacterBase\n");
     mCharacterState->onNotify(
         *this,
         event); // notify the state (we dont want the states to be an observer)
@@ -410,10 +410,11 @@ void CharacterBase::setupAnimation(Textures::CharacterID aniId) {
         .duration = aniConfig.animationDuration,
         .repeat = aniConfig.repeat,
         .animationId = aniId};
-
+/*
     fmt::print("setupAnimation for CharacterId '{}'': StartFrame ({}/{}) \n ",
                aniId._to_string(), aniConfig.frames.at(0).x,
                aniConfig.frames.at(0).y);
+*/
 
     getSpriteAnimation().setFrameSize(config.frameSize);
     getSpriteAnimation().setStartFrame(

@@ -25,14 +25,16 @@ class EntityStatic //: public SceneNode
         sf::Shape* getShape(){
                 return mShape;
         };
-        void setContact(bool isContact) {mIsInContact = isContact;};
         void setCornerPoints(std::vector<sf::Vector2f> points);
         std::vector<sf::Vector2f> getCornerPoints();
         std::string getName();
         void setName(std::string name);
+        void increaseContactPoints();
+        void decreaseContactPoints();
+        uint16_t getContactPoints() {return mContactPoints;};
 
 private:
-        bool mIsInContact;
+        uint16_t mContactPoints;
         virtual void updateCurrent(sf::Time dt);
         sf::Shape* mShape;
         EntityType mEntityType;

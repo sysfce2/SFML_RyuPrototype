@@ -35,7 +35,7 @@ void CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId) {
 
 void CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event) {
     CharacterBase::onNotify(*this, event);
-    fmt::print("Called onNotify in CharacterIchi\n");
+    // fmt::print("Called onNotify in CharacterIchi\n");
 }
 
 // TODO: for the start ths will make it but its probably better to

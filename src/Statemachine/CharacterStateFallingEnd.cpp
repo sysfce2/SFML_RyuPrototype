@@ -14,11 +14,11 @@
 CharacterStateFallingEnd::CharacterStateFallingEnd()
     :  touchedFloor(false)
 {
-    std::cout << "FallingEnd-cdor\n";
+    fmt::print("FallingEnd-cdor\n");
 }
 
 CharacterStateFallingEnd::~CharacterStateFallingEnd(){
-    std::cout << "FallingEnd-dtor\n";
+    fmt::print("FallingEnd-dtor\n");
 }
 
 std::unique_ptr<CharacterState>

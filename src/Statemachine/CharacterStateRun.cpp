@@ -13,12 +13,12 @@
 CharacterStateRun::CharacterStateRun()
 : mRunCharacterSpeed(180.f)
 {
-    std::cout << "RunStateCreated" << std::endl;
+    // fmt::print("RunStateCreated\n");
 }
 
 CharacterStateRun::~CharacterStateRun()
 {
-    std::cout << "RunStateDestroyed" << std::endl;
+    // fmt::print("RunStateDestroyed\n");
 }
 
 std::unique_ptr<CharacterState> 

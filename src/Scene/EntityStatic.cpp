@@ -5,7 +5,7 @@
 EntityStatic::EntityStatic(EntityType type) :
     mShape(nullptr)
     ,mEntityType(type)
-    ,mIsInContact(false)
+    ,mContactPoints(0)
 {}
 EntityStatic::~EntityStatic() {}
 
@@ -13,6 +13,18 @@ void
 EntityStatic::setShape(sf::Shape* shape)
 {
   if(shape != nullptr) mShape = shape;
+}
+
+void
+EntityStatic::increaseContactPoints()
+{
+  ++mContactPoints;
+}
+
+void
+EntityStatic::decreaseContactPoints()
+{
+  --mContactPoints;
 }
 
 void

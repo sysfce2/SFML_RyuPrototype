@@ -94,7 +94,6 @@ CharacterStateFalling::exit(CharacterBase& character)
     {
         character.setActionHeight(EActionHeight::High);
     }
-    std::cout << "delete below\n";
     character.rayCastPoints.erase("below");
     character.getSpriteAnimation().restart();
 }

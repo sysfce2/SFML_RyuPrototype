@@ -1,3 +1,9 @@
+17/1/24
+- live editor for scenes/level
+-> while playing you can select & move platforms around so you can live test
+-> special mode for mousebutton
+- then save positions to config file
+
 28/10/23
 - WE DEF: need to rethink the movement "system" -> implem jumping is difficult and awful
 -> ze.g.https://www.youtube.com/watch?v=KbtcEVCM7bw
