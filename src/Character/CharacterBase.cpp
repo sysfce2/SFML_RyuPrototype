@@ -401,7 +401,7 @@ void CharacterBase::setupAnimation(Textures::CharacterID aniId) {
     auto spritesheetId = AnimationToSpritesheetID.at(aniId);
     aniConfig =
         mAnimationManager->getCharacterAnimationConfig(spritesheetId, aniId);
-    // fmt::print("startF(x): {}, startD(y): {}","bla","bla");
+     fmt::print("spritesheet: {}\n", spritesheetId._to_string());
     AnimationConfiguration config{
         // TODO: check if x/y are in correct order for later spritesheets
         .frameSize = {aniConfig.frameSize.y, aniConfig.frameSize.x},

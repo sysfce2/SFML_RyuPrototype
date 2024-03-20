@@ -1,3 +1,4 @@
+#include "Ryu/Statemachine/CharacterStateLedgeHang.h"
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Statemachine/CharacterState.h>
@@ -48,8 +49,10 @@ void CharacterStateJumpUp::onNotify(CharacterBase &character,
 void CharacterStateJumpUp::update(CharacterBase &character) {
 
     if (character.getSpriteAnimation().isFinished()) {
-        std::unique_ptr<CharacterStateIdle> state =
-            std::make_unique<CharacterStateIdle>();
+        std::unique_ptr<CharacterStateLedgeHang> state =
+            std::make_unique<CharacterStateLedgeHang>();
+        //std::unique_ptr<CharacterStateIdle> state =
+        //    std::make_unique<CharacterStateIdle>();
         character.changeState(std::move(state));
     }
 }

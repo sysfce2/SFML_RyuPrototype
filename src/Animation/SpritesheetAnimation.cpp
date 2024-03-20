@@ -154,7 +154,8 @@ bool SpritesheetAnimation::isRepeating() const { return mRepeat; }
 void SpritesheetAnimation::restart() { mCurrentFrame = 0; }
 
 bool SpritesheetAnimation::isFinished() const {
-    return mCurrentFrame >= mNumFrames;
+    //return mCurrentFrame >= mNumFrames;
+    return mCurrentFrame == (mNumFrames-1);
 }
 
 sf::FloatRect SpritesheetAnimation::getLocalBounds() const {
@@ -195,10 +196,12 @@ void SpritesheetAnimation::update(sf::Time dt) {
     // TODO: in the loop get the frametime
     while (mElapsedTime >= timePerFrame &&
            (mCurrentFrame <= mNumFrames || mRepeat)) {
-        if (mCurrentFrame + 1 < mFrames.size()) {
+
+        if (mCurrentFrame + 1 <= mFrames.size()) {
             timePerFrame =
-                sf::milliseconds(mFrames.at(mCurrentFrame + 1).duration);
+                sf::milliseconds(mFrames.at(mCurrentFrame /* + 1*/).duration);
         }
+
 
         textureRect.left += textureRect.width;
         if (textureRect.left + textureRect.width > textureBounds.x) {

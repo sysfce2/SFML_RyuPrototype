@@ -1,3 +1,4 @@
+#include "Ryu/Control/CharacterEnums.h"
 #include "Ryu/Core/Utilities.h"
 #include <Ryu/Statemachine/CharacterStateLedgeClimbUp.h>
 
@@ -7,6 +8,7 @@
 
 #include <SFML/System/Vector2.hpp>
 #include <box2d/b2_math.h>
+#include <fmt/core.h>
 #include <memory>
 
 
@@ -30,9 +32,8 @@ CharacterStateLedgeClimbUp::handleInput(CharacterBase& character,EInput input)
        {
        }
 
-       case EInput::PressDown:
+       case EInput::ActionInput:
        {
-           //return std::move(std::make_unique<CharacterStateIdle>());
        }
 
     default:
@@ -45,13 +46,18 @@ CharacterStateLedgeClimbUp::handleInput(CharacterBase& character,EInput input)
 void
 CharacterStateLedgeClimbUp::update(CharacterBase& character)
 {
-    if (character.getSpriteAnimation().isFinished()) {
+    fmt::print("Current frame: {}\n",character.getSpriteAnimation().getCurrentFrame());
+    if (character.getSpriteAnimation().getCurrentFrame() == (character.getSpriteAnimation().getFramesCount())) {
+/*
         b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(character.getPositionCross().x),
                           Converter::pixelsToMeters<float>(character.getPositionCross().y)};
-        character.getBody()->SetTransform((character.getBody()->GetPosition() + newBodyPos), 0.f);
-        std::unique_ptr<CharacterStateIdle> state =
-            std::make_unique<CharacterStateIdle>();
-        character.changeState(std::move(state));
+*/
+        //character.getBody()->SetTransform((character.getBody()->GetPosition() + newBodyPos), 0.f);
+        //character.getSpriteAnimation().restart();
+        // TODO: check ob das mit der Zeit der animation zusammenaengt ? -> muessen das multiple von frametime sein
+        // - check fps and set aniframetimes to multiples from fps time
+        character.changeState(std::move(std::make_unique<CharacterStateIdle>()));
+        //return;
     }
 }
 
@@ -60,8 +66,9 @@ void
 CharacterStateLedgeClimbUp::enter(CharacterBase& character)
 {
     // TODO: tmp:
-    character.getSpriteAnimation().setOrigin(0,40);
+    //character.getSpriteAnimation().setOrigin(0,40);
     character.setupAnimation(Textures::CharacterID::IchiLedgeClimbUp);
+    //character.setupAnimation(Textures::CharacterID::IchiLandLow);
     character.setCharacterStateEnum(ECharacterState::ClimbUp);
 }
 
@@ -69,6 +76,7 @@ void
 CharacterStateLedgeClimbUp::exit(CharacterBase& character)
 {
     character.getSpriteAnimation().restart();
+    fmt::print("exit ledgeclimb");
 }
 
 //} /// namespace ryu

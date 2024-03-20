@@ -35,6 +35,7 @@ namespace RyuDebug {
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "State: %s",
                            debugData.characterState);
         ImGui::Text("AniFrames: %i ", debugData.numFrames);
+
         ImGui::Text("AniFrames in Vector: %i ", debugData.numFramesVector);
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "JumpForce: {%f,%f}",
                            debugData.charJumpForce.x, debugData.charJumpForce.y);
@@ -72,11 +73,35 @@ namespace RyuDebug {
         {
             notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
         }
+        DebugSpritesheetInfo();
     }
     ImGui::Separator();
     ImGui::Text("For ImGui-Demo-Window press '-' ");
     }
 
+    void
+    DebugWidgets::DebugSpritesheetInfo()
+    {
+        ImGui::Separator();
+        ImGui::Text("Origin (%f/%f)",
+                    playerCharacter->getSpriteAnimation().getOrigin().x,
+                    playerCharacter->getSpriteAnimation().getOrigin().y );
+        ImGui::Separator();
+        ImGui::Text("FrameSize: (%d/%d)",
+                    playerCharacter->getSpriteAnimation().getFrameSize().x,
+                    playerCharacter->getSpriteAnimation().getFrameSize().y);
+        ImGui::Separator();
+        ImGui::Text("LocalBounds: (%f/%f)",
+                    playerCharacter->getSpriteAnimation().getLocalBounds().height,
+                    playerCharacter->getSpriteAnimation().getLocalBounds().width);
+        ImGui::Separator();
+        ImGui::Text("GlobalBounds: (%f/%f)",
+                    playerCharacter->getSpriteAnimation().getGlobalBounds().height,
+                    playerCharacter->getSpriteAnimation().getGlobalBounds().width);
+        //ImGui::Text("Spritesheetname: %s", playerCharacter->
+        ImGui::Separator();
+
+    }
 
     void
     DebugWidgets::CreateDebugGui() {

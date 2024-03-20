@@ -52,8 +52,9 @@ CharacterStateIdle::update(CharacterBase& character)
 void
 CharacterStateIdle::enter(CharacterBase& character)
 {
-    //TODO: tmp
-    character.getSpriteAnimation().setOrigin(0,0);
+    //TODO: tmp normally its done in the exit state here we test it for climbup
+    //character.getSpriteAnimation().restart();
+    //character.getSpriteAnimation().setOrigin(0,0);
     character.setupAnimation(Textures::CharacterID::IchiIdle);
     character.setCharacterStateEnum(ECharacterState::Idle);
 

@@ -53,6 +53,7 @@ class DebugWidgets : public Subject {
 
         void ShowWidgets();
         void CreateDebugGui();
+        void DebugSpritesheetInfo();
 
         DebugData debugData{};
 

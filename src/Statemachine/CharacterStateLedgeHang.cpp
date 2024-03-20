@@ -47,7 +47,6 @@ CharacterStateLedgeHang::handleInput(CharacterBase& character,EInput input)
 void
 CharacterStateLedgeHang::update(CharacterBase& character)
 {
-        fmt::print("GravityScaleHang: {}\n",  character.getBody()->GetGravityScale());
 }
 
 

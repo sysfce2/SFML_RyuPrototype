@@ -13,6 +13,7 @@ enum class EInput
     ReleaseDown,
     ReleaseRight,
     ReleaseLeft,
+    ActionInput
 };
 
 BETTER_ENUM(ECharacterState, char
