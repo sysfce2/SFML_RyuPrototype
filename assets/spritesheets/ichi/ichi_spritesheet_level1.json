@@ -333,7 +333,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 96 },
     "sourceSize": { "w": 80, "h": 96 },
-    "duration": 1500
+    "duration": 100
    },
    "ichi_spritesheet_level1 42.aseprite": {
     "frame": { "x": 240, "y": 288, "w": 80, "h": 96 },

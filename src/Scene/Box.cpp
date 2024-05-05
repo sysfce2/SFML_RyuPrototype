@@ -23,6 +23,7 @@ Box::Box(Type boxType, const SceneTextureHolder& textures)
     : mType(boxType), mSprite(textures.getResource(toTextureID(boxType)))
 
 {
+    setPosition(sf::Vector2f(760.f,60.f));
     // TODO: add another ctor for positioning !
     
     // set origin of texture to center 
@@ -39,7 +40,7 @@ Box::updateCurrent(sf::Time dt)
     sf::Vector2f velocity = getVelocity();
 
     // TODO: no magic mnumbers
-    if ((position.x <= 150)
+    if ((position.x <= 750)
     || (position.x >= 1000))
     {
         velocity.x = -velocity.x;

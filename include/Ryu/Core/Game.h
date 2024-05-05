@@ -31,6 +31,8 @@ class Game : public Observer
 	  void addObservers();
     void setDebugValues();
     void useCharacterDebugSettings();
+    void teleportMainCharacter(float x, float y);
+
   private:
 	  sf::RenderWindow mWindow;
 	  World mWorld;

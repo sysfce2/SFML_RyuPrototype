@@ -182,6 +182,7 @@ void SpritesheetAnimation::update(sf::Time dt) {
     // TODO: here take the timedirectly from the Frame itself and not the
     // average time
     // sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
+
     sf::Time timePerFrame = sf::milliseconds(mFrames.at(0).duration);
     mElapsedTime += dt;
     sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
@@ -198,8 +199,7 @@ void SpritesheetAnimation::update(sf::Time dt) {
            (mCurrentFrame <= mNumFrames || mRepeat)) {
 
         if (mCurrentFrame + 1 <= mFrames.size()) {
-            timePerFrame =
-                sf::milliseconds(mFrames.at(mCurrentFrame /* + 1*/).duration);
+            timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame).duration);
         }
 
 
@@ -233,6 +233,7 @@ void SpritesheetAnimation::update(sf::Time dt) {
     // std::cout << "TextureRect: " << textureRect.width << "," <<
     // textureRect.height << "\n";
     mSprite.setTextureRect(textureRect);
+
 }
 
 void SpritesheetAnimation::flipAnimationLeft() {

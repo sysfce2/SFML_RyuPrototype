@@ -48,10 +48,10 @@ CharacterStateLedgeClimbUp::update(CharacterBase& character)
 {
     fmt::print("Current frame: {}\n",character.getSpriteAnimation().getCurrentFrame());
     if (character.getSpriteAnimation().getCurrentFrame() == (character.getSpriteAnimation().getFramesCount())) {
-/*
+///*
         b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(character.getPositionCross().x),
                           Converter::pixelsToMeters<float>(character.getPositionCross().y)};
-*/
+//*/
         //character.getBody()->SetTransform((character.getBody()->GetPosition() + newBodyPos), 0.f);
         //character.getSpriteAnimation().restart();
         // TODO: check ob das mit der Zeit der animation zusammenaengt ? -> muessen das multiple von frametime sein

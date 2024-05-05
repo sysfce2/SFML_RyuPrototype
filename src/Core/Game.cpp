@@ -1,3 +1,5 @@
+#include "Ryu/Statemachine/CharacterState.h"
+#include "Ryu/Statemachine/CharacterStateRun.h"
 #include <Ryu/Core/Game.h>
 #include <Ryu/Core/World.h>
 #include <Ryu/Core/AssetManager.h>
@@ -11,9 +13,11 @@
 
 // #include <imgui.h>
 #include <SFML/System/Vector2.hpp>
+#include <fmt/core.h>
 #include <imgui-SFML.h>
 
 #include <SFML/Graphics.hpp>
+#include <imgui.h>
 #include <iostream>
 #include <memory>
 
@@ -52,17 +56,23 @@ Game::useCharacterDebugSettings()
 			player->setPositionOffset(sf::Vector2f(mDebugWidgets.debugData.positionCross[0],
 												   mDebugWidgets.debugData.positionCross[1]));
 			player->setOffset(true);
+}
 
+void
+Game::teleportMainCharacter(float x, float y)
+{
+	auto player = mWorld.getPlayer();
+	player->teleportCharacter(x, y);
 }
 
 void
 Game::onNotify(const SceneNode& entity, RyuEvent event)
 {
+	fmt::print("onNotify in GAME\n");
 	switch(event._value)
 	{
 		case RyuEvent::DebugToggle:
 		{
-			fmt::print("DebugToggle in GAME\n");
 				mDebugWidgets.debugData.activateRyuDebug == false ? mDebugWidgets.debugData.activateRyuDebug = true : mDebugWidgets.debugData.activateRyuDebug = false;
 				mDebugWidgetsActive = mDebugWidgets.debugData.activateRyuDebug;
 				mDebugWidgetsActive ? useCharacterDebugSettings() : mWorld.getPlayer()->resetCharacterSettings();
@@ -82,6 +92,19 @@ Game::onNotify(const SceneNode& entity, RyuEvent event)
 		{
 			fmt::print("DebugValues changed, notified in Game\n");
 			useCharacterDebugSettings();
+			break;
+		}
+		case RyuEvent::TeleportWait:
+		{
+			fmt::print("TeleportActive\n");
+			break;
+		}
+		case RyuEvent::TeleportDo:
+		{
+			fmt::print("TeleportInActive\n");
+			teleportMainCharacter(mDebugWidgets.debugData.mousPos[0]
+								  ,mDebugWidgets.debugData.mousPos[1]);
+            fmt::print("Game: Teleport here: {}/{}\n", mDebugWidgets.debugData.mousPos[0], mDebugWidgets.debugData.mousPos[1]);
 			break;
 		}
 		case RyuEvent::TemporaryOutput:

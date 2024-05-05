@@ -15,12 +15,15 @@ namespace Textures
 {
 	enum class SceneID
 	{
+		BGMountain,
 		BoxPushable,
 		BoxHeavy,
-		Ladder,
-		Ground,
+		Button,
 		Grass,
-		BGMountain,
+		Grate,
+		Ground,
+		Ladder,
+		Teleport,
 		Unknown
 	};
 

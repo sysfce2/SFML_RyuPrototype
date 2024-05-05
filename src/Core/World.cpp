@@ -1,4 +1,5 @@
 #include "Ryu/Scene/Entity.h"
+#include "Ryu/Scene/LevelManager.h"
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Core/SpriteNode.h>
@@ -15,6 +16,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <box2d/b2_body.h>
 #include <box2d/b2_draw.h>
 #include <box2d/b2_world.h>
@@ -43,7 +45,8 @@ World::World(sf::RenderWindow &window)
           b2Vec2{0.0f, GRAVITY})) /// set gravity to 10 & create physics world
       ,
       phGroundBodies(), phDebugPhysics(false), phTimeStep(1.f / 60.f), clock(),
-      mStaticEntities() {
+      levelManager(std::make_unique<LevelManager>())
+      , mStaticEntities() {
     loadTextures();
 
     // build pyhsics
@@ -76,6 +79,12 @@ void World::loadTextures() {
                         "assets/backgrounds/99_dummy/722756.png");
     mSceneTextures.load(Textures::SceneID::Grass,
                         "assets/scenes/99_dummy/tile_grass_1.png");
+    mSceneTextures.load(Textures::SceneID::Button,
+                        "assets/scenes/99_dummy/tile_button_1.png");
+    mSceneTextures.load(Textures::SceneID::Teleport,
+                        "assets/scenes/99_dummy/tile_teleport_1.png");
+    mSceneTextures.load(Textures::SceneID::Grate,
+                        "assets/scenes/99_dummy/tile_grate_1.png");
 
     // mSceneTextures.load(Textures::SceneID::Ground,
     // "assets/scenes/99_dummy/box_wood.png");
@@ -113,14 +122,14 @@ void World::buildScene() {
     mSceneLayers[static_cast<unsigned>(Layer::Ground1)]->attachChild(
         std::move(backgroundSprite));
 
-    // pushable Box
+    // pushable Box / moving platform test
     std::unique_ptr<Box> box =
         std::make_unique<Box>(Box::Type::Pushable, mSceneTextures);
     mPushBox = box.get();
-    mPushBox->setPosition(mSpawnPosition);
+    mPushBox->setPosition(sf::Vector2f(760.f,80.f));
 
     std::unique_ptr<CharacterIchi> ichi = std::make_unique<CharacterIchi>(
-        ECharacterState::Idle, phWorld, sf::Vector2f(100, 200));
+        ECharacterState::Idle, phWorld, sf::Vector2f(150, 200));
     mPlayer = ichi.get();
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(
         std::move(box));
@@ -130,6 +139,7 @@ void World::buildScene() {
     // texts.emplace_back(createText("TEST"));
     setDebugDrawer(mWindow);
 }
+
 
 // TODO: overthink how to story the physic body ! (in the Entityclass ?)
 // whats with multiple levels .... we need at least a map
@@ -217,49 +227,24 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
     return res;
 }
 
+b2Body *
+World::createPhysicalBox(LevelObject obj)
+{
+    return createPhysicalBox(obj.posX, obj.posY, obj.sizeX, obj.sizeY, obj.name, obj.type, obj.texture, obj.entityType);
+}
+
 void World::setPhysics() {
 
-    // grounds
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(600, 780, 1200, 20, "floor", b2_staticBody)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(8, 580, 16, 800, "left_side", b2_staticBody)));
-    phGroundBodies.emplace_back(
-        PhysicsObject("", createPhysicalBox(1190, 580, 16, 1100, "right_side",
-                                            b2_staticBody)));
-    // 1rst platform
+    for(const auto& obj : physicsObjects.at("Level2"))
+    {
+        phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(obj)));
+    }
 
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(70, 150, 150, 32, "platform_1", b2_staticBody,
-                              Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "",
-        createPhysicalBox(240, 280, 140, 32, "platform_2", b2_staticBody,
-                          Textures::SceneID::Grass, EntityType::Climbable)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "",
-        createPhysicalBox(380, 380, 150, 32, "platform_3", b2_staticBody,
-                          Textures::SceneID::Grass, EntityType::Climbable)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(500, 500, 320, 32, "platform_4", b2_staticBody,
-                              Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(720, 420, 120, 32, "platform_5", b2_staticBody,
-                              Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(780, 300, 120, 32, "platform_6", b2_staticBody,
-                              Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(720, 600, 120, 32, "platform_7", b2_staticBody,
-                              Textures::SceneID::Grass)));
-    phGroundBodies.emplace_back(PhysicsObject(
-        "", createPhysicalBox(780, 700, 120, 32, "platform_8", b2_staticBody,
-                              Textures::SceneID::Grass)));
-
+/*
     pBoxTest =
-        createPhysicalBox(300, 100, 50, 50, "box_pushable_1", b2_dynamicBody,
+        createPhysicalBox(750, 80, 50, 50, "box_pushable_2", b2_dynamicBody,
                           Textures::SceneID::BoxPushable);
-
+*/
     // sf::Shape* boxShape = getShapeFromPhysicsBody(pBoxTest);
     // newCrate.init(std::move(box),std::move(boxShape));
     // mCrates.push_back(std::move(&newCrate));

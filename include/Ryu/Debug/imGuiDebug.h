@@ -29,21 +29,23 @@ static float jumpImpulseUpVec[4] = {.0f, .0f, .0f, .0f};
 static float massCenterVec[4] = {.0f, .0f, .0f, .0f};
 */
 struct DebugData{
- bool showImGuiDemoWindow=false;
- bool activateRyuDebug=false;
- const char *characterState;
- b2Vec2 charJumpForce;
- bool characterIsFalling;
- size_t numFrames;
- size_t numFramesVector;
- b2Vec2 jumpImpulseForward, jumpImpulseUp, massCenter;
- float charMass;
+    bool showImGuiDemoWindow=false;
+    bool activateRyuDebug=false;
+    const char *characterState;
+    b2Vec2 charJumpForce;
+    bool characterIsFalling;
+    size_t numFrames;
+    size_t numFramesVector;
+    b2Vec2 jumpImpulseForward, jumpImpulseUp, massCenter;
+    float charMass;
 
- float jumpImpulseForwardVec[4] = {.0f, .0f, .0f, .0f};
- float jumpImpulseUpVec[4] = {.0f, .0f, .0f, .0f};
- float massCenterVec[4] = {.0f, .0f, .0f, .0f};
+    float jumpImpulseForwardVec[4] = {.0f, .0f, .0f, .0f};
+    float jumpImpulseUpVec[4] = {.0f, .0f, .0f, .0f};
+    float massCenterVec[4] = {.0f, .0f, .0f, .0f};
 
- int positionCross[2] = {0,0};
+    int positionCross[2] = {0,0};
+    float mousPos[2] = {.0f, .0f};
+    bool readMousePos = false;
 };
 
 class DebugWidgets : public Subject {

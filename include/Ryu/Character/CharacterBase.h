@@ -2,6 +2,7 @@
 
 // #include <Ryu/Animation/Animation.h>
 #include "Ryu/Animation/AnimationManager.h"
+#include "Ryu/Control/PlayerController.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Core/AssetIdentifiers.h>
@@ -9,6 +10,7 @@
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Events/Subject.h>
 #include <Ryu/Events/Observer.h>
+#include <Ryu/Scene/ContactListener.h>
 #include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Scene/EntityStatic.h>
 #include <Ryu/Statemachine/CharacterState.h>
@@ -21,6 +23,7 @@
 #include <box2d/box2d.h>
 #include <iostream>
 #include <memory.h>
+#include <memory>
 #include <vector>
 
 using BaseTextureManager = AssetManager<sf::Texture, Textures::PhysicAssetsID>;
@@ -109,44 +112,6 @@ static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSprit
 
 class AnimationManager;
 
-/* move to separate file  !!! */
-class RyuContactListener : public b2ContactListener
-{
-
-  public:
-    void BeginContact(b2Contact* contact)
-    {
-      // t.b.c
-
-      auto userData = contact->GetFixtureA()->GetBody()->GetUserData();
-      EntityStatic* entity = reinterpret_cast<EntityStatic*>(userData.pointer);
-
-      std::vector<sf::Vector2f> cornerPoints = entity->getCornerPoints();
-      entity->increaseContactPoints();
-
-      fmt::print("Get Contact with {}, ({}) climbable: {}, points: A: {}/{} B: {}/{} C: {}/{} D: {}/{}\n"
-                 , entity->getName(), entity->getContactPoints()
-                 , entity->getEntityType() == EntityType::Climbable ? "Yes" : "No"
-                 , cornerPoints.at(0).x, cornerPoints.at(0).y
-                 , cornerPoints.at(1).x, cornerPoints.at(1).y
-                 , cornerPoints.at(2).x, cornerPoints.at(2).y
-                 , cornerPoints.at(3).x, cornerPoints.at(3).y
-                 );
-
-
-      //entity->getShape()->
-    }
-
-    void EndContact(b2Contact* contact)
-    {
-
-      auto userData = contact->GetFixtureA()->GetBody()->GetUserData();
-      EntityStatic* entity = reinterpret_cast<EntityStatic*>(userData.pointer);
-      entity->decreaseContactPoints();
-      fmt::print("End Contact with {} ({})\n", entity->getName(), entity->getContactPoints());
-    }
-
-};
 
 class CharacterBase : public SceneNode, public Subject, public Observer {
 
@@ -180,6 +145,7 @@ public:
   void updatePhysics();
   void updatePhysics(const sf::Vector2f &position);
   void checkClimbingState();
+  std::string checkContactObjects();
 
   virtual void handleInput(EInput input);
     virtual void update(sf::Time deltaTime);
@@ -195,6 +161,7 @@ public:
 
   void notifyObservers(Ryu::EEvent event);
   bool isFalling() { return mCharacterFalling; }
+  void setFalling(bool falling) {mCharacterFalling=falling; }
 
   b2Body *getBody() { return mBody; }
   b2Fixture *getFixture() { return mFixture; }

@@ -1,4 +1,6 @@
+#include "Ryu/Animation/SpritesheetAnimation.h"
 #include "Ryu/Core/AssetIdentifiers.h"
+#include "Ryu/Statemachine/CharacterStateRun.h"
 #include <Ryu/Character/CharacterIchi.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Core/Category.h>
@@ -18,24 +20,39 @@
 #include <math.h>
 #include <string>
 // namespace ryu {
+class CharacterStateRun;
 
 CharacterIchi::CharacterIchi(ECharacterState startState,
                              std::unique_ptr<b2World> &phWorld,
                              const sf::Vector2f &position)
     : CharacterBase(startState, phWorld, position), ichiTextureManager(), rayCastCallbacks() {
     loadTextures();
-
     // mCharacterAnimation.setPosition({100.f,50.f});
     mCharacterState->enter(*this);
+
 }
 
 void CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId) {
     setTexture(ichiTextureManager, textureId);
 }
 
+void CharacterIchi::teleportCharacter(float x, float y)
+{
+	b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(x),
+                      Converter::pixelsToMeters<float>(y)};
+	getBody()->SetTransform(newBodyPos,0);
+	changeState(std::make_unique<CharacterStateRun>());
+    auto pPosi = getBody()->GetPosition();
+    getSpriteAnimation().setPosition(
+			Converter::metersToPixels(pPosi.x),
+			Converter::metersToPixels(pPosi.y));
+	moveCharacter(sf::Vector2f{1,0}); // the trick is to push the character a bit
+
+}
+
 void CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event) {
     CharacterBase::onNotify(*this, event);
-    // fmt::print("Called onNotify in CharacterIchi\n");
+    fmt::print("Called onNotify in CharacterIchi: Event: {}\n", event._to_string());
 }
 
 // TODO: for the start ths will make it but its probably better to
@@ -127,6 +144,20 @@ CharacterIchi::eraseRaycast(std::string rcName)
     rayCastCallbacks.erase(rcName);
 }
 
+void CharacterIchi::checkContact(std::string name)
+{
+    if(name == "teleport_1")
+    {
+        fmt::print("Now we teleport in Ichi to posi 1\n");
+        teleportCharacter(50,20);
+    }
+    if(name == "teleport_2")
+    {
+        fmt::print("Now we teleport in Ichi to posi 1\n");
+        teleportCharacter(1000,270);
+    }
+}
+
 void CharacterIchi::update(sf::Time deltaTime) {
     CharacterBase::update(deltaTime);
     rayCastCallbacks["up"] = RyuPhysics::createRaycast(
@@ -162,6 +193,8 @@ void CharacterIchi::update(sf::Time deltaTime) {
     else{
        if(rayCastCallbacks.find("below") != rayCastCallbacks.end()) eraseRaycast("below");
     }
+
+    checkContact(CharacterBase::checkContactObjects());
 
 /*
     if(rayCastCallbacks.at("up").m_Hit) fmt::print("Up: RayCastHit at b2D {}/{} and \n sfml {}/{}\n", rayCastCallbacks.at("up").m_Point.x ,rayCastCallbacks.at("up").m_Point.y

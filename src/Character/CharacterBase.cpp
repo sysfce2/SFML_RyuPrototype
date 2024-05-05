@@ -312,6 +312,14 @@ bool CharacterBase::inDuckMode() {
     );
 }
 
+std::string CharacterBase::checkContactObjects()
+{
+    //if(contactListener.contactObject == "teleport_1")
+    //{
+        return contactListener.contactObject;
+    //}
+}
+
 void CharacterBase::update(sf::Time deltaTime) {
     // std::cout //<< " x(pBody): " <<
     // Converter::metersToPixels(mBody->GetPosition().x)
@@ -322,6 +330,9 @@ void CharacterBase::update(sf::Time deltaTime) {
     //          mBody->GetLinearVelocity().Length() << "\n";
     // TODO this has to be moved to a new state ! (falling)
     // dummy impl. / without falling animation
+    // just to make sure both are set
+    if(mECharacterState._value == ECharacterState::Falling) mCharacterFalling = true;
+
     if (mBody->GetLinearVelocity().y > 0.5f) {
         if (allowedToFall() && not mCharacterFalling &&
             mECharacterState._value != ECharacterState::Falling) {
@@ -350,6 +361,7 @@ void CharacterBase::update(sf::Time deltaTime) {
     }
 
     updateCharacterPosition(deltaTime);
+
 
     checkClimbingState();
 }
@@ -498,7 +510,7 @@ void CharacterBase::setTextureOnCharacter(Textures::SpritesheetID textureId) {
 }
 
 void CharacterBase::changeColor(sf::Color color) {
-    // mCharacterAnimationShape.setFillColor(color);
+    mCharacterAnimation.getSprite().setColor(color);
 }
 
 //} /// namespace ryu

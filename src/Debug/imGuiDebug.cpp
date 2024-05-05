@@ -15,17 +15,29 @@ namespace RyuDebug {
 
     void
     DebugWidgets::ShowWidgets() {
-    ImGuiIO &io = ImGui::GetIO();
-    ImGui::Text("Ryu Debug Viewer\n"
-                "(right-click to change position)");
-    ImGui::Separator();
-    if (ImGui::CollapsingHeader("Basic")) {
-        if (ImGui::IsMousePosValid())
-            ImGui::Text("Mouse Position", io.MousePos.x,
-                        io.MousePos.y);
-        else
-            ImGui::Text("Mouse Position: <invalid>");
-    }
+        ImGuiIO &io = ImGui::GetIO();
+        if(debugData.readMousePos)
+        {
+            debugData.mousPos[0] = io.MousePos.x;
+            debugData.mousPos[1] = io.MousePos.y;
+
+            if(io.MouseClicked[0])
+            {
+                debugData.readMousePos = false;
+                notify(*playerCharacter,Ryu::EEvent::TeleportDo);
+            }
+        }
+
+        ImGui::Text("Ryu Debug Viewer\n"
+                    "(right-click to change position)");
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader("Basic")) {
+            if (ImGui::IsMousePosValid())
+                ImGui::Text("Mouse Position: %f/%f", io.MousePos.x,
+                            io.MousePos.y);
+            else
+                ImGui::Text("Mouse Position: <invalid>");
+        }
     ImGui::Separator();
     if (ImGui::CollapsingHeader("Character")) {
         // ImGui::Text("CharacterState: %s ",characterState);
@@ -56,6 +68,10 @@ namespace RyuDebug {
         if (ImGui::InputFloat2("Masscenter", debugData.massCenterVec)) {
             fmt::print("Set center of mass\n");
             notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
+        }
+        if (ImGui::Button("Teleport")) {
+            debugData.readMousePos = true;
+            notify(*playerCharacter,Ryu::EEvent::TeleportWait);
         }
         if (ImGui::Button("Reset Values"))
         {

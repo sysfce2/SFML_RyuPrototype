@@ -8,12 +8,14 @@
 #include <Ryu/Scene/Box.h>
 #include <Ryu/Scene/Crate.h>
 #include <Ryu/Scene/EntityStatic.h>
+#include <Ryu/Scene/LevelManager.h>
 #include <Ryu/Scene/SceneNode.h>
 #include <SFML/Graphics.hpp>
 
 #include <array>
 #include <box2d/b2_math.h>
 #include <vector>
+#include <memory>
 
 typedef AssetManager<sf::Texture, Textures::SceneID> SceneTextureHolder;
 
@@ -23,15 +25,6 @@ class b2Body;
 
 static b2DrawSFML debugDrawer;
 
-struct PhysicsObject {
-    std::string name;
-    b2Body* pBody;
-
-    PhysicsObject() : name(""), pBody(nullptr) {}
-
-    PhysicsObject(std::string _name, b2Body* _pBody)
-        : name(_name), pBody(_pBody) {}
-};
 
 // namespace ryu {
 class World : private sf::NonCopyable, public Observer {
@@ -67,6 +60,7 @@ class World : private sf::NonCopyable, public Observer {
     b2Body* createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
                               std::string name, b2BodyType type,
                               Textures::SceneID texture, EntityType entityType);
+    b2Body* createPhysicalBox(LevelObject obj);
 
   private:
     sf::RenderWindow &mWindow;
@@ -98,5 +92,8 @@ class World : private sf::NonCopyable, public Observer {
 
     // Clock for calculating delta time (for physics simulation)
     sf::Clock clock;
+
+    // TODO: does this belongs here ?
+    std::unique_ptr<LevelManager> levelManager;
 };
 //} /// namespace ryu

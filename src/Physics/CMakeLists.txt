@@ -4,6 +4,7 @@ set (SRC
 
 set(HEADER
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Physics/DebugDraw.h"
+     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Physics/PhysicsObject.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Physics/Raycast.h"
 )
 
