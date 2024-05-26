@@ -19,24 +19,34 @@
 
 SpritesheetAnimation::SpritesheetAnimation()
     : mSprite(), mFrameSize(), mNumFrames(0), mCurrentFrame(0),
-      mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),
-      mStartFrame({0, 0}), mFrames({}), mOwner(nullptr) {}
+      mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false), maxTextureSize(sf::Texture::getMaximumSize())
+    , animationIdName(""),
+      mStartFrame({0, 0}), mFrames({}), mOwner(nullptr)
+{
+    fmt::print("Maximum TextureSize: {}\n", maxTextureSize);
+}
 
 SpritesheetAnimation::SpritesheetAnimation(baseCharPtr owner)
     : mSprite(), mFrameSize(), mNumFrames(0), mCurrentFrame(0),
-      mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),
-      mStartFrame({0, 0}), mFrames({}), mOwner(owner) {}
+      mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),maxTextureSize(sf::Texture::getMaximumSize())
+    , animationIdName(""),
+      mStartFrame({0, 0}), mFrames({}), mOwner(owner)
+{
+    fmt::print("Maximum TextureSize: {}\n", maxTextureSize);
+}
 
 SpritesheetAnimation::SpritesheetAnimation(const sf::Texture &texture,
                                            baseCharPtr owner)
     : mSprite(texture), mFrameSize(), mNumFrames(0), mCurrentFrame(0),
-      mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),
+      mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),maxTextureSize(sf::Texture::getMaximumSize())
+    , animationIdName(""),
       mStartFrame({0, 0}), mFrames({}),
       mOwner(owner) { // set origin of texture to center
     sf::FloatRect bounds = mSprite.getLocalBounds();
     mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-    std::cout << "Boundswidth: " << bounds.width
-              << "Boundsheight: " << bounds.height << "\n";
+    fmt::print("Maximum TextureSize: {}\n", maxTextureSize);
+    //std::cout << "Boundswidth: " << bounds.width
+    //          << "Boundsheight: " << bounds.height << "\n";
     // mSprite.setOrigin(120.f, 144.f);
 }
 
@@ -50,6 +60,11 @@ const sf::Texture *SpritesheetAnimation::getTexture() const {
 
 void SpritesheetAnimation::setFrameSize(sf::Vector2i frameSize) {
     mFrameSize = frameSize;
+}
+
+void SpritesheetAnimation::setAnimationName(std::string name)
+{
+    animationIdName = name;
 }
 
 sf::Vector2i SpritesheetAnimation::getFrameSize() const { return mFrameSize; }
@@ -196,8 +211,8 @@ void SpritesheetAnimation::update(sf::Time dt) {
     // << "\n";
     // TODO: in the loop get the frametime
     while (mElapsedTime >= timePerFrame &&
-           (mCurrentFrame <= mNumFrames || mRepeat)) {
-
+           (mCurrentFrame < mNumFrames || mRepeat)) {
+        // fmt::print("AniName: {}\n", animationIdName);
         if (mCurrentFrame + 1 <= mFrames.size()) {
             timePerFrame = sf::milliseconds(mFrames.at(mCurrentFrame).duration);
         }
@@ -210,22 +225,32 @@ void SpritesheetAnimation::update(sf::Time dt) {
         }
         mElapsedTime -= timePerFrame;
         // fire event / find it be carefully not to create it !!!!
-        const auto &frameEvent = mFrames.at(mCurrentFrame).event;
-        // TODO move to debug gui !
-        if(mOwner && frameEvent._value != Ryu::EEvent::None) {
-            fmt::print("Fire Event: {} from frame {} \n",
-                       frameEvent._to_string(), std::to_string(mCurrentFrame));
-           // make pointer to owner -> use sharedPointer ?
-           mOwner->notifyObservers( frameEvent); //TODO: scenenode ?
-        }
-        if (mRepeat) {
-            mCurrentFrame = (mCurrentFrame + 1) % mNumFrames;
-            if (mCurrentFrame == 0) {
-                textureRect = sf::IntRect(mStartFrame.x, mStartFrame.y,
-                                          mFrameSize.x, mFrameSize.y);
+        try{
+            if(mCurrentFrame < mFrames.size())
+            {
+                const auto &frameEvent = mFrames.at(mCurrentFrame).event;
+                // TODO move to debug gui !
+                if(mOwner && frameEvent._value != Ryu::EEvent::None) {
+                    fmt::print("Fire Event: {} from frame {} \n",
+                               frameEvent._to_string(), std::to_string(mCurrentFrame));
+                    // make pointer to owner -> use sharedPointer ?
+                    mOwner->notifyObservers( frameEvent); //TODO: scenenode ?
+                }
+
             }
-        } else {
-            mCurrentFrame++;
+            if (mRepeat) {
+                mCurrentFrame = (mCurrentFrame + 1) % mNumFrames;
+                if (mCurrentFrame == 0) {
+                    textureRect = sf::IntRect(mStartFrame.x, mStartFrame.y,
+                                              mFrameSize.x, mFrameSize.y);
+                }
+            } else {
+                mCurrentFrame++;
+                fmt::print("CurrentFrame is now: {}\n", mCurrentFrame);
+            }
+        } catch (std::exception)
+        {
+            fmt::print("St went wrong.\n");
         }
         // std::cout << "F(" << mCurrentFrame << ")" <<
         // timePerFrame.asMilliseconds() << "\n";

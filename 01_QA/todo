@@ -1,3 +1,8 @@
+26/5/24
+- for prototype we will try to avoid switching textures for animations and use a maxsize of 16k x 16k, although this is not very efficient
+-> but problems i cant figure out at the moment (flickering) occure when switching textures
+-> for special animations like climbing we need a bigger framesize for the animation
+
 17/1/24
 - live editor for scenes/level
 -> while playing you can select & move platforms around so you can live test

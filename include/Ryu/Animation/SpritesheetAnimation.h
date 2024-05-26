@@ -63,6 +63,7 @@ class SpritesheetAnimation : public sf::Drawable,
     sf::FloatRect getGlobalBounds() const;
     int getCurrentFrame() const;
     void update(sf::Time dt);
+    void setAnimationName(std::string name);
     sf::Sprite &getSprite() { return mSprite; }
 
   private:
@@ -77,8 +78,9 @@ class SpritesheetAnimation : public sf::Drawable,
     sf::Time mDuration;
     sf::Time mElapsedTime;
     bool mRepeat;
+    unsigned int maxTextureSize;
     // std::vector<AnimationFrame> mFrames;
     std::vector<RyuParser::Frame> mFrames;
-
+    std::string animationIdName;
     baseCharPtr mOwner;
 };

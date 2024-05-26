@@ -434,7 +434,7 @@ void CharacterBase::setupAnimation(Textures::CharacterID aniId) {
     getSpriteAnimation().setNumFrames(config.duration, aniConfig.frames);
     getSpriteAnimation().setDuration(config.duration);
     getSpriteAnimation().setRepeating(config.repeat);
-
+    getSpriteAnimation().setAnimationName(config.animationId._to_string());
     setTextureOnCharacter(spritesheetId);
 
     // set origin of texture to center
