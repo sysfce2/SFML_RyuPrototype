@@ -247,6 +247,33 @@ Editor::update(sf::Time dt)
     }
 }
 
+
+void
+Editor::addAnimationsFromJson(std::string spriteSheet, ImportFormat appFormat, json& data)
+{
+    if(appFormat == ImportFormat::Aseprite)
+    {
+       auto anis = data["meta"]["frameTags"];
+
+       std::vector<RyuParser::AnimationEditor> aniVector;
+
+       for(const auto& a : anis)
+       {
+         auto ani = a.get<RyuParser::AnimationEditor>();
+         aniVector.emplace_back(ani);
+       }
+
+       animations.emplace(spriteSheet, aniVector);
+
+       return;
+    }
+
+    if(appFormat == ImportFormat::Texturepacker)
+    {
+
+    }
+}
+
 /* \brief: At the moment we can only parse jsons generated with Aseprite, but it could be possible to extend to
 *          other PixelArtTools.
 *          Before exporting please make sure that every Animation has exactly one tag. It will be confusing
@@ -279,17 +306,25 @@ Editor::parseJsonData(std::string path)
         // build-up metadata
         if (data.contains("meta"))
         {
-            auto anis = data["meta"]["frameTags"];
-            
-            std::vector<RyuParser::AnimationEditor> aniVector;
-            
-            for(const auto& a : anis)
+            ImportFormat appFormat = ImportFormat::None;
+            if (data["meta"].contains("app"))
             {
-                auto ani = a.get<RyuParser::AnimationEditor>();
-                aniVector.emplace_back(ani);
+                std::string app = data["meta"]["app"];
+                if(app.find("aseprite") != std::string::npos)
+                {
+                    fmt::print("A aseprite spritesheet\n");
+                    appFormat = ImportFormat::Aseprite;
+
+                }
+                if(app.find("texturepacker") != std::string::npos)
+                {
+                    appFormat = ImportFormat::Texturepacker;
+                    fmt::print("A texturepacker spritesheet\n");
+                }
+
             }
-            
-            animations.emplace(spriteSheet, aniVector);
+
+            addAnimationsFromJson(spriteSheet, appFormat, data);
 
         }            
         selectedSpritesheet = spriteSheet;

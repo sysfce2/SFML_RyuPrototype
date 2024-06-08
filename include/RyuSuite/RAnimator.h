@@ -46,6 +46,12 @@ enum class EFileBrowserState
   AnimationConfigJson
 };
 
+enum class ImportFormat {
+  None,
+  Aseprite,
+  Texturepacker
+};
+
 using TaggedSheetAnimation = std::pair<const std::string, std::vector<RyuParser::AnimationEditor>>  ;
 
   class Editor
@@ -95,6 +101,7 @@ using TaggedSheetAnimation = std::pair<const std::string, std::vector<RyuParser:
       void editFrame(RyuParser::AnimationEditor& ani, size_t frame);
       void parseConfiguration(std::string configFile);
       void updateAnimations(RyuParser::JsonAnimations& aniSource);
+      void addAnimationsFromJson(std::string spriteSheet, ImportFormat appFormat, json& data);
       GuiCharTextureManager guiCharTextureManager;
       GuiTextureManager guiTextureManager;
       SpritesheetAnimation spritesheetAnimation;
