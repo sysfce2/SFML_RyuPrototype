@@ -26,6 +26,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <map>
 #include <utility> /// std::pair
 
 //namespace RyuAnimator {
@@ -53,6 +54,47 @@ namespace RyuParser {
         j.at("duration").get_to(frame.duration);
     }
 
+    void from_json(const json& j, RyuParser::FrameValues& frameValues) {
+        j.at("frame").at("x").get_to(frameValues.x);
+        j.at("frame").at("y").get_to(frameValues.y);
+        j.at("frame").at("w").get_to(frameValues.width);
+        j.at("frame").at("h").get_to(frameValues.height);
+    }
+
+    void from_json(const json& j, RyuParser::SpriteSourceSize& sheetValues) {
+        j.at("spriteSourceSize").at("x").get_to(sheetValues.x);
+        j.at("spriteSourceSize").at("y").get_to(sheetValues.y);
+        j.at("spriteSourceSize").at("w").get_to(sheetValues.width);
+        j.at("spriteSourceSize").at("h").get_to(sheetValues.height);
+    }
+
+    void from_json(const json& j, RyuParser::FrameSize& frameSize) {
+        j.at("sourceSize").at("w").get_to(frameSize.width);
+        j.at("sourceSize").at("h").get_to(frameSize.height);
+    }
+
+    void from_json(const json& j, RyuParser::FramePivot& pivot) {
+        j.at("pivot").at("x").get_to(pivot.x);
+        j.at("pivot").at("y").get_to(pivot.y);
+    }
+
+    void from_json(const json& j, RyuParser::FrameTexturePacker& frame) {
+        j.at("filename").get_to(frame.name);
+        j.at("frame").at("x").get_to(frame.frame.x);
+        j.at("frame").at("y").get_to(frame.frame.y);
+        j.at("frame").at("w").get_to(frame.frame.width);
+        j.at("frame").at("h").get_to(frame.frame.height);
+        j.at("rotated").get_to(frame.rotated);
+        j.at("trimmed").get_to(frame.trimmed);
+        j.at("spriteSourceSize").at("x").get_to(frame.spriteSourceSize.x);
+        j.at("spriteSourceSize").at("y").get_to(frame.spriteSourceSize.y);
+        j.at("spriteSourceSize").at("w").get_to(frame.spriteSourceSize.width);
+        j.at("spriteSourceSize").at("h").get_to(frame.spriteSourceSize.height);
+        j.at("sourceSize").at("w").get_to(frame.sourceSize.width);
+        j.at("sourceSize").at("h").get_to(frame.sourceSize.height);
+        j.at("pivot").at("x").get_to(frame.pivot.x);
+        j.at("pivot").at("y").get_to(frame.pivot.y);
+    }
 
     void to_json(json& j, const RyuParser::FrameEditor& frame){
         // json jEvent = frame.event;
@@ -247,7 +289,13 @@ Editor::update(sf::Time dt)
     }
 }
 
-
+/*
+** brief: According the json - format from whch program the json is exported from
+** we need different methods of parsing.
+** Following json-formats for spritesheets are available
+** - Aseprite
+** - Texturepacker
+*/
 void
 Editor::addAnimationsFromJson(std::string spriteSheet, ImportFormat appFormat, json& data)
 {
@@ -265,20 +313,153 @@ Editor::addAnimationsFromJson(std::string spriteSheet, ImportFormat appFormat, j
 
        animations.emplace(spriteSheet, aniVector);
 
+        // read framespecific data due aseprite-json spec
+        if (data.contains("frames"))
+        {
+            for(auto& ani : animations[selectedSpritesheet])
+            {
+                for(int i = ani.fromFrame;i<=ani.toFrame;i++)
+                {
+                    RyuParser::FrameEditor frame;
+                    std::string framePosition = selectedSpritesheet+" "+std::to_string(i)+".aseprite";
+                    try {
+                        frame.duration = data["frames"][framePosition]["duration"];
+                        frame.height = data["frames"][framePosition]["frame"]["h"];
+                        frame.width = data["frames"][framePosition]["frame"]["w"];
+                        frame.x = data["frames"][framePosition]["frame"]["x"];
+                        frame.y = data["frames"][framePosition]["frame"]["y"];
+                        frame.event = RyuEvent::None;
+
+                    ani.frames.push_back(frame);
+                    } catch (std::exception) {
+                        fmt::print("Exception thrown: do filenames of .json, .png and .aseprite match: frameposition: {}, spritesheetname: {}?\nse check all filenames.",framePosition, selectedSpritesheet);
+                    }
+                }
+                ani.animationType = Textures::AnimationType::Character;
+            }
+
+            setAnimationPreferences(selectedSpritesheet);
+
+        }
+
+        std::cout << data["meta"]["frameTags"].dump() << "\n";
        return;
     }
 
     if(appFormat == ImportFormat::Texturepacker)
     {
+        fmt::print("adding animations to animap. \n");
 
+        auto frames = data["frames"];
+
+        std::vector<RyuParser::AnimationEditor> aniVector;
+        std::string filename{""};
+
+        std::map<std::string, RyuParser::AnimationEditor> anis{};
+        std::set<std::string> aniSet;
+        std::string lastAnimation = "";
+        int16_t fromFrame, toFrame, posiSheet=0;
+
+        for(const auto& f : frames)
+        {
+            auto frame = f.get<RyuParser::FrameTexturePacker>();
+            filename = frame.name;
+            auto lastUnderScore = filename.find_last_of("_");
+
+            filename = filename.substr(0, lastUnderScore);
+            aniSet.emplace(filename);
+
+            if(not anis.contains(filename))
+            {
+                RyuParser::AnimationEditor ani;
+                ani.fromFrame = fromFrame;
+                ani.name = filename;
+                ani.pivot.x = frame.pivot.x;
+                ani.pivot.y = frame.pivot.y;
+                anis[filename] = ani;
+            }
+
+            RyuParser::FrameEditor eFrame;
+            eFrame.duration = 100;
+            eFrame.height = frame.frame.height;
+            eFrame.width = frame.frame.width;
+            eFrame.x = frame.frame.x;
+            eFrame.y = frame.frame.y;
+            anis.at(filename).frames.push_back(eFrame);
+// TODO: think further ...
+            ++posiSheet;
+
+            fmt::print("Name: {}\n, Pivot({}/{})\n, Size(h:{},w:{})\n, Frame(h:{},w:{}, x:{}, y:{})\n\n"
+                       ,frame.name
+                       ,frame.pivot.x
+                       ,frame.pivot.y
+                       ,frame.sourceSize.height
+                       ,frame.sourceSize.width
+                       ,frame.frame.height
+                       ,frame.frame.width
+                       ,frame.frame.x
+                       ,frame.frame.y
+            );
+
+
+
+        }
+
+        bool test = true;
+
+        /*
+        {
+            auto frame = f.get<RyuParser::FrameTexturePacker>();
+            filename = frame.name;
+            auto lastUnderScore = filename.find_last_of("_");
+
+            filename = filename.substr(0, lastUnderScore);
+
+            if(filename != lastAnimation)
+            {
+                RyuParser::AnimationEditor tpAni;
+                fromFrame = posiSheet;
+                tpAni.fromFrame = fromFrame;
+                tpAni.toFrame = toFrame;
+                tpAni.numFrames = tpAni.frames.size();
+
+                anis[filename] = tpAni;
+            }
+            else
+            {
+                toFrame = posiSheet;
+            }
+
+            RyuParser::FrameEditor fr;
+            fr.duration = 100;
+            fr.height = frame.frame.height;
+            fr.width = frame.frame.width;
+            fr.x = frame.frame.x;
+            fr.y = frame.frame.y;
+
+
+            anis[filename].frames.emplace_back(fr);
+
+            lastAnimation = filename;
+
+
+            fmt::print("Add {} to animations. \n", filename);
+            // TODO: add frames etc. calculate correctly framepositions with one loop !!!
+
+            ++posiSheet;
+        }
+    bool test = true; */
+    }
+    {
+      fmt::print("Animation added done \n");
     }
 }
 
-/* \brief: At the moment we can only parse jsons generated with Aseprite, but it could be possible to extend to
-*          other PixelArtTools.
-*          Before exporting please make sure that every Animation has exactly one tag. It will be confusing
-*          if animations occur in the list which according tags only were created to describe parent states.
-*          e.g. "Climbing" as a parent tag, "startClimb", "loopClimb", "endClimb" as childrens.  
+/* \brief: At the moment we can only parse jsons generated with Aseprite or Texturepacker,
+*          but it could be possible to extend to other PixelArtTools.
+*          If you use tags to tag animationse: please make sure that every Animation has exactly one tag.
+*          It will be confusing if animations occur in the list which according tags only were created
+*          to describe parent states. e.g. "Climbing" as a parent tag, "startClimb", "loopClimb", "endClimb" as childrens.
 *          We only would be interested in the child animations !
 */
 void
@@ -323,46 +504,12 @@ Editor::parseJsonData(std::string path)
                 }
 
             }
+            selectedSpritesheet = spriteSheet;
 
             addAnimationsFromJson(spriteSheet, appFormat, data);
 
         }            
-        selectedSpritesheet = spriteSheet;
-
-        // read framespecific data due aseprite-json spec
-        if (data.contains("frames"))
-        {
-            for(auto& ani : animations[selectedSpritesheet])
-            {
-                for(int i = ani.fromFrame;i<=ani.toFrame;i++)
-                {
-                    RyuParser::FrameEditor frame;
-                    std::string framePosition = selectedSpritesheet+" "+std::to_string(i)+".aseprite";
-                    try {
-                        frame.duration = data["frames"][framePosition]["duration"];
-                        frame.height = data["frames"][framePosition]["frame"]["h"];
-                        frame.width = data["frames"][framePosition]["frame"]["w"];
-                        frame.x = data["frames"][framePosition]["frame"]["x"];
-                        frame.y = data["frames"][framePosition]["frame"]["y"];
-                        frame.event = RyuEvent::None;
-
-                    ani.frames.push_back(frame);
-                    } catch (std::exception) {
-                        fmt::print("Exception thrown: do filenames of .json, .png and .aseprite match: frameposition: {}, spritesheetname: {}?\nse check all filenames.",framePosition, selectedSpritesheet);
-                    }
-                }
-                ani.animationType = Textures::AnimationType::Character;
-            }
-            
-            setAnimationPreferences(selectedSpritesheet);
-        
-        }
-        
-        std::cout << data["meta"]["frameTags"].dump() << "\n";
         parsedSpritesheet = true;
-
-        
-        
     }
     catch(json::exception e)
     {

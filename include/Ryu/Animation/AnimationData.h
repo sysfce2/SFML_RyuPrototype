@@ -31,6 +31,77 @@ struct FrameBase
 
 };
 
+  struct FrameSize
+  {
+    int16_t width;
+    int16_t height;
+    FrameSize() :
+        width(0)
+       ,height(0) {}
+  };
+
+  struct SpriteSourceSize
+  {
+    int16_t x;
+    int16_t y;
+    int16_t width;
+    int16_t height;
+
+    SpriteSourceSize() :
+       x(0)
+      ,y(0)
+      ,width(0)
+      ,height(0) {}
+
+  };
+
+  struct FrameValues
+  {
+    int16_t x;
+    int16_t y;
+    int16_t width;
+    int16_t height;
+
+    FrameValues() :
+       x(0)
+      ,y(0)
+      ,width(0)
+      ,height(0) {}
+
+  };
+
+  struct FramePivot
+  {
+    float x;
+    float y;
+
+    FramePivot() :
+       x(.0f)
+      ,y(.0f) {}
+
+  };
+
+  struct FrameTexturePacker
+  {
+    std::string name;
+    FrameValues frame;
+    bool rotated;
+    bool trimmed;
+    SpriteSourceSize spriteSourceSize;
+    FrameSize sourceSize;
+    FramePivot pivot;
+
+    FrameTexturePacker() :
+      name("")
+      ,frame({})
+      ,rotated(false)
+      ,trimmed(false)
+      ,spriteSourceSize({})
+      ,sourceSize({})
+      ,pivot({}) {}
+
+  };
+
   /*
   ** This is a kind of dirty workaround: nlohman needs to have the convertfunctions & according Datatsrutures
   ** to be in the same namespace. In the editor we load jsondata from the arttool (e.g. Aseprite),
@@ -54,7 +125,7 @@ struct FrameBase
       bool repeat;
       Textures::AnimationType animationType;
       AnimationId animationId;
-      sf::Vector2i positionCross;
+      sf::Vector2f pivot;
 
       AnimationBase() :
            name("name")
@@ -68,7 +139,7 @@ struct FrameBase
           ,repeat(false)
           ,animationType(Textures::AnimationType::None)
           ,animationId(Textures::CharacterID::None)
-          ,positionCross({0,0}) {}
+          ,pivot({0,0}) {}
   };
 
   struct Animation : AnimationBase {};
