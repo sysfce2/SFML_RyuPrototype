@@ -1,0 +1,5 @@
+- atm we do animation differentiation for Texture packers spritesheet creation with the naming:
+-> therefore every animation needs to have its own name ending with framenumber "_x" (x = 1..)
+
+- later we can introduce own exporter in Texturepacker (see: https://www.codeandweb.com/texturepacker/documentation/custom-exporter)
+-> distinguish coudl be in the meta section like with aseprite json - exporter

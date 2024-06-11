@@ -372,10 +372,11 @@ Editor::addAnimationsFromJson(std::string spriteSheet, ImportFormat appFormat, j
             if(not anis.contains(filename))
             {
                 RyuParser::AnimationEditor ani;
-                ani.fromFrame = fromFrame;
+                ani.fromFrame = posiSheet;
                 ani.name = filename;
                 ani.pivot.x = frame.pivot.x;
                 ani.pivot.y = frame.pivot.y;
+                ani.animationType = Textures::AnimationType::Character;
                 anis[filename] = ani;
             }
 
@@ -385,8 +386,9 @@ Editor::addAnimationsFromJson(std::string spriteSheet, ImportFormat appFormat, j
             eFrame.width = frame.frame.width;
             eFrame.x = frame.frame.x;
             eFrame.y = frame.frame.y;
+            eFrame.event = RyuEvent::None;
             anis.at(filename).frames.push_back(eFrame);
-// TODO: think further ...
+// TODO: we need to save the stuff in global animations map !!!
             ++posiSheet;
 
             fmt::print("Name: {}\n, Pivot({}/{})\n, Size(h:{},w:{})\n, Frame(h:{},w:{}, x:{}, y:{})\n\n"
@@ -400,10 +402,14 @@ Editor::addAnimationsFromJson(std::string spriteSheet, ImportFormat appFormat, j
                        ,frame.frame.x
                        ,frame.frame.y
             );
-
-
-
         }
+
+        for(const auto& a : anis)
+        {
+            aniVector.emplace_back(a.second);
+        }
+
+        animations.emplace(spriteSheet, aniVector);
 
         bool test = true;
 
