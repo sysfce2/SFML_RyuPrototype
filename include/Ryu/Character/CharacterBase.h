@@ -106,8 +106,9 @@ static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSprit
 {Textures::CharacterID::IchiStartFalling, Textures::SpritesheetID::Ichi80x96},
 {Textures::CharacterID::IchiSword1Idle, Textures::SpritesheetID::Ichi80x96},
 {Textures::CharacterID::IchiSword1Walk, Textures::SpritesheetID::Ichi80x96},
-{Textures::CharacterID::IchiLedgeClimbUp, Textures::SpritesheetID::Ichi128x196},
-{Textures::CharacterID::IchiLedgeHangIdle, Textures::SpritesheetID::Ichi128x196},
+{Textures::CharacterID::IchiLedgeClimbUp, Textures::SpritesheetID::Ichi80x96},
+/TODO: redo spritesheet process with the following animation !
+{Textures::CharacterID::IchiLedgeHangIdle, Textures::SpritesheetID::Ichi80x96},
 };
 
 class AnimationManager;

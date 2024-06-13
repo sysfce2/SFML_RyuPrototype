@@ -62,9 +62,12 @@ void CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event) {
 // 3. also move  the texturemamager to the animationmanager ?
 static std::map<Textures::SpritesheetID, std::string> spritesheePaths = {
     {Textures::SpritesheetID::Ichi80x96,
-     "assets/spritesheets/ichi/ichi_spritesheet_level1.png"},
+     //"assets/spritesheets/ichi/ichi_spritesheet_level1.png"},
+     "assets/spritesheets/ichi/ichi_level1.png"},
+/*
     {Textures::SpritesheetID::Ichi128x196,
-     "assets/spritesheets/ichi/ichi_climb_up_ledge_128x196.png"}};
+    "assets/spritesheets/ichi/ichi_climb_up_ledge_128x196.png"},*/
+};
 
 void CharacterIchi::loadTextures() {
     // At the moment we should not switch textures often on an object so we put
