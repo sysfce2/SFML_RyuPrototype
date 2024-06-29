@@ -99,6 +99,10 @@ namespace RyuDebug {
     DebugWidgets::DebugSpritesheetInfo()
     {
         ImGui::Separator();
+        ImGui::Text("PivotAbs (%d/%d)",
+                    playerCharacter->getSpriteAnimation().getPivotAbs().x,
+                    playerCharacter->getSpriteAnimation().getPivotAbs().y );
+        ImGui::Separator();
         ImGui::Text("Origin (%f/%f)",
                     playerCharacter->getSpriteAnimation().getOrigin().x,
                     playerCharacter->getSpriteAnimation().getOrigin().y );

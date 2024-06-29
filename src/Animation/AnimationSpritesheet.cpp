@@ -3,6 +3,7 @@
 */
 
 
+#include <SFML/System/Vector2.hpp>
 #include <iostream>
 #include <Ryu/Animation/AnimationSpritesheet.h>
 #include <SFML/Graphics/RenderTarget.hpp>

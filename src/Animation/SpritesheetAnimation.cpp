@@ -10,6 +10,7 @@
 
 #include <SFML/System/Time.hpp>
 
+#include <SFML/System/Vector2.hpp>
 #include <fmt/core.h>
 #include <iostream>
 #include <string>
@@ -22,6 +23,7 @@ SpritesheetAnimation::SpritesheetAnimation()
       mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false), maxTextureSize(sf::Texture::getMaximumSize())
     , animationIdName(""),
       mStartFrame({0, 0}), mFrames({}), mOwner(nullptr)
+    , mPivotAbs({}), mPivotNorm({})
 {
     fmt::print("Maximum TextureSize: {}\n", maxTextureSize);
 }
@@ -31,6 +33,7 @@ SpritesheetAnimation::SpritesheetAnimation(baseCharPtr owner)
       mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),maxTextureSize(sf::Texture::getMaximumSize())
     , animationIdName(""),
       mStartFrame({0, 0}), mFrames({}), mOwner(owner)
+    , mPivotAbs({}), mPivotNorm({})
 {
     fmt::print("Maximum TextureSize: {}\n", maxTextureSize);
 }
@@ -40,8 +43,9 @@ SpritesheetAnimation::SpritesheetAnimation(const sf::Texture &texture,
     : mSprite(texture), mFrameSize(), mNumFrames(0), mCurrentFrame(0),
       mDuration(sf::Time::Zero), mElapsedTime(sf::Time::Zero), mRepeat(false),maxTextureSize(sf::Texture::getMaximumSize())
     , animationIdName(""),
-      mStartFrame({0, 0}), mFrames({}),
-      mOwner(owner) { // set origin of texture to center
+      mStartFrame({0, 0}), mFrames({}), mOwner(owner)
+    , mPivotAbs({}), mPivotNorm({})
+{ // set origin of texture to center
     sf::FloatRect bounds = mSprite.getLocalBounds();
     mSprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
     fmt::print("Maximum TextureSize: {}\n", maxTextureSize);
@@ -186,6 +190,24 @@ void SpritesheetAnimation::setStartFrame(sf::Vector2i startFrame) {
     mStartFrame = startFrame;
 }
 
+void
+SpritesheetAnimation::setPivotAbs(sf::Vector2i vec)
+{
+    mPivotAbs = vec;
+}
+
+void
+SpritesheetAnimation::setPivotNorm(sf::Vector2f vec)
+{
+    mPivotNorm = vec;
+}
+
+sf::Vector2f
+SpritesheetAnimation::getPivotNorm(){return mPivotNorm;}
+
+sf::Vector2i
+SpritesheetAnimation::getPivotAbs(){return mPivotAbs;}
+
 void SpritesheetAnimation::update(sf::Time dt) {
     /* Tasks:
      * X1. start ani with specific frame on spritesheet
@@ -197,7 +219,7 @@ void SpritesheetAnimation::update(sf::Time dt) {
     // TODO: here take the timedirectly from the Frame itself and not the
     // average time
     // sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
-
+    //fmt::print(">>>SpriteAniPos: ({}/{})\n",getPosition().x,getPosition().y);
     sf::Time timePerFrame = sf::milliseconds(mFrames.at(0).duration);
     mElapsedTime += dt;
     sf::Vector2i textureBounds(mSprite.getTexture()->getSize());

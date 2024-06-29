@@ -127,7 +127,9 @@ namespace RyuParser {
                {"AnimationType", ani.animationType._to_string()},
                {"AnimationId", std::visit( // as animationId is a std::variant with different datatypes we need to use visit
                        [](auto&& cId){return cId._to_string();},
-                       ani.animationId)}};
+                       ani.animationId)},
+               {"PivotNorm",{{"x", ani.pivot.x},{"y", ani.pivot.y} }}
+  };
     }
 
 } /// namespace RyuParser
