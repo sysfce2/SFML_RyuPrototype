@@ -16,6 +16,7 @@
 #include <Thirdparty/glm/glm.hpp>
 #include <box2d/b2_math.h>
 #include <box2d/b2_shape.h>
+#include <cmath>
 #include <fmt/core.h>
 
 #include <box2d/box2d.h>
@@ -415,33 +416,43 @@ void CharacterBase::setupAnimation(Textures::CharacterID aniId) {
         mAnimationManager->getCharacterAnimationConfig(spritesheetId, aniId);
      fmt::print("spritesheet: {}\n", spritesheetId._to_string());
     AnimationConfiguration config{
-        // TODO: check if x/y are in correct order for later spritesheets
+        // frameSize.x= width / frameSize.y=height
         .frameSize = {aniConfig.frameSize.y, aniConfig.frameSize.x},
         .startFrame = {aniConfig.frames.at(0).x, aniConfig.frames.at(0).y},
         .numFrames = aniConfig.numFrames,
-        .duration = aniConfig.animationDuration,
-        .repeat = aniConfig.repeat,
-        .animationId = aniId};
-/*
-    fmt::print("setupAnimation for CharacterId '{}'': StartFrame ({}/{}) \n ",
-               aniId._to_string(), aniConfig.frames.at(0).x,
-               aniConfig.frames.at(0).y);
-*/
+        .duration = aniConfig.animationDuration, .repeat = aniConfig.repeat,
+        .animationId = aniId, .pivotNormalized = {aniConfig.pivot.x, aniConfig.pivot.y}
+        , .pivotAbsolute = {
+        (int)(std::round(aniConfig.pivot.x*aniConfig.frameSize.y)),
+        (int)(std::round(aniConfig.pivot.y*aniConfig.frameSize.x))}
+        };
 
-    getSpriteAnimation().setFrameSize(config.frameSize);
-    getSpriteAnimation().setStartFrame(
+    fmt::print("setupAnimation for CharacterId '{}'':\n PivotNorm ({}/{})\n , PivotAbs ({}/{})\n, StartFrame ({}/{}) \n ",
+               aniId._to_string()
+               , config.pivotNormalized.x
+               , config.pivotNormalized.y
+               , config.pivotAbsolute.x
+               , config.pivotAbsolute.y
+               , aniConfig.frames.at(0).x
+               , aniConfig.frames.at(0).y);
+
+    auto& spriteAni = getSpriteAnimation();
+
+    spriteAni.setFrameSize(config.frameSize);
+    spriteAni.setStartFrame(
         {config.startFrame.x, config.startFrame.y});
-    getSpriteAnimation().setNumFrames(config.duration, aniConfig.frames);
-    getSpriteAnimation().setDuration(config.duration);
-    getSpriteAnimation().setRepeating(config.repeat);
-    getSpriteAnimation().setAnimationName(config.animationId._to_string());
+    spriteAni.setNumFrames(config.duration, aniConfig.frames);
+    spriteAni.setDuration(config.duration);
+    spriteAni.setRepeating(config.repeat);
+    spriteAni.setAnimationName(config.animationId._to_string());
     setTextureOnCharacter(spritesheetId);
 
     // set origin of texture to center
-    sf::FloatRect bounds = getSpriteAnimation().getSprite().getLocalBounds();
-    getSpriteAnimation().getSprite().setOrigin(bounds.width / 2.f,
+    sf::FloatRect bounds = spriteAni.getSprite().getLocalBounds();
+    spriteAni.getSprite().setOrigin(bounds.width / 2.f,
                                                bounds.height / 2.f);
-
+    spriteAni.setPivotAbs(config.pivotAbsolute);
+    spriteAni.setPivotNorm(config.pivotNormalized);
     // the first time we need to init physics-body etc
     if (not physicsInitialized) {
         initPhysics();

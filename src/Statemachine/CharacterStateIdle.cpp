@@ -55,6 +55,14 @@ CharacterStateIdle::enter(CharacterBase& character)
     //TODO: tmp normally its done in the exit state here we test it for climbup
     //character.getSpriteAnimation().restart();
     //character.getSpriteAnimation().setOrigin(0,0);
+    auto& spriteAni = character.getSpriteAnimation();
+    auto pivot = spriteAni.getPivotAbs();
+    auto posSprite = spriteAni.getPosition();
+    auto origSprite = spriteAni.getOrigin();
+    fmt::print("Idle - Pivot: {}/{}\n", pivot.x, pivot.y);
+    fmt::print("Idle - getSpritePosi: {}/{}\n", posSprite.x, posSprite.y);
+    fmt::print("Idle - getOrigin: {}/{}\n", origSprite.x, origSprite.y);
+    //spriteAni.setPosition((float)pivot.x/10,(float)pivot.y/10 );
     character.setupAnimation(Textures::CharacterID::IchiIdle);
     character.setCharacterStateEnum(ECharacterState::Idle);
 

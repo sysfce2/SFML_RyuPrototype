@@ -65,6 +65,11 @@ class SpritesheetAnimation : public sf::Drawable,
     void update(sf::Time dt);
     void setAnimationName(std::string name);
     sf::Sprite &getSprite() { return mSprite; }
+    sf::Vector2f getPivotNorm();
+    void setPivotAbs(sf::Vector2i vec);
+    void setPivotNorm(sf::Vector2f vec);
+
+    sf::Vector2i getPivotAbs();
 
   private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const;
@@ -79,6 +84,8 @@ class SpritesheetAnimation : public sf::Drawable,
     sf::Time mElapsedTime;
     bool mRepeat;
     unsigned int maxTextureSize;
+    sf::Vector2f mPivotNorm;
+    sf::Vector2i mPivotAbs;
     // std::vector<AnimationFrame> mFrames;
     std::vector<RyuParser::Frame> mFrames;
     std::string animationIdName;

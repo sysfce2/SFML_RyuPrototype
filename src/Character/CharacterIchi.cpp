@@ -160,7 +160,7 @@ void CharacterIchi::checkContact(std::string name)
         teleportCharacter(1000,270);
     }
 }
-
+// TODO: check here flip st to do with raycasts?
 void CharacterIchi::update(sf::Time deltaTime) {
     CharacterBase::update(deltaTime);
     rayCastCallbacks["up"] = RyuPhysics::createRaycast(

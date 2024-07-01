@@ -54,10 +54,16 @@ void
 CharacterStateLedgeHang::enter(CharacterBase& character)
 {
     //TODO: temporary -> this should be automatically added !
-    character.getSpriteAnimation().setOrigin(9,88);
+    //auto& spriteAni = character.getSpriteAnimation();
+    auto& spriteAni = character.getSpriteAnimation();
+    auto pivot = spriteAni.getPivotAbs();
+    auto posSprite = spriteAni.getPosition();
+    auto origSprite = spriteAni.getOrigin();
+
     character.getBody()->SetGravityScale(0); // "flymode"
     character.setupAnimation(Textures::CharacterID::IchiLedgeHangIdle);
     character.setCharacterStateEnum(ECharacterState::Hanging);
+    spriteAni.setPosition((float)posSprite.x,(float)posSprite.y - 82);
 }
 
 void

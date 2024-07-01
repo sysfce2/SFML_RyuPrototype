@@ -1250,7 +1250,17 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":134,"h":192},
 	"sourceSize": {"w":134,"h":192},
 	"pivot": {"x":0.201493,"y":0.880208}
-}],
+},
+{
+	"filename": "ichi_hang_ledge_1.png",
+	"frame": {"x":0,"y":576,"w":134,"h":192},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":134,"h":192},
+	"sourceSize": {"w":134,"h":192},
+	"pivot": {"x":0.201493,"y":0.880208}
+}
+],
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",

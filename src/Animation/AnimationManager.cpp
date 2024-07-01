@@ -45,7 +45,7 @@ AnimationManager::readAnimationConfigs()
             std::make_pair(jAnis.spritesheetId, jAnis)
         );
     }
-    fmt::print("Reading configs done.");
+    fmt::print("Reading configs done.\n");
 }
 
 // TODO: extend ?

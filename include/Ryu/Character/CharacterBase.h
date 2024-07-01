@@ -84,6 +84,8 @@ struct AnimationConfiguration {
   sf::Time duration;
   bool repeat;
   Textures::CharacterID animationId;
+  sf::Vector2f pivotNormalized;
+  sf::Vector2i pivotAbsolute;
 };
 
 static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSpritesheetID =
@@ -107,7 +109,7 @@ static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSprit
 {Textures::CharacterID::IchiSword1Idle, Textures::SpritesheetID::Ichi80x96},
 {Textures::CharacterID::IchiSword1Walk, Textures::SpritesheetID::Ichi80x96},
 {Textures::CharacterID::IchiLedgeClimbUp, Textures::SpritesheetID::Ichi80x96},
-/TODO: redo spritesheet process with the following animation !
+//TODO: redo spritesheet process with the following animation !
 {Textures::CharacterID::IchiLedgeHangIdle, Textures::SpritesheetID::Ichi80x96},
 };
 

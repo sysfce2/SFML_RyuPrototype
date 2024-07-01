@@ -48,10 +48,10 @@ CharacterStateLedgeClimbUp::update(CharacterBase& character)
 {
     fmt::print("Current frame: {}\n",character.getSpriteAnimation().getCurrentFrame());
     if (character.getSpriteAnimation().getCurrentFrame() == (character.getSpriteAnimation().getFramesCount())) {
-///*
+/*
         b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(character.getPositionCross().x),
                           Converter::pixelsToMeters<float>(character.getPositionCross().y)};
-//*/
+*/
         //character.getBody()->SetTransform((character.getBody()->GetPosition() + newBodyPos), 0.f);
         //character.getSpriteAnimation().restart();
         // TODO: check ob das mit der Zeit der animation zusammenaengt ? -> muessen das multiple von frametime sein
@@ -67,6 +67,10 @@ CharacterStateLedgeClimbUp::enter(CharacterBase& character)
 {
     // TODO: tmp:
     //character.getSpriteAnimation().setOrigin(0,40);
+    auto& spriteAni = character.getSpriteAnimation();
+    auto pivot = spriteAni.getPivotAbs();
+    fmt::print("LedgeClimbup - Pivot: {}/{}\n", pivot.x, pivot.y);
+    spriteAni.setOrigin((float)pivot.x,(float)pivot.y );
     character.setupAnimation(Textures::CharacterID::IchiLedgeClimbUp);
     //character.setupAnimation(Textures::CharacterID::IchiLandLow);
     character.setCharacterStateEnum(ECharacterState::ClimbUp);

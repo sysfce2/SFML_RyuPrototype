@@ -59,7 +59,6 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
         j.at("Sheet_end").get_to(ani.toFrame);
         j.at("AnimationDirection").get_to(ani.direction);
         j.at("numFrames").get_to(ani.numFrames);
-
         json frames = j["Frames"];
 
         sf::Vector2i frameSize;
@@ -136,6 +135,10 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
         {
             fmt::print("Invalid AnimationId.");
         }
+
+        json pivot = j["PivotNorm"];
+        ani.pivot.x = pivot["x"];
+        ani.pivot.y = pivot["y"];
 
    }
     
