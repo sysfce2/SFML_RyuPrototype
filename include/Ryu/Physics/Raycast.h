@@ -2,6 +2,7 @@
 
 #include <Ryu/Core/Utilities.h>
 #include <Ryu/Events/Subject.h>
+#include <Ryu/Physics/Raycasttypes.h>
 
 #include <box2d/b2_world_callbacks.h>
 #include <box2d/b2_math.h>
@@ -9,7 +10,6 @@
 
 #include <iostream>
 #include <memory>
-
 
 class SceneNode;
 

@@ -3,6 +3,7 @@
 // #include <Ryu/Animation/Animation.h>
 #include "Ryu/Animation/AnimationManager.h"
 #include "Ryu/Control/PlayerController.h"
+#include "Ryu/Physics/Raycasttypes.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Core/AssetIdentifiers.h>
@@ -88,6 +89,43 @@ struct AnimationConfiguration {
   sf::Vector2i pivotAbsolute;
 };
 
+  // this is the framesize for the boundary box of the physics body
+static constexpr std::pair<int, int> INIT_FRAME_SIZE(60, 86);
+static constexpr std::pair<int, int> DUCK_FRAME_SIZE(60, 45);
+
+struct CharacterPhysicsValues
+{
+
+  float gravityScale = 4.8f;   /// for dynamic objects density needs to be > 0
+  float fixtureDensity = 5.f;   /// for dynamic objects density needs to be > 0
+  float fixtureFriction = 0.1f; /// recommended by  b2d docu
+  float fixtureRestitution = 0.1f;
+
+  float rayCastLength = 40.0f;
+
+  std::pair<int,int> getFrameSize(bool characterDuck)
+  {
+    std::pair<int, int> size;
+    if (characterDuck){
+        size.first =
+            DUCK_FRAME_SIZE
+                .first; // mCharacterAnimation.getSprite().getTextureRect().width;
+        size.second =
+            DUCK_FRAME_SIZE
+                .second; // mCharacterAnimation.getSprite().getTextureRect().height;
+    } else {
+        size.first =
+            INIT_FRAME_SIZE
+                .first; // mCharacterAnimation.getSprite().getTextureRect().width;
+        size.second =
+            INIT_FRAME_SIZE
+                .second; // mCharacterAnimation.getSprite().getTextureRect().height;
+    }
+    return size;
+  }
+
+};
+
 static std::map<Textures::CharacterID, Textures::SpritesheetID> AnimationToSpritesheetID =
 {
 {Textures::CharacterID::IchiDuckEnter, Textures::SpritesheetID::Ichi80x96},
@@ -152,8 +190,8 @@ public:
 
   virtual void handleInput(EInput input);
     virtual void update(sf::Time deltaTime);
-    virtual bool getHit(std::string rcName) = 0;
-    virtual void eraseRaycast(std::string rcName);
+    virtual bool getHit(RaycastPosition rcName) = 0;
+    virtual void eraseRaycast(RaycastPosition rcName);
   void updateCharacterPosition(sf::Time deltaTime);
   virtual void loadTextures();
   void changeState(std::unique_ptr<CharacterState> toState);
@@ -241,10 +279,11 @@ protected:
   b2Body *mBody;
   b2Fixture *mFixture;
   Textures::LevelID mCurrentLevel;
+  CharacterPhysicsValues mCharacterPhysicsValues;
 
   ECharacterMovement mECharacterMovement;
 public:
-  std::map<std::string, std::pair<b2Vec2, b2Vec2>> rayCastPoints;
+  std::map<RaycastPosition, std::pair<b2Vec2, b2Vec2>> rayCastPoints;
     CharacterSetting mCharSettings{};
     CharacterFinalSetting mFinalCharSettings{};
 

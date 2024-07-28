@@ -1,3 +1,4 @@
+#include "Ryu/Physics/Raycasttypes.h"
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateFalling.h>
 #include <Ryu/Statemachine/CharacterStateFallingEnd.h>
@@ -47,22 +48,10 @@ CharacterStateFalling::update(CharacterBase& character)
 {
     if(not touchedFloor)
     {
-      /*
-      auto rc = RyuPhysics::createRaycast(
-            "below"
-            ,std::make_pair(character.getSpriteAnimation().getPosition().x
-            ,character.getSpriteAnimation().getPosition().y+RyuPhysics::raycastOffset)
-            ,90,55.0f /// angle, length 
-            ,character.getMoveDirection()
-            ,character.getPhysicsWorldRef()
-            ,character.rayCastPoints
-            );
-      */
-      if(character.getHit("below"))
+      if(character.getHit(RaycastPosition::Below))
       {
-        std::cout << "Boom\n";
         touchedFloor = true;
-        character.eraseRaycast("below");
+        character.eraseRaycast(RaycastPosition::Below);
         std::unique_ptr<CharacterStateFallingEnd> state = std::make_unique<CharacterStateFallingEnd>();
         character.changeState(std::move(state));
       }
@@ -94,7 +83,7 @@ CharacterStateFalling::exit(CharacterBase& character)
     {
         character.setActionHeight(EActionHeight::High);
     }
-    character.rayCastPoints.erase("below");
+    character.rayCastPoints.erase(RaycastPosition::Below);
     character.getSpriteAnimation().restart();
 }
 

@@ -2,6 +2,7 @@
 #include "Ryu/Animation/SpritesheetAnimation.h"
 #include "Ryu/Control/CharacterEnums.h"
 #include "Ryu/Core/AssetIdentifiers.h"
+#include "Ryu/Physics/Raycasttypes.h"
 #include "Ryu/Statemachine/CharacterStateLedgeClimbUp.h"
 #include "Ryu/Statemachine/CharacterStateLedgeHang.h"
 #include <Ryu/Animation/AnimationManager.h>
@@ -11,9 +12,12 @@
 #include <Ryu/Statemachine/CharacterStateFalling.h>
 #include <Ryu/Statemachine/CharacterStateIdle.h>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Shape.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <Thirdparty/glm/glm.hpp>
+#include <box2d/b2_body.h>
 #include <box2d/b2_math.h>
 #include <box2d/b2_shape.h>
 #include <cmath>
@@ -26,10 +30,6 @@
 #include <memory>
 
 // namespace ryu {
-
-// this is the framesize for the boundary box of the physics body
-static constexpr std::pair<int, int> INIT_FRAME_SIZE(60, 86);
-static constexpr std::pair<int, int> DUCK_FRAME_SIZE(60, 45);
 
 template <typename T>
 bool IsInBounds(const T &value, const T &low, const T &high) {
@@ -48,6 +48,7 @@ CharacterBase::CharacterBase(std::unique_ptr<b2World> &phWorld,
       mDuckStateActive(false),
       mAnimationManager(std::make_unique<AnimationManager>()),
       mSetOffset(false),
+      mCharacterPhysicsValues({}),
       contactListener()
 {
     // std::shared_ptr<CharacterBase> sPtr =
@@ -204,7 +205,7 @@ void CharacterBase::initPhysics(std::unique_ptr<b2World> &phWorld,
     bodyDef.position.Set(Converter::pixelsToMeters<double>(position.x),
                          Converter::pixelsToMeters<double>(inDuckMode() ? position.y + (DUCK_FRAME_SIZE.second / 2) : position.y));
     bodyDef.fixedRotation = true;
-    bodyDef.gravityScale = 4.8f;
+    bodyDef.gravityScale = mCharacterPhysicsValues.gravityScale;
 
     // Create a shape
     b2PolygonShape polygonShape;
@@ -215,24 +216,10 @@ void CharacterBase::initPhysics(std::unique_ptr<b2World> &phWorld,
     // dimension.x/2.f,dimension.y/2.f */
     // polygonShape.SetAsBox(0.5,0.9);
 
-    int size_x = 0; // mCharacterAnimation.getSprite().getTextureRect().width;
-    int size_y = 0;
+    auto shapeSize = mCharacterPhysicsValues.getFrameSize(inDuckMode());
 
-    if (inDuckMode()){
-        size_x =
-            DUCK_FRAME_SIZE
-                .first; // mCharacterAnimation.getSprite().getTextureRect().width;
-        size_y =
-            DUCK_FRAME_SIZE
-                .second; // mCharacterAnimation.getSprite().getTextureRect().height;
-    } else {
-        size_x =
-            INIT_FRAME_SIZE
-                .first; // mCharacterAnimation.getSprite().getTextureRect().width;
-        size_y =
-            INIT_FRAME_SIZE
-                .second; // mCharacterAnimation.getSprite().getTextureRect().height;
-    }
+    int size_x = shapeSize.first; // mCharacterAnimation.getSprite().getTextureRect().width;
+    int size_y = shapeSize.second;
 
     polygonShape.SetAsBox(Converter::pixelsToMeters<double>(size_x * 0.5f),
                           Converter::pixelsToMeters<double>(size_y * 0.5f));
@@ -240,20 +227,22 @@ void CharacterBase::initPhysics(std::unique_ptr<b2World> &phWorld,
     // Create a fixture
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &polygonShape;
-    fixtureDef.density = 5.f;   /// for dynamic objects density needs to be > 0
-    fixtureDef.friction = 0.1f; /// recommended by  b2d docu
-    fixtureDef.restitution = 0.1;
+    fixtureDef.density = mCharacterPhysicsValues.fixtureDensity;
+    fixtureDef.friction = mCharacterPhysicsValues.fixtureFriction;
+    fixtureDef.restitution = mCharacterPhysicsValues.fixtureRestitution;
 
     mBody = phWorld->CreateBody(&bodyDef);
     mFixture = mBody->CreateFixture(&fixtureDef);
-    //fmt::print("Duckmode: {}\n", inDuckMode() ? " true " : " false ");
+
     sf::Shape *shape = new sf::RectangleShape(sf::Vector2f(size_x, size_y));
+    //std::unique_ptr<sf::Shape> shape = std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x, size_y));
+
     shape->setOrigin(size_x / 2.0f, size_y / 2.0f);
     shape->setPosition(sf::Vector2f(position.x, position.y ));
     shape->setTexture(
         &baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));
 
-    mBody->GetUserData().pointer = (uintptr_t)shape;
+    mBody->GetUserData().pointer = (uintptr_t)shape;//.get();
 
     std::cout << "Init character at position "
               << Converter::metersToPixels(bodyDef.position.x) << ","
@@ -274,7 +263,7 @@ CharacterBase::getShapeFromCharPhysicsBody(b2Body *physicsBody) const {
 
 void CharacterBase::drawCurrent(sf::RenderTarget &target,
                                 sf::RenderStates) const {
-    // t.b.c
+    // draw physics outline
     if (mBody) {
         target.draw(*(getShapeFromCharPhysicsBody(mBody)));
     }
@@ -376,7 +365,7 @@ CharacterBase::checkClimbingState()
 }
 
 void
-CharacterBase::eraseRaycast(std::string rcName)
+CharacterBase::eraseRaycast(RaycastPosition rcName)
 {
  rayCastPoints.erase(rcName);
 }

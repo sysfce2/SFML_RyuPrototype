@@ -6,6 +6,7 @@
 #include <Ryu/Core/Category.h>
 #include <Ryu/Core/Utilities.h>
 #include <Ryu/Physics/Raycast.h>
+#include <Ryu/Physics/Raycasttypes.h>
 // test
 #include <Ryu/Core/World.h>
 
@@ -126,14 +127,14 @@ void CharacterIchi::moveCharacter(sf::Vector2f velocity) {
 
 void CharacterIchi::drawCurrent(sf::RenderTarget &target,
                                 sf::RenderStates states) const {
-    // t.b.c
+    // draw physicsshape (visible in debug-mode)
     CharacterBase::drawCurrent(target, states);
     // draw PlayerSprite
     target.draw(mCharacterAnimation);
 }
 
 bool
-CharacterIchi::getHit(std::string rcName)
+CharacterIchi::getHit(RaycastPosition rcName)
 {
     if(rayCastCallbacks.find(rcName) != rayCastCallbacks.end()) return rayCastCallbacks.at(rcName).m_Hit;
 
@@ -141,7 +142,7 @@ CharacterIchi::getHit(std::string rcName)
 }
 
 void
-CharacterIchi::eraseRaycast(std::string rcName)
+CharacterIchi::eraseRaycast(RaycastPosition rcName)
 {
     CharacterBase::eraseRaycast(rcName);
     rayCastCallbacks.erase(rcName);
@@ -160,41 +161,45 @@ void CharacterIchi::checkContact(std::string name)
         teleportCharacter(1000,270);
     }
 }
+
+void
+CharacterIchi::createCharacterRaycast(RaycastPosition position, float rcPositionX, float rcPositionY, float angle, float length)
+{
+        rayCastCallbacks[position] = RyuPhysics::createRaycast(
+            position,
+            std::make_pair(rcPositionX, rcPositionY),
+            angle,
+            length,
+            getMoveDirection(),
+            getPhysicsWorldRef(),
+            rayCastPoints
+        );
+}
+
+
 // TODO: check here flip st to do with raycasts?
 void CharacterIchi::update(sf::Time deltaTime) {
+
     CharacterBase::update(deltaTime);
-    rayCastCallbacks["up"] = RyuPhysics::createRaycast(
-        "up",
-        std::make_pair(mCharacterAnimation.getPosition().x,
-                       mCharacterAnimation.getPosition().y -
-                           RyuPhysics::raycastOffset),
-        0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
-    rayCastCallbacks["mid"] = RyuPhysics::createRaycast(
-        "mid",
-        std::make_pair(mCharacterAnimation.getPosition().x,
-                       mCharacterAnimation.getPosition().y),
-        0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
-    rayCastCallbacks["down"] = RyuPhysics::createRaycast(
-       "down",
-        std::make_pair(mCharacterAnimation.getPosition().x,
-                       mCharacterAnimation.getPosition().y +
-                           RyuPhysics::raycastOffset),
-        0, 40.0f, getMoveDirection(), getPhysicsWorldRef(), rayCastPoints);
+
+    createCharacterRaycast(RaycastPosition::Up,
+                           mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y-RyuPhysics::raycastOffset,
+                           0, mCharacterPhysicsValues.rayCastLength);
+    createCharacterRaycast(RaycastPosition::Mid,
+                           mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y,
+                           0, mCharacterPhysicsValues.rayCastLength);
+    createCharacterRaycast(RaycastPosition::Down,
+                           mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset,
+                           0, mCharacterPhysicsValues.rayCastLength);
 
     if(isFalling())
     {
-        rayCastCallbacks["below"] = RyuPhysics::createRaycast(
-            "below"
-            ,std::make_pair(mCharacterAnimation.getPosition().x
-            ,mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset)
-            ,90,55.0f /// angle, length
-            ,getMoveDirection()
-            ,getPhysicsWorldRef()
-            ,rayCastPoints
-            );
+        createCharacterRaycast(RaycastPosition::Below,
+                               mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset,
+                               90.f, 55.f);
     }
     else{
-       if(rayCastCallbacks.find("below") != rayCastCallbacks.end()) eraseRaycast("below");
+       if(rayCastCallbacks.find(RaycastPosition::Below) != rayCastCallbacks.end()) eraseRaycast(RaycastPosition::Below);
     }
 
     checkContact(CharacterBase::checkContactObjects());

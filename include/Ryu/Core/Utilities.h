@@ -1,7 +1,7 @@
 #pragma once
 
-//#include <box2d/b2_math.h>
 #include <Ryu/Control/CharacterEnums.h>
+#include <Ryu/Physics/Raycasttypes.h>
 
 #include <box2d/box2d.h>
 #include <string>
@@ -32,13 +32,13 @@ namespace Converter
     constexpr T radToDeg(const T& x) {return 180*x/PI;};
 }
 
-using RaycastPoints=std::map<std::string, std::pair<b2Vec2,b2Vec2> >;
+using RaycastPoints=std::map<RaycastPosition, std::pair<b2Vec2,b2Vec2> >;
 
 namespace RyuPhysics
 {
 
   constexpr double raycastOffset = 25.0f;
-  RayCastClosest createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
+  RayCastClosest createRaycast(RaycastPosition positionLocal, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
   
 }
 /*

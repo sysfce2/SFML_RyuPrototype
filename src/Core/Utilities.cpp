@@ -1,6 +1,6 @@
 #include <Ryu/Core/Utilities.h>
-#include <Ryu/Physics/Raycast.h>
 #include <Ryu/Scene/SceneNode.h>
+#include <Ryu/Physics/Raycast.h>
 
 #include <box2d/box2d.h>
 
@@ -38,7 +38,13 @@ namespace RyuPhysics
 {
 
  //TODO: imo this returns a copy of the raycast propably this is unefficient
- RayCastClosest createRaycast(std::string type, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints)
+    RayCastClosest createRaycast(RaycastPosition localPosition,
+                                 std::pair<double,double> startPoint,
+                                 float angle,
+                                 float length,
+                                 EMoveDirection charMoveDirection,
+                                 std::unique_ptr<b2World>& physWorld,
+                                 RaycastPoints& rayCastPoints)
   {
     // creating a raycast from the characters position downwards
     // 0° right / 90° up / 180° left / 270° down
@@ -54,7 +60,7 @@ namespace RyuPhysics
               Converter::pixelsToMeters<double>(startPoint.second));
 
     b2Vec2 p2 = p1 + (dir * d); 
-    auto rc = rayCastPoints.find(type);
+    auto rc = rayCastPoints.find(localPosition);
     
     if(rc != rayCastPoints.end())
     {
@@ -63,7 +69,7 @@ namespace RyuPhysics
     }
     else
     {
-        rayCastPoints.insert(std::make_pair(type,std::make_pair(p1,p2)));
+        rayCastPoints.insert(std::make_pair(localPosition,std::make_pair(p1,p2)));
     }
     
     RayCastClosest callback;
