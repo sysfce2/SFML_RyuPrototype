@@ -63,7 +63,11 @@ CharacterStateLedgeHang::enter(CharacterBase& character)
     character.getBody()->SetGravityScale(0); // "flymode"
     character.setupAnimation(Textures::CharacterID::IchiLedgeHangIdle);
     character.setCharacterStateEnum(ECharacterState::Hanging);
-    spriteAni.setPosition((float)posSprite.x,(float)posSprite.y - 82);
+    sf::Vector2f vec{(float)posSprite.x,(float)posSprite.y-82.f};
+    spriteAni.setAnimationPosition(vec);
+    // FIXME:-82 ? oh when setting here an offset the raycast will also be set shortly and this creates
+    // a flickering bc sw it also will try to set the animation ...
+    // so raycast should be set with the animation but with the physics body !!!
 }
 
 void

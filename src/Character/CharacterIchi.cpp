@@ -43,9 +43,9 @@ void CharacterIchi::teleportCharacter(float x, float y)
 	getBody()->SetTransform(newBodyPos,0);
 	changeState(std::make_unique<CharacterStateRun>());
     auto pPosi = getBody()->GetPosition();
-    getSpriteAnimation().setPosition(
+    getSpriteAnimation().setAnimationPosition({
 			Converter::metersToPixels(pPosi.x),
-			Converter::metersToPixels(pPosi.y));
+			Converter::metersToPixels(pPosi.y)});
 	moveCharacter(sf::Vector2f{1,0}); // the trick is to push the character a bit
 
 }

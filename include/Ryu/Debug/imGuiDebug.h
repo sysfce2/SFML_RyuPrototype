@@ -46,6 +46,7 @@ struct DebugData{
     int positionCross[2] = {0,0};
     float mousPos[2] = {.0f, .0f};
     bool readMousePos = false;
+    float worldUpdateFactor = 1.0f;
 };
 
 class DebugWidgets : public Subject {

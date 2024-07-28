@@ -26,7 +26,8 @@
 #include <memory>
 #include <utility>
 
-const float GRAVITY = 9.81f;
+constexpr float GRAVITY = 9.81f;
+constexpr float PHYSICS_TIME_STEP = 1.f / 60.f;
 
 // namespace ryu{
 World::World(sf::RenderWindow &window)
@@ -44,7 +45,7 @@ World::World(sf::RenderWindow &window)
       phWorld(std::make_unique<b2World>(
           b2Vec2{0.0f, GRAVITY})) /// set gravity to 10 & create physics world
       ,
-      phGroundBodies(), phDebugPhysics(false), phTimeStep(1.f / (60.f)), clock(),
+      phGroundBodies(), phDebugPhysics(false), phTimeStep(PHYSICS_TIME_STEP), clock(),
       levelManager(std::make_unique<LevelManager>())
       , mStaticEntities() {
     loadTextures();
@@ -380,7 +381,7 @@ void World::update(sf::Time dt) {
     // Draw debug shapes of all physics objects
 
     // needable or already in scenegraph ?
-    mPlayer->update(dt);//*0.25f);
+    mPlayer->update(dt); //slowmo
     mSceneGraph.update(dt);
 
     /*

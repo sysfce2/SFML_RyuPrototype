@@ -147,16 +147,16 @@ void Game::run()
 			
 			while (mWindow.pollEvent(event))
 			{
-    		ImGui::SFML::ProcessEvent(mWindow, event);
+				ImGui::SFML::ProcessEvent(mWindow, event);
 				processEvents(event, commands);
 			}
-			
-      ImGui::SFML::Update(mWindow, timeSinceLastUpdate);
-			mPlayerController->handleRealtimeInput(commands);
-			
 			if (!mIsPaused )
 			{
-				update(TimePerFrame);
+
+				ImGui::SFML::Update(mWindow, timeSinceLastUpdate);
+				mPlayerController->handleRealtimeInput(commands);
+
+				update(TimePerFrame*mDebugWidgets.debugData.worldUpdateFactor);
 				mDebugWidgets.CreateDebugGui();
 			}//!mAnimator.showAnimationEditor
 			mAnimator.createEditorWidgets(&mAnimator.showAnimationEditor);

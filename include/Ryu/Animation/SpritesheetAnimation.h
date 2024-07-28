@@ -68,6 +68,7 @@ class SpritesheetAnimation : public sf::Drawable,
     sf::Vector2f getPivotNorm();
     void setPivotAbs(sf::Vector2i vec);
     void setPivotNorm(sf::Vector2f vec);
+    void setAnimationPosition(sf::Vector2f posi);
 
     sf::Vector2i getPivotAbs();
 
@@ -83,6 +84,7 @@ class SpritesheetAnimation : public sf::Drawable,
     sf::Time mDuration;
     sf::Time mElapsedTime;
     bool mRepeat;
+    bool lockPositioning = false;
     unsigned int maxTextureSize;
     sf::Vector2f mPivotNorm;
     sf::Vector2i mPivotAbs;

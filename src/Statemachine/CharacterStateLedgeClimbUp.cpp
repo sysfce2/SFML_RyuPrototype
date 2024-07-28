@@ -70,7 +70,7 @@ CharacterStateLedgeClimbUp::enter(CharacterBase& character)
     auto& spriteAni = character.getSpriteAnimation();
     auto pivot = spriteAni.getPivotAbs();
     fmt::print("LedgeClimbup - Pivot: {}/{}\n", pivot.x, pivot.y);
-    spriteAni.setOrigin((float)pivot.x,(float)pivot.y );
+    //spriteAni.setOrigin((float)pivot.x,(float)pivot.y );
     character.setupAnimation(Textures::CharacterID::IchiLedgeClimbUp);
     //character.setupAnimation(Textures::CharacterID::IchiLandLow);
     character.setCharacterStateEnum(ECharacterState::ClimbUp);

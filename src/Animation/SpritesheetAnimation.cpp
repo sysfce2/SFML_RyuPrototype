@@ -202,6 +202,18 @@ SpritesheetAnimation::setPivotNorm(sf::Vector2f vec)
     mPivotNorm = vec;
 }
 
+void SpritesheetAnimation::setAnimationPosition(sf::Vector2f posi)
+{
+    if(lockPositioning)
+    {
+        return;
+    }
+
+    lockPositioning = true;
+    setPosition(posi);
+    lockPositioning = false;
+}
+
 sf::Vector2f
 SpritesheetAnimation::getPivotNorm(){return mPivotNorm;}
 

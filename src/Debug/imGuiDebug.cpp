@@ -9,35 +9,34 @@
 
 namespace RyuDebug {
 
-    DebugWidgets::DebugWidgets(CharacterIchi* character)
-        : playerCharacter(character)
-    {}
+DebugWidgets::DebugWidgets(CharacterIchi *character)
+    : playerCharacter(character) {}
 
-    void
-    DebugWidgets::ShowWidgets() {
-        ImGuiIO &io = ImGui::GetIO();
-        if(debugData.readMousePos)
-        {
-            debugData.mousPos[0] = io.MousePos.x;
-            debugData.mousPos[1] = io.MousePos.y;
+void DebugWidgets::ShowWidgets() {
+    ImGuiIO &io = ImGui::GetIO();
+    if (debugData.readMousePos) {
+        debugData.mousPos[0] = io.MousePos.x;
+        debugData.mousPos[1] = io.MousePos.y;
 
-            if(io.MouseClicked[0])
-            {
-                debugData.readMousePos = false;
-                notify(*playerCharacter,Ryu::EEvent::TeleportDo);
-            }
+        if (io.MouseClicked[0]) {
+            debugData.readMousePos = false;
+            notify(*playerCharacter, Ryu::EEvent::TeleportDo);
         }
+    }
 
-        ImGui::Text("Ryu Debug Viewer\n"
-                    "(right-click to change position)");
-        ImGui::Separator();
-        if (ImGui::CollapsingHeader("Basic")) {
-            if (ImGui::IsMousePosValid())
-                ImGui::Text("Mouse Position: %f/%f", io.MousePos.x,
-                            io.MousePos.y);
-            else
-                ImGui::Text("Mouse Position: <invalid>");
-        }
+    ImGui::Text("Ryu Debug Viewer\n"
+                "(right-click to change position)");
+    ImGui::Separator();
+    if (ImGui::CollapsingHeader("Basic")) {
+        if (ImGui::IsMousePosValid())
+            ImGui::Text("Mouse Position: %f/%f", io.MousePos.x, io.MousePos.y);
+        else
+            ImGui::Text("Mouse Position: <invalid>");
+    }
+    ImGui::Separator();
+    if (ImGui::CollapsingHeader("World")) {
+        ImGui::SliderFloat("WorldUpdateFactor: ", &debugData.worldUpdateFactor, 0.f, 2.f, "%.3f");
+    }
     ImGui::Separator();
     if (ImGui::CollapsingHeader("Character")) {
         // ImGui::Text("CharacterState: %s ",characterState);
@@ -50,81 +49,78 @@ namespace RyuDebug {
 
         ImGui::Text("AniFrames in Vector: %i ", debugData.numFramesVector);
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "JumpForce: {%f,%f}",
-                           debugData.charJumpForce.x, debugData.charJumpForce.y);
+                           debugData.charJumpForce.x,
+                           debugData.charJumpForce.y);
         ImGui::Separator();
 
-        if (ImGui::InputFloat2 ("JumpForceForward", debugData.jumpImpulseForwardVec)) {
+        if (ImGui::InputFloat2("JumpForceForward",
+                               debugData.jumpImpulseForwardVec)) {
             debugData.jumpImpulseForward.x = debugData.jumpImpulseForwardVec[0];
             debugData.jumpImpulseForward.y = debugData.jumpImpulseForwardVec[1];
-            fmt::print("Set jumpForceForward {}/{}\n",debugData.jumpImpulseForward.x,debugData.jumpImpulseForward.y);
-            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
+            fmt::print("Set jumpForceForward {}/{}\n",
+                       debugData.jumpImpulseForward.x,
+                       debugData.jumpImpulseForward.y);
+            notify(*playerCharacter, Ryu::EEvent::DebugValuesChanged);
         }
         if (ImGui::InputFloat2("JumpForceUp", debugData.jumpImpulseUpVec)) {
             debugData.jumpImpulseUp.x = debugData.jumpImpulseUpVec[0];
             debugData.jumpImpulseUp.y = debugData.jumpImpulseUpVec[1];
             fmt::print("Set jumpForceUp\n");
-            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
+            notify(*playerCharacter, Ryu::EEvent::DebugValuesChanged);
         }
         if (ImGui::InputFloat2("Masscenter", debugData.massCenterVec)) {
             fmt::print("Set center of mass\n");
-            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
+            notify(*playerCharacter, Ryu::EEvent::DebugValuesChanged);
         }
         if (ImGui::Button("Teleport")) {
             debugData.readMousePos = true;
-            notify(*playerCharacter,Ryu::EEvent::TeleportWait);
+            notify(*playerCharacter, Ryu::EEvent::TeleportWait);
         }
-        if (ImGui::Button("Reset Values"))
-        {
+        if (ImGui::Button("Reset Values")) {
             debugData.jumpImpulseForwardVec[0] = 150;
             debugData.jumpImpulseForwardVec[1] = -250;
             debugData.jumpImpulseForward = {150, -250};
             debugData.jumpImpulseUpVec[0] = 0;
             debugData.jumpImpulseUpVec[1] = -200;
             debugData.jumpImpulseUp = {0, -200};
-            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
-
+            notify(*playerCharacter, Ryu::EEvent::DebugValuesChanged);
         }
 
-        if(ImGui::InputInt2("PositionCross-Offset", debugData.positionCross))
-        {
-            notify(*playerCharacter,Ryu::EEvent::DebugValuesChanged);
+        if (ImGui::InputInt2("PositionCross-Offset", debugData.positionCross)) {
+            notify(*playerCharacter, Ryu::EEvent::DebugValuesChanged);
         }
         DebugSpritesheetInfo();
     }
     ImGui::Separator();
     ImGui::Text("For ImGui-Demo-Window press '-' ");
-    }
+}
 
-    void
-    DebugWidgets::DebugSpritesheetInfo()
-    {
-        ImGui::Separator();
-        ImGui::Text("PivotAbs (%d/%d)",
-                    playerCharacter->getSpriteAnimation().getPivotAbs().x,
-                    playerCharacter->getSpriteAnimation().getPivotAbs().y );
-        ImGui::Separator();
-        ImGui::Text("Origin (%f/%f)",
-                    playerCharacter->getSpriteAnimation().getOrigin().x,
-                    playerCharacter->getSpriteAnimation().getOrigin().y );
-        ImGui::Separator();
-        ImGui::Text("FrameSize: (%d/%d)",
-                    playerCharacter->getSpriteAnimation().getFrameSize().x,
-                    playerCharacter->getSpriteAnimation().getFrameSize().y);
-        ImGui::Separator();
-        ImGui::Text("LocalBounds: (%f/%f)",
-                    playerCharacter->getSpriteAnimation().getLocalBounds().height,
-                    playerCharacter->getSpriteAnimation().getLocalBounds().width);
-        ImGui::Separator();
-        ImGui::Text("GlobalBounds: (%f/%f)",
-                    playerCharacter->getSpriteAnimation().getGlobalBounds().height,
-                    playerCharacter->getSpriteAnimation().getGlobalBounds().width);
-        //ImGui::Text("Spritesheetname: %s", playerCharacter->
-        ImGui::Separator();
+void DebugWidgets::DebugSpritesheetInfo() {
+    ImGui::Separator();
+    ImGui::Text("PivotAbs (%d/%d)",
+                playerCharacter->getSpriteAnimation().getPivotAbs().x,
+                playerCharacter->getSpriteAnimation().getPivotAbs().y);
+    ImGui::Separator();
+    ImGui::Text("Origin (%f/%f)",
+                playerCharacter->getSpriteAnimation().getOrigin().x,
+                playerCharacter->getSpriteAnimation().getOrigin().y);
+    ImGui::Separator();
+    ImGui::Text("FrameSize: (%d/%d)",
+                playerCharacter->getSpriteAnimation().getFrameSize().x,
+                playerCharacter->getSpriteAnimation().getFrameSize().y);
+    ImGui::Separator();
+    ImGui::Text("LocalBounds: (%f/%f)",
+                playerCharacter->getSpriteAnimation().getLocalBounds().height,
+                playerCharacter->getSpriteAnimation().getLocalBounds().width);
+    ImGui::Separator();
+    ImGui::Text("GlobalBounds: (%f/%f)",
+                playerCharacter->getSpriteAnimation().getGlobalBounds().height,
+                playerCharacter->getSpriteAnimation().getGlobalBounds().width);
+    // ImGui::Text("Spritesheetname: %s", playerCharacter->
+    ImGui::Separator();
+}
 
-    }
-
-    void
-    DebugWidgets::CreateDebugGui() {
+void DebugWidgets::CreateDebugGui() {
     if (debugData.showImGuiDemoWindow) {
         ImGui::ShowDemoWindow(&debugData.showImGuiDemoWindow);
     }
@@ -159,7 +155,8 @@ namespace RyuDebug {
             window_flags |= ImGuiWindowFlags_NoMove;
         }
         ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-        if (ImGui::Begin("RyuDebugOverlay", &debugData.activateRyuDebug, window_flags)) {
+        if (ImGui::Begin("RyuDebugOverlay", &debugData.activateRyuDebug,
+                         window_flags)) {
             ShowWidgets();
             if (ImGui::BeginPopupContextWindow()) {
                 if (ImGui::MenuItem("Custom", NULL, location == -1))
@@ -181,5 +178,5 @@ namespace RyuDebug {
         }
         ImGui::End();
     }
-    }
-} /// namespace RyuDebug
+}
+} // namespace RyuDebug

@@ -181,7 +181,7 @@ void CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event) {
         case Ryu::EEvent::TemporaryOutput:
         {
             mAnimationManager->outputStoredAnimations();
-        mCharacterAnimation.setPosition(mCharacterAnimation.getPosition() + positionCrossOffset);
+            mCharacterAnimation.setAnimationPosition({mCharacterAnimation.getPosition() + positionCrossOffset});
         }
 
         default: {}
@@ -345,11 +345,11 @@ void CharacterBase::update(sf::Time deltaTime) {
             mCharacterState->enter(*this);
         }
 
-        mCharacterAnimation.setPosition(
-            Converter::metersToPixels<double>(mBody->GetPosition().x),
+        mCharacterAnimation.setAnimationPosition(
+            {Converter::metersToPixels<double>(mBody->GetPosition().x),
             inDuckMode()
             ? (Converter::metersToPixels<double>(mBody->GetPosition().y  - (DUCK_FRAME_SIZE.second)/2))
-            : Converter::metersToPixels<double>(mBody->GetPosition().y));
+            : Converter::metersToPixels<double>(mBody->GetPosition().y)});
 
     }
     /*
@@ -480,7 +480,8 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
         }
         else
         {
-            mCharacterAnimation.setPosition(mCharacterAnimation.getPosition());
+            //FIXME: what is this for ?
+            mCharacterAnimation.setAnimationPosition(mCharacterAnimation.getPosition());
             mSetOffset = false;
         }
             mBody->SetLinearVelocity(
@@ -495,8 +496,9 @@ void CharacterBase::updateCharacterPosition(sf::Time deltaTime) {
     {
         // physics body get a impulse in jump(), so here no update is needed
         auto pPosi = mBody->GetPosition();
-        mCharacterAnimation.setPosition(Converter::metersToPixels(pPosi.x),
-                                        Converter::metersToPixels(pPosi.y));
+        mCharacterAnimation.setAnimationPosition(
+            {Converter::metersToPixels(pPosi.x),
+             Converter::metersToPixels(pPosi.y)});
     }
 
     mCharacterState->update(*this);
