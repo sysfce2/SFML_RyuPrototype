@@ -3,6 +3,7 @@
 // #include <Ryu/Animation/Animation.h>
 #include "Ryu/Animation/AnimationManager.h"
 #include "Ryu/Control/PlayerController.h"
+#include "Ryu/Debug/b2DrawSFML.hpp"
 //#include "Ryu/Physics/RaycastTypes.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Control/CharacterEnums.h>
@@ -218,6 +219,7 @@ public:
   bool getHit(RaycastPosition rcName) {return mRaycastComponent.getHit(rcName);}
   void eraseRaycast(RaycastPosition rcName) {mRaycastComponent.eraseRaycast(rcName);}
   void eraseRaycastPoints(RaycastPosition rcName) {mRaycastComponent.eraseRaycastPoints(rcName);}
+  void drawRaycasts(b2DrawSFML& debugDrawer) {mRaycastComponent.drawRaycasts(debugDrawer);}
 
   b2Vec2 getLinearVelocity() { return mBody->GetLinearVelocity(); }
   bool allowedToFall();
@@ -259,6 +261,7 @@ protected:
   ECharacterState mECharacterState;
   float mCharacterSpeed;
   bool physicsInitialized;
+  Ryu::Physics::RaycastComponent mRaycastComponent;
 
 
 
@@ -272,7 +275,6 @@ private:
     bool mSetOffset;
     b2Vec2 mLastBodyPosition;
     RyuContactListener contactListener;
-    Ryu::Physics::RaycastComponent mRaycastComponent;
 
 protected:
   std::unique_ptr<AnimationManager> mAnimationManager;

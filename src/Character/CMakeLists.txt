@@ -11,7 +11,7 @@ set(HEADER
 
 add_library(ryucharacterlib STATIC "${SRC}" "${HEADER}")
 
-target_link_libraries(ryucharacterlib PUBLIC ryuscenelib ryustateslib ryudebuglib ryucorelib box2d  )
+target_link_libraries(ryucharacterlib PUBLIC ryuscenelib ryustateslib ryudebuglib ryucorelib ryuphysicslib box2d  )
 
 
 target_include_directories(ryucharacterlib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")

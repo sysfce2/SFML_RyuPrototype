@@ -308,10 +308,7 @@ void World::draw() {
     if (phDebugPhysics) {
         // draw raycasts
         phWorld->DebugDraw();
-        for (auto rc : mPlayer->rayCastPoints) {
-            debugDrawer.DrawSegment(rc.second.first, rc.second.second,
-                                    b2Color(0.9f, 0.0f, 0.0f));
-        }
+        mPlayer->drawRaycasts(debugDrawer);
     }
 
     // TODO: add the ground and stuff to the scenegraph !

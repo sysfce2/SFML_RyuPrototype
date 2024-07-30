@@ -133,20 +133,6 @@ void CharacterIchi::drawCurrent(sf::RenderTarget &target,
     target.draw(mCharacterAnimation);
 }
 
-bool
-CharacterIchi::getHit(RaycastPosition rcName)
-{
-    if(rayCastCallbacks.find(rcName) != rayCastCallbacks.end()) return rayCastCallbacks.at(rcName).m_Hit;
-
-    return false;
-}
-
-void
-CharacterIchi::eraseRaycast(RaycastPosition rcName)
-{
-    CharacterBase::eraseRaycast(rcName);
-    rayCastCallbacks.erase(rcName);
-}
 
 void CharacterIchi::checkContact(std::string name)
 {
@@ -162,19 +148,6 @@ void CharacterIchi::checkContact(std::string name)
     }
 }
 
-void
-CharacterIchi::createCharacterRaycast(RaycastPosition position, float rcPositionX, float rcPositionY, float angle, float length)
-{
-        rayCastCallbacks[position] = RyuPhysics::createRaycast(
-            position,
-            std::make_pair(rcPositionX, rcPositionY),
-            angle,
-            length,
-            getMoveDirection(),
-            getPhysicsWorldRef(),
-            rayCastPoints
-        );
-}
 
 
 // TODO: check here flip st to do with raycasts?
@@ -183,24 +156,25 @@ void CharacterIchi::update(sf::Time deltaTime) {
     CharacterBase::update(deltaTime);
 
     auto& charPos = mCharacterAnimation.getPosition();
-    createCharacterRaycast(RaycastPosition::Up,
-                           charPos.x, charPos.y-RyuPhysics::raycastOffset,
-                           0, mCharacterPhysicsValues.rayCastLength);
-    createCharacterRaycast(RaycastPosition::Mid,
+    mRaycastComponent.createCharacterRaycast(RaycastPosition::Up,
+                           charPos.x, charPos.y-Ryu::Physics::raycastOffset,
+                            0, mCharacterPhysicsValues.rayCastLength
+                            , getMoveDirection(), phWorldRef);
+    mRaycastComponent.createCharacterRaycast(RaycastPosition::Mid,
                            charPos.x, charPos.y,
-                           0, mCharacterPhysicsValues.rayCastLength);
-    createCharacterRaycast(RaycastPosition::Down,
-                           charPos.x, charPos.y+RyuPhysics::raycastOffset,
-                           0, mCharacterPhysicsValues.rayCastLength);
+                           0, mCharacterPhysicsValues.rayCastLength, getMoveDirection(), phWorldRef);
+    mRaycastComponent.createCharacterRaycast(RaycastPosition::Down,
+                           charPos.x, charPos.y+Ryu::Physics::raycastOffset,
+                           0, mCharacterPhysicsValues.rayCastLength, getMoveDirection(), phWorldRef);
 
     if(isFalling())
     {
-        createCharacterRaycast(RaycastPosition::Below,
-                               charPos.x, charPos.y+RyuPhysics::raycastOffset,
-                               90.f, 55.f);
+        mRaycastComponent.createCharacterRaycast(RaycastPosition::Below,
+                               charPos.x, charPos.y+Ryu::Physics::raycastOffset,
+                               90.f, 55.f, getMoveDirection(), phWorldRef);
     }
     else{
-       if(rayCastCallbacks.find(RaycastPosition::Below) != rayCastCallbacks.end()) eraseRaycast(RaycastPosition::Below);
+        mRaycastComponent.eraseBelow();
     }
 
     checkContact(CharacterBase::checkContactObjects());
