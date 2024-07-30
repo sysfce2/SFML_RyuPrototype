@@ -3,7 +3,7 @@
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Physics/Raycast.h>
-#include <Ryu/Physics/Raycasttypes.h>
+#include <Ryu/Physics/RaycastTypes.h>
 
 #include <box2d/b2_math.h>
 
@@ -23,17 +23,16 @@ class CharacterIchi : public CharacterBase
         unsigned int getCategory() const override;
         void update(sf::Time deltaTime) override;
         void onNotify(const SceneNode& entity, Ryu::EEvent event) override;
-        bool getHit(RaycastPosition rcName) override;
-        void eraseRaycast(RaycastPosition rcName) override;
+        void checkContact(std::string name);
         void teleportCharacter(float x, float y);
 private:
         void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
         //void createRaycast(std::string type,std::pair<double,double> startPoint, float angle, float length);
         void allowedMovement(bool& xMove, bool& yMove);
-        void checkContact(std::string name);
-        void createCharacterRaycast(RaycastPosition position, float rcPositionX, float rcPositionY, float angle, float length);
+        //void checkContact(std::string name);
+        //void createCharacterRaycast(RaycastPosition position, float rcPositionX, float rcPositionY, float angle, float length);
         IchiTextureManager ichiTextureManager;
-        std::map<RaycastPosition, RayCastClosest> rayCastCallbacks;
+        //std::map<RaycastPosition, RayCastClosest> rayCastCallbacks;
 };
 
 //} /// namespace ryu

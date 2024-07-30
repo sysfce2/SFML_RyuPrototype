@@ -37,47 +37,4 @@ splitStrings(std::string& s, char delimiter, std::vector<std::string>& output)
 namespace RyuPhysics
 {
 
- //TODO: imo this returns a copy of the raycast propably this is unefficient
-    RayCastClosest createRaycast(RaycastPosition localPosition,
-                                 std::pair<double,double> startPoint,
-                                 float angle,
-                                 float length,
-                                 EMoveDirection charMoveDirection,
-                                 std::unique_ptr<b2World>& physWorld,
-                                 RaycastPoints& rayCastPoints)
-  {
-    // creating a raycast from the characters position downwards
-    // 0° right / 90° up / 180° left / 270° down
-    float raycastAngle = b2_pi * angle / 180.0f;
-    float lengthMeter = Converter::pixelsToMeters<double>(length);
-    b2Vec2 d(lengthMeter * cosf(raycastAngle),lengthMeter * sinf(raycastAngle));
-    
-    // direction according lookdir of character
-    bool rcLeftOrRight = (angle >= 180 || angle == 0);
-    int8 dir = ((charMoveDirection == EMoveDirection::Left && rcLeftOrRight) ? -1 : 1);
-
-    b2Vec2 p1(Converter::pixelsToMeters<double>(startPoint.first),
-              Converter::pixelsToMeters<double>(startPoint.second));
-
-    b2Vec2 p2 = p1 + (dir * d); 
-    auto rc = rayCastPoints.find(localPosition);
-    
-    if(rc != rayCastPoints.end())
-    {
-        rc->second.first = p1;
-        rc->second.second = p2; 
-    }
-    else
-    {
-        rayCastPoints.insert(std::make_pair(localPosition,std::make_pair(p1,p2)));
-    }
-    
-    RayCastClosest callback;
-    physWorld.get()->RayCast(&callback, p1,p2);
-
-    return callback;
-    //TODO:  how to inform state ? 
-    // callback.addObserver(this);
-    //callback.setOwner(std::make_unique<CharacterIchi>(*this));
-  }
 }

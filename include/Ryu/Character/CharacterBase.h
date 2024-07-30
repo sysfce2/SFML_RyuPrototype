@@ -3,7 +3,7 @@
 // #include <Ryu/Animation/Animation.h>
 #include "Ryu/Animation/AnimationManager.h"
 #include "Ryu/Control/PlayerController.h"
-#include "Ryu/Physics/Raycasttypes.h"
+//#include "Ryu/Physics/RaycastTypes.h"
 #include <Ryu/Animation/SpritesheetAnimation.h>
 #include <Ryu/Control/CharacterEnums.h>
 #include <Ryu/Core/AssetIdentifiers.h>
@@ -11,6 +11,7 @@
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Events/Subject.h>
 #include <Ryu/Events/Observer.h>
+#include <Ryu/Physics/RaycastComponent.h>
 #include <Ryu/Scene/ContactListener.h>
 #include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Scene/EntityStatic.h>
@@ -189,9 +190,7 @@ public:
   std::string checkContactObjects();
 
   virtual void handleInput(EInput input);
-    virtual void update(sf::Time deltaTime);
-    virtual bool getHit(RaycastPosition rcName) = 0;
-    virtual void eraseRaycast(RaycastPosition rcName);
+  virtual void update(sf::Time deltaTime);
   void updateCharacterPosition(sf::Time deltaTime);
   virtual void loadTextures();
   void changeState(std::unique_ptr<CharacterState> toState);
@@ -214,6 +213,12 @@ public:
   void setActionHeight(EActionHeight heightValue) {
     mActionHeight = heightValue;
   }
+
+  // Raycastaccess
+  bool getHit(RaycastPosition rcName) {return mRaycastComponent.getHit(rcName);}
+  void eraseRaycast(RaycastPosition rcName) {mRaycastComponent.eraseRaycast(rcName);}
+  void eraseRaycastPoints(RaycastPosition rcName) {mRaycastComponent.eraseRaycastPoints(rcName);}
+
   b2Vec2 getLinearVelocity() { return mBody->GetLinearVelocity(); }
   bool allowedToFall();
   bool inDuckMode();
@@ -246,7 +251,9 @@ protected:
 
   sf::Shape *getShapeFromCharPhysicsBody(b2Body *physicsBody) const;
 
+
   SpritesheetAnimation mCharacterAnimation;
+
 
   std::unique_ptr<CharacterState> mCharacterState;
   ECharacterState mECharacterState;
@@ -265,6 +272,7 @@ private:
     bool mSetOffset;
     b2Vec2 mLastBodyPosition;
     RyuContactListener contactListener;
+    Ryu::Physics::RaycastComponent mRaycastComponent;
 
 protected:
   std::unique_ptr<AnimationManager> mAnimationManager;
@@ -283,7 +291,6 @@ protected:
 
   ECharacterMovement mECharacterMovement;
 public:
-  std::map<RaycastPosition, std::pair<b2Vec2, b2Vec2>> rayCastPoints;
     CharacterSetting mCharSettings{};
     CharacterFinalSetting mFinalCharSettings{};
 

@@ -1,4 +1,4 @@
-#include "Ryu/Physics/Raycasttypes.h"
+#include "Ryu/Physics/RaycastTypes.h"
 #include <Ryu/Character/CharacterBase.h>
 #include <Ryu/Statemachine/CharacterStateFalling.h>
 #include <Ryu/Statemachine/CharacterStateFallingEnd.h>
@@ -83,7 +83,7 @@ CharacterStateFalling::exit(CharacterBase& character)
     {
         character.setActionHeight(EActionHeight::High);
     }
-    character.rayCastPoints.erase(RaycastPosition::Below);
+    character.eraseRaycastPoints(RaycastPosition::Below);
     character.getSpriteAnimation().restart();
 }
 

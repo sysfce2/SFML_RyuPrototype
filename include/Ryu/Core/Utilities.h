@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Ryu/Control/CharacterEnums.h>
-#include <Ryu/Physics/Raycasttypes.h>
+#include <Ryu/Physics/RaycastTypes.h>
 
 #include <box2d/box2d.h>
 #include <string>
@@ -10,7 +10,7 @@
 #include <memory>
 
 class b2World;
-class RayCastClosest;
+//class RayCastClosest;
 /*
 * box2D uses MSR - meter-seconds-radians - unities
 */
@@ -32,13 +32,13 @@ namespace Converter
     constexpr T radToDeg(const T& x) {return 180*x/PI;};
 }
 
-using RaycastPoints=std::map<RaycastPosition, std::pair<b2Vec2,b2Vec2> >;
+//using RaycastPoints=std::map<RaycastPosition, std::pair<b2Vec2,b2Vec2> >;
 
 namespace RyuPhysics
 {
 
-  constexpr double raycastOffset = 25.0f;
-  RayCastClosest createRaycast(RaycastPosition positionLocal, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
+  //constexpr double raycastOffset = 25.0f;
+  //RayCastClosest createRaycast(RaycastPosition positionLocal, std::pair<double,double> startPoint,float angle,float length, EMoveDirection charMoveDirection, std::unique_ptr<b2World>& physWorld, RaycastPoints& rayCastPoints);
   
 }
 /*

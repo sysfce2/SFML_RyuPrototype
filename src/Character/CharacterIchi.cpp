@@ -6,7 +6,7 @@
 #include <Ryu/Core/Category.h>
 #include <Ryu/Core/Utilities.h>
 #include <Ryu/Physics/Raycast.h>
-#include <Ryu/Physics/Raycasttypes.h>
+#include <Ryu/Physics/RaycastTypes.h>
 // test
 #include <Ryu/Core/World.h>
 
@@ -26,7 +26,7 @@ class CharacterStateRun;
 CharacterIchi::CharacterIchi(ECharacterState startState,
                              std::unique_ptr<b2World> &phWorld,
                              const sf::Vector2f &position)
-    : CharacterBase(startState, phWorld, position), ichiTextureManager(), rayCastCallbacks() {
+    : CharacterBase(startState, phWorld, position), ichiTextureManager() {
     loadTextures();
     // mCharacterAnimation.setPosition({100.f,50.f});
     mCharacterState->enter(*this);
@@ -182,20 +182,21 @@ void CharacterIchi::update(sf::Time deltaTime) {
 
     CharacterBase::update(deltaTime);
 
+    auto& charPos = mCharacterAnimation.getPosition();
     createCharacterRaycast(RaycastPosition::Up,
-                           mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y-RyuPhysics::raycastOffset,
+                           charPos.x, charPos.y-RyuPhysics::raycastOffset,
                            0, mCharacterPhysicsValues.rayCastLength);
     createCharacterRaycast(RaycastPosition::Mid,
-                           mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y,
+                           charPos.x, charPos.y,
                            0, mCharacterPhysicsValues.rayCastLength);
     createCharacterRaycast(RaycastPosition::Down,
-                           mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset,
+                           charPos.x, charPos.y+RyuPhysics::raycastOffset,
                            0, mCharacterPhysicsValues.rayCastLength);
 
     if(isFalling())
     {
         createCharacterRaycast(RaycastPosition::Below,
-                               mCharacterAnimation.getPosition().x, mCharacterAnimation.getPosition().y+RyuPhysics::raycastOffset,
+                               charPos.x, charPos.y+RyuPhysics::raycastOffset,
                                90.f, 55.f);
     }
     else{

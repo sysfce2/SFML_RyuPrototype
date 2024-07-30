@@ -1,3 +1,8 @@
+29/7/24
+- refactor hard 1
+  - raycast related stuff will go into the raycast component!
+  (spread btw. utilities, CharacterIchi, CharacterBase and whatnot)
+
 26/5/24
 - for prototype we will try to avoid switching textures for animations and use a maxsize of 16k x 16k, although this is not very efficient
 -> but problems i cant figure out at the moment (flickering) occure when switching textures

@@ -2,7 +2,7 @@
 #include "Ryu/Animation/SpritesheetAnimation.h"
 #include "Ryu/Control/CharacterEnums.h"
 #include "Ryu/Core/AssetIdentifiers.h"
-#include "Ryu/Physics/Raycasttypes.h"
+#include <Ryu/Physics/RaycastTypes.h>
 #include "Ryu/Statemachine/CharacterStateLedgeClimbUp.h"
 #include "Ryu/Statemachine/CharacterStateLedgeHang.h"
 #include <Ryu/Animation/AnimationManager.h>
@@ -362,12 +362,6 @@ CharacterBase::checkClimbingState()
     auto contacts = mBody->GetContactList();
 
 
-}
-
-void
-CharacterBase::eraseRaycast(RaycastPosition rcName)
-{
- rayCastPoints.erase(rcName);
 }
 
 void CharacterBase::toggleTestStates()
