@@ -26,34 +26,40 @@ class CharacterStateRun;
 CharacterIchi::CharacterIchi(ECharacterState startState,
                              std::unique_ptr<b2World> &phWorld,
                              const sf::Vector2f &position)
-    : CharacterBase(startState, phWorld, position), ichiTextureManager() {
+    : CharacterBase(startState, phWorld, position), ichiTextureManager()
+{
     loadTextures();
     // mCharacterAnimation.setPosition({100.f,50.f});
     mCharacterState->enter(*this);
-
 }
 
-void CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId) {
+void
+CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId)
+{
     setTexture(ichiTextureManager, textureId);
 }
 
-void CharacterIchi::teleportCharacter(float x, float y)
+void
+CharacterIchi::teleportCharacter(float x, float y)
 {
-	b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(x),
+    b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(x),
                       Converter::pixelsToMeters<float>(y)};
-	getBody()->SetTransform(newBodyPos,0);
-	changeState(std::make_unique<CharacterStateRun>());
+    getBody()->SetTransform(newBodyPos, 0);
+    changeState(std::make_unique<CharacterStateRun>());
     auto pPosi = getBody()->GetPosition();
-    getSpriteAnimation().setAnimationPosition({
-			Converter::metersToPixels(pPosi.x),
-			Converter::metersToPixels(pPosi.y)});
-	moveCharacter(sf::Vector2f{1,0}); // the trick is to push the character a bit
-
+    getSpriteAnimation().setAnimationPosition(
+        {Converter::metersToPixels(pPosi.x),
+         Converter::metersToPixels(pPosi.y)});
+    moveCharacter(
+        sf::Vector2f{1, 0}); // the trick is to push the character a bit
 }
 
-void CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event) {
+void
+CharacterIchi::onNotify(const SceneNode &entity, Ryu::EEvent event)
+{
     CharacterBase::onNotify(*this, event);
-    fmt::print("Called onNotify in CharacterIchi: Event: {}\n", event._to_string());
+    fmt::print("Called onNotify in CharacterIchi: Event: {}\n",
+               event._to_string());
 }
 
 // TODO: for the start ths will make it but its probably better to
@@ -65,12 +71,14 @@ static std::map<Textures::SpritesheetID, std::string> spritesheePaths = {
     {Textures::SpritesheetID::Ichi80x96,
      //"assets/spritesheets/ichi/ichi_spritesheet_level1.png"},
      "assets/spritesheets/ichi/ichi_level1.png"},
-/*
-    {Textures::SpritesheetID::Ichi128x196,
-    "assets/spritesheets/ichi/ichi_climb_up_ledge_128x196.png"},*/
+    /*
+        {Textures::SpritesheetID::Ichi128x196,
+        "assets/spritesheets/ichi/ichi_climb_up_ledge_128x196.png"},*/
 };
 
-void CharacterIchi::loadTextures() {
+void
+CharacterIchi::loadTextures()
+{
     // At the moment we should not switch textures often on an object so we put
     // every animatzion/level in one big spritesheet and load it at the startup
     // of the level we should check what happens when we change outfits etc...
@@ -81,17 +89,21 @@ void CharacterIchi::loadTextures() {
     // ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
 }
 
-unsigned int CharacterIchi::getCategory() const {
+unsigned int
+CharacterIchi::getCategory() const
+{
     return static_cast<unsigned>(Category::Type::Player);
 }
 
-void CharacterIchi::allowedMovement(bool &xMove, bool &yMove) {
+void
+CharacterIchi::allowedMovement(bool &xMove, bool &yMove)
+{
 
-    if ((mECharacterState._value == ECharacterState::DuckIdle ||
-         mECharacterState._value == ECharacterState::DuckEnter ||
-         mECharacterState._value == ECharacterState::DuckEnd ||
-         mECharacterState._value == ECharacterState::DuckWalk) ||
-        mECharacterMovement != ECharacterMovement::CanClimb) {
+    if ((mECharacterState._value == ECharacterState::DuckIdle
+         || mECharacterState._value == ECharacterState::DuckEnter
+         || mECharacterState._value == ECharacterState::DuckEnd
+         || mECharacterState._value == ECharacterState::DuckWalk)
+        || mECharacterMovement != ECharacterMovement::CanClimb) {
         yMove = false;
     }
 
@@ -103,7 +115,9 @@ void CharacterIchi::allowedMovement(bool &xMove, bool &yMove) {
     */
 }
 
-void CharacterIchi::moveCharacter(sf::Vector2f velocity) {
+void
+CharacterIchi::moveCharacter(sf::Vector2f velocity)
+{
     // std::cout << "MOVE CHAR " << velocity.x << "," << velocity.y << "\n";
     /* TODO: tmp here/constran movement*/
 
@@ -112,8 +126,8 @@ void CharacterIchi::moveCharacter(sf::Vector2f velocity) {
 
     allowedMovement(xMove, yMove);
 
-    if (mECharacterState._value != ECharacterState::JumpUp &&
-        velocity.x == 0.f && velocity.y == 0.f) {
+    if (mECharacterState._value != ECharacterState::JumpUp && velocity.x == 0.f
+        && velocity.y == 0.f) {
         setMovement({0.f, 0.f});
     }
 
@@ -125,64 +139,45 @@ void CharacterIchi::moveCharacter(sf::Vector2f velocity) {
     // std::cout << "move: " << (int)getMoveDirection() << "\n";
 }
 
-void CharacterIchi::drawCurrent(sf::RenderTarget &target,
-                                sf::RenderStates states) const {
+void
+CharacterIchi::drawCurrent(sf::RenderTarget &target,
+                           sf::RenderStates states) const
+{
     // draw physicsshape (visible in debug-mode)
     CharacterBase::drawCurrent(target, states);
     // draw PlayerSprite
     target.draw(mCharacterAnimation);
 }
 
-
-void CharacterIchi::checkContact(std::string name)
+void
+CharacterIchi::checkTeleportContact(std::string name)
 {
-    if(name == "teleport_1")
-    {
+    if (name == "teleport_1") {
         fmt::print("Now we teleport in Ichi to posi 1\n");
-        teleportCharacter(50,20);
+        teleportCharacter(50, 20);
     }
-    if(name == "teleport_2")
-    {
+    if (name == "teleport_2") {
         fmt::print("Now we teleport in Ichi to posi 1\n");
-        teleportCharacter(1000,270);
+        teleportCharacter(1000, 270);
     }
 }
 
-
-
 // TODO: check here flip st to do with raycasts?
-void CharacterIchi::update(sf::Time deltaTime) {
+void
+CharacterIchi::update(sf::Time deltaTime)
+{
 
     CharacterBase::update(deltaTime);
 
-    auto& charPos = mCharacterAnimation.getPosition();
-    mRaycastComponent.createCharacterRaycast(RaycastPosition::Up,
-                           charPos.x, charPos.y-Ryu::Physics::raycastOffset,
-                            0, mCharacterPhysicsValues.rayCastLength
-                            , getMoveDirection(), phWorldRef);
-    mRaycastComponent.createCharacterRaycast(RaycastPosition::Mid,
-                           charPos.x, charPos.y,
-                           0, mCharacterPhysicsValues.rayCastLength, getMoveDirection(), phWorldRef);
-    mRaycastComponent.createCharacterRaycast(RaycastPosition::Down,
-                           charPos.x, charPos.y+Ryu::Physics::raycastOffset,
-                           0, mCharacterPhysicsValues.rayCastLength, getMoveDirection(), phWorldRef);
+    checkTeleportContact(CharacterBase::checkContactObjects());
 
-    if(isFalling())
-    {
-        mRaycastComponent.createCharacterRaycast(RaycastPosition::Below,
-                               charPos.x, charPos.y+Ryu::Physics::raycastOffset,
-                               90.f, 55.f, getMoveDirection(), phWorldRef);
-    }
-    else{
-        mRaycastComponent.eraseBelow();
-    }
-
-    checkContact(CharacterBase::checkContactObjects());
-
-/*
-    if(rayCastCallbacks.at("up").m_Hit) fmt::print("Up: RayCastHit at b2D {}/{} and \n sfml {}/{}\n", rayCastCallbacks.at("up").m_Point.x ,rayCastCallbacks.at("up").m_Point.y
-                 ,Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.x), Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.y));
-*/
+    /*
+        if(rayCastCallbacks.at("up").m_Hit) fmt::print("Up: RayCastHit at b2D
+       {}/{} and \n sfml {}/{}\n", rayCastCallbacks.at("up").m_Point.x
+       ,rayCastCallbacks.at("up").m_Point.y
+                     ,Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.x),
+       Converter::metersToPixels<double>(rayCastCallbacks.at("up").m_Point.y));
+    */
 }
 
 //} /// namespace ryu
