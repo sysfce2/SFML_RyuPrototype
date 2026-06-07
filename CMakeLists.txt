@@ -26,6 +26,29 @@ FetchContent_MakeAvailable(TRACY)
 message(STATUS "Tracy fetched and built.")
 set_option(TRACY_ENABLE "" ON)
 
+# Fetch Box2D
+include(FetchContent)
+message(STATUS "Fetching Box2D...")
+FetchContent_Declare(Box2D
+    GIT_REPOSITORY https://github.com/erincatto/Box2D.git
+    GIT_TAG v3.1.1
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(Box2D)
+
+# Fetch nlohmann_json
+message(STATUS "Fetching nlohmann_json...")
+FetchContent_Declare(nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.12.0
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 # fetch SFML from git
 include(FetchContent)
 message(STATUS "Fetching SFML...")
@@ -39,8 +62,23 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 message(STATUS "SFML fetched and built.")
 
-# fetch ImGUI-SFML from git
+include(FetchContent)
+message(STATUS "Fetching ImGUI...")
+FetchContent_Declare(ImGui
+	GIT_REPOSITORY https://github.com/ocornut/imgui.git 
+	GIT_TAG v1.92.8
+	GIT_SHALLOW ON
+	EXCLUDE_FROM_ALL
+	SYSTEM
+)
+FetchContent_MakeAvailable(ImGui)
+message(STATUS "ImGui fetched and built.")
 
+# Set IMGUI_DIR to the source directory of ImGui
+set(IMGUI_DIR ${imgui_SOURCE_DIR})
+message(STATUS "IMGUI_DIR set to: ${IMGUI_DIR}")
+
+# fetch ImGUI-SFML from git
 include(FetchContent)
 message(STATUS "Fetching ImGui-SFML...")
 FetchContent_Declare(ImGuiSFML
@@ -52,6 +90,18 @@ FetchContent_Declare(ImGuiSFML
 )
 FetchContent_MakeAvailable(ImGuiSFML)
 message(STATUS "ImGuiSFML fetched and built.")
+
+# fetch fmt
+include(FetchContent)
+message(STATUS "Fetching fmt")
+FetchContent_Declare(fmt
+	GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+	GIT_TAG 12.1.0
+	GIT_SHALLOW ON
+	EXCLUDE_FROM_ALL
+	SYSTEM
+)
+FetchContent_MakeAvailable(fmt)
 
 # Create a function to simplify linking libraries
 function(link_sfml_to_target target)
@@ -75,11 +125,11 @@ set(INCLUDE_FOLDER "src/include")
 #set(CMAKE_CXX_COMPILER "gcc")
 
 #find_package(SFML 3.0.0 COMPONENTS Audio Graphics Window System Network REQUIRED)
-find_package(box2d CONFIG REQUIRED)
-find_package(nlohmann_json 3.2.0 REQUIRED)
+#find_package(box2d CONFIG REQUIRED)
+#find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(OpenGL REQUIRED)
 #find_package(ImGui-SFML REQUIRED)
-find_package(fmt)
+#find_package(fmt)
 	
 if(ImGui-SFML_FOUND)
 	message("\n-> ImGui-SFML directory found.")
@@ -101,12 +151,15 @@ endif()
 #set(SFML_DEPENDENCIES "libxi-dev")
 
 # first add global find packages !!! -> then add sub CMakeLists -> the sub CMakes have all the find packages
-set(TRACYCLIENT "src/Thirdparty/tracy/TracyClient.cpp")
+set(TRACYCLIENT "_deps/tracy-src/public/TracyClient.cpp")
 add_subdirectory("src") 
 add_executable(ryupt "${MAIN}" "${TRACYCLIENT}")
 target_compile_features(ryupt PRIVATE cxx_std_20)
 
 target_include_directories(ryupt PUBLIC "${INCLUDE_FOLDER}") #HOW >TO ADD SUBFOLDErS ?
+#target_include_directories(ryupt PUBLIC "${box2d_SOURCE_DIR}/include") 
+target_include_directories(ryuscenelib PUBLIC "${box2d_SOURCE_DIR}/include") 
+message("Box2D src: ${box2d_SOURCE_DIR} ")
 #message("-- Linking SFML: found in ${SFML_DIR}, Libraries: ${SFML_LIBRARIES}")
 link_sfml_to_target(ryupt)
 target_link_libraries(ryupt PUBLIC
@@ -122,7 +175,7 @@ target_link_libraries(ryupt PUBLIC
 	ryuanimationlib
 	ryucharacterlib
 	ryustateslib
-	box2d	
+	Box2D	
 	fmt::fmt
 	ImGui-SFML::ImGui-SFML
 	#${SFML_LIBRARIES}
@@ -132,6 +185,8 @@ target_link_libraries(ryupt PUBLIC
     dl
     TracyClient
 )# b2DebugDraw)
+
+#target_link_libraries(ryupt PRIVATE Box2D::Box2D)
 
 #TODO: investigate why adding tests lead to not compiling/linking when using shared libs
 # furthermore imgui-sfml seems to need sfml as a shared lib ... but ryu static libs
