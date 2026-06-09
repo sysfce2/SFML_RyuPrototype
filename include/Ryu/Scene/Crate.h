@@ -17,16 +17,14 @@ public:
     Crate();
     ~Crate();
 
-    void init(b2World* phWorld, const glm::vec2 &position, const glm::vec2 &dimension);
-    void init(b2Body* pBody, sf::Shape* pShape);
+    void init(b2WorldId phWorld, const glm::vec2 &position, const glm::vec2 &dimension);
+    void init(b2BodyId pBody, sf::Shape* pShape);
 
-    b2Body* getBody(){return mBody;}
-    b2Fixture* getFixture(){return mFixture;}
+    b2BodyId getBody(){return mBodyId;}
     sf::Shape* getShape(){return mShape;}
 
 private:
-    b2Body* mBody;
-    b2Fixture* mFixture;
+    b2BodyId mBodyId;
     sf::Texture* mTexture;
     sf::Shape* mShape;
 

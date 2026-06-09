@@ -11,8 +11,7 @@ sf::Texture dummyTexture = sf::Texture();
 
 Crate::Crate()
 : Sprite(dummyTexture)
-, mBody(nullptr)
-, mFixture(nullptr)
+, mBodyId()
 , mCrateTextureManager()
 {
     // Outfit normal
@@ -22,33 +21,31 @@ Crate::Crate()
 Crate::~Crate(){}
 
 void
-Crate::init(b2Body* pBody, sf::Shape* pShape)
+Crate::init(b2BodyId pBody, sf::Shape* pShape)
 {
-    mBody = pBody;
-    mFixture = pBody->GetFixtureList();
+    mBodyId = pBody;
     mShape = pShape;
 }
 
 void
-Crate::init(b2World* phWorld, const glm::vec2 &position, const glm::vec2 &dimension)
+Crate::init(b2WorldId phWorld, const glm::vec2 &position, const glm::vec2 &dimension)
 {
     // Create the body of the falling Crate
-    b2BodyDef bodyDef;
+    b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(position.x,position.y);
+    bodyDef.position = (b2Vec2){position.x,position.y};
+    mBodyId = b2CreateBody(phWorld, &bodyDef);
 
-    mBody = phWorld->CreateBody(&bodyDef);
+    // Create the shape (v3.1)
+    b2Polygon box = b2MakeBox(dimension.x/2.f,dimension.y/2.f);
 
-    // Create a shape
-    b2PolygonShape polygonShape;
-    polygonShape.SetAsBox(dimension.x/2.f,dimension.y/2.f);
+    b2SurfaceMaterial material =b2DefaultSurfaceMaterial();
+    material.friction = 0.3f; /// recommended by b2d docu
+    
+    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    shapeDef.density = 1.f; /// for dynamic objects density needs to be > 0
+    shapeDef.material = material;  
 
-    // Create a fixture
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &polygonShape;
-    fixtureDef.density = 1.f; /// for dynamic objects density needs to be > 0
-    fixtureDef.friction = 0.3f; /// recommended by b2d docu 
-    mFixture = mBody->CreateFixture(&fixtureDef);
-    std::cout << "Init crate at position "<< bodyDef.position.x << ","<< bodyDef.position.y << "\n";
-
+    // TODO: guess I need to store the ID somewhere !
+    b2ShapeId shapeId = b2CreatePolygonShape(mBodyId, &shapeDef, &box);
 }
