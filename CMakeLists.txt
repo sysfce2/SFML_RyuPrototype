@@ -159,6 +159,7 @@ target_compile_features(ryupt PRIVATE cxx_std_20)
 target_include_directories(ryupt PUBLIC "${INCLUDE_FOLDER}") #HOW >TO ADD SUBFOLDErS ?
 #target_include_directories(ryupt PUBLIC "${box2d_SOURCE_DIR}/include") 
 target_include_directories(ryuscenelib PUBLIC "${box2d_SOURCE_DIR}/include") 
+target_include_directories(ryuscenelib PUBLIC "${fmt_SOURCE_DIR}/include") 
 message("Box2D src: ${box2d_SOURCE_DIR} ")
 #message("-- Linking SFML: found in ${SFML_DIR}, Libraries: ${SFML_LIBRARIES}")
 link_sfml_to_target(ryupt)

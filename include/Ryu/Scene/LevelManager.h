@@ -5,7 +5,7 @@
 //#include <Ryu/Scene/LevelObject.h>
 //#include <Ryu/Physics/PhysicsObject.h>
 
-#include <box2d/b2_body.h>
+#include <box2d/box2d.h>
 #include <map>
 #include <vector>
 #include <string>
