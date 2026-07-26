@@ -12,8 +12,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <box2d/b2_common.h>
-#include <box2d/b2_math.h>
 #include <box2d/box2d.h>
 #include <fmt/core.h>
 
@@ -41,11 +39,13 @@ CharacterIchi::setTextureOnCharacter(Textures::SpritesheetID textureId)
 void
 CharacterIchi::teleportCharacter(float x, float y)
 {
-    b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(x),
-                      Converter::pixelsToMeters<float>(y)};
-    getBody()->SetTransform(newBodyPos, 0);
+    b2Vec2 newBodyPos{Converter::pixelsToMeters<float>(x), Converter::pixelsToMeters<float>(y)};
+    b2Body_SetTransform(getBody(), newBodyPos, b2Rot{0, 0});
+    
     changeState(std::make_unique<CharacterStateRun>());
-    auto pPosi = getBody()->GetPosition();
+
+    auto pPosi = b2Body_GetPosition(getBody());
+    
     getSpriteAnimation().setAnimationPosition(
         {Converter::metersToPixels(pPosi.x),
          Converter::metersToPixels(pPosi.y)});

@@ -21,8 +21,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <Thirdparty/glm/glm.hpp>
-#include <box2d/b2_contact.h>
-#include <box2d/b2_math.h>
 #include <box2d/box2d.h>
 #include <fmt/core.h>
 #include <iostream>
@@ -198,7 +196,7 @@ class CharacterBase : public SceneNode, public Subject, public Observer, public 
     bool isFalling() { return mCharacterFalling; }
     void setFalling(bool falling) { mCharacterFalling = falling; }
 
-    b2Body *getBody() { return mBody; }
+    b2BodyId getBody() { return mBodyId; }
     b2Fixture *getFixture() { return mFixture; }
     ECharacterState getCharacterStateEnum() { return mECharacterState; }
     EActionHeight getActionHeight() { return mActionHeight; }
@@ -230,7 +228,7 @@ class CharacterBase : public SceneNode, public Subject, public Observer, public 
     }
     // \ Raycastaccess
 
-    b2Vec2 getLinearVelocity() { return mBody->GetLinearVelocity(); }
+    b2Vec2 getLinearVelocity() { return b2Body_GetLinearVelocity(mBodyId); }
     bool allowedToFall();
     bool inDuckMode();
     void jumpUp();
@@ -265,7 +263,7 @@ class CharacterBase : public SceneNode, public Subject, public Observer, public 
     void drawCurrent(sf::RenderTarget &target,
                      sf::RenderStates states) const override;
 
-    sf::Shape *getShapeFromCharPhysicsBody(b2Body *physicsBody) const;
+    sf::Shape* getShapeFromCharPhysicsBody(b2BodyId physicsBodyId) const;
 
     SpritesheetAnimation mCharacterAnimation;
 
@@ -296,7 +294,7 @@ class CharacterBase : public SceneNode, public Subject, public Observer, public 
 
     // TODO: physics -> physics interface
     //std::unique_ptr<b2World> &phWorldRef;
-    b2Body *mBody;
+    b2BodyId mBodyId;
     b2Fixture *mFixture;
     Textures::LevelID mCurrentLevel;
     CharacterPhysicsValues mCharacterPhysicsValues;

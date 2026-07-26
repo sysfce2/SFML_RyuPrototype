@@ -11,9 +11,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <box2d/b2_body.h>
-#include <box2d/b2_math.h>
-#include <box2d/b2_world.h>
+#include <box2d/box2d.h>
+#include <box2d/types.h>
 #include <exception>
 #include <fmt/core.h>
 #include <memory>
@@ -21,15 +20,16 @@
 
 const b2Vec2 GRAVITY(0,9.81f);
 constexpr float PHYSICS_TIME_STEP = 1.f / 60.f;
-constexpr int32 VELOCITY_ITERATIONS = 8;
-constexpr int32 POSITION_ITERATIONS = 3;
+constexpr int SUBSTEP_COUNT = 1;
+constexpr int32_t VELOCITY_ITERATIONS = 8;
+constexpr int32_t POSITION_ITERATIONS = 3;
 
 CharacterPhysicsParameters::CharacterPhysicsParameters() :
     mBody(nullptr),
     mFixture(nullptr),
     mGravityScale(4.8f),  /// for dynamic objects density needs to be > 0
-    mFixtureDensity(5.f), /// for dynamic objects density needs to be > 0
-    mFixtureFriction(0.1f), /// recommended by  b2d docu
+    mDensity(5.f), /// for dynamic objects density needs to be > 0
+    mFriction(0.1f), /// recommended by  b2d docu
     mFixtureRestitution(0.1f),
     mRaycastLength(40.0f),
     mMoveMultiplier({1.05f, 1.47f}),
@@ -39,6 +39,12 @@ CharacterPhysicsParameters::CharacterPhysicsParameters() :
     mBodyMass(25)
 {}
 
+CharacterPhysicsParameters::~CharacterPhysicsParameters()
+{
+    b2DestroyBody(mBodyId);
+    mBodyId = b2_nullBodyId;
+}
+
 SceneObjectPhysicsParameters::SceneObjectPhysicsParameters() :
     mPosition({}),
     mSize({}),
@@ -46,7 +52,7 @@ SceneObjectPhysicsParameters::SceneObjectPhysicsParameters() :
     mType(b2BodyType::b2_staticBody),
     mTextureId(Textures::SceneID::Unknown),
     mEntityType(EntityType::None),
-    mPhysicsBody(nullptr) {}
+    mPhysicsBodyId(b2_nullBodyId) {}
     // polygonShape.SetAsBox(0.5,0.9);
 
 
@@ -60,16 +66,22 @@ SceneObjectPhysicsParameters::SceneObjectPhysicsParameters(
     mType(type),
     mTextureId(textureId),
     mEntityType(entityType),
-    mPhysicsBody(nullptr)
+    mPhysicsBodyId(b2_nullBodyId)
 {}
 
 // TODO: set contactlistener (see characterbase)
 Physics::Physics() :
     mCharacterPhysics({}),
-    mPhysicsWorld(std::make_unique<b2World>(GRAVITY)),
+    mPhysicsWorldId(),
     mStaticEntities(),
     mPhTimeStep(PHYSICS_TIME_STEP),
-    mDebugPhysicsActive(false){}
+    mDebugPhysicsActive(false)
+{
+    b2WorldDef worldDef = b2DefaultWorldDef();
+    worldDef.gravity = GRAVITY;
+    mPhysicsWorldId = b2CreateWorld(&worldDef);
+    
+}
 
 Physics::~Physics()
 {
@@ -77,15 +89,20 @@ Physics::~Physics()
    {
        for(auto& sceneObj : level.second)
        {
-           mPhysicsWorld->DestroyBody(sceneObj.mPhysicsBody);
+           // TODO: save every bodyId in a map
+           // b2DestroyBody(sceneObj.mBodyId);
+           // mPhysicsWorld->DestroyBody(sceneObj.mPhysicsBody);
        }
    }
+
+   b2DestroyWorld(mPhysicsWorldId);
+   mPhysicsWorldId = b2_nullWorldId;
 }
 
 void
 Physics::update()
 {
-    mPhysicsWorld->Step(PHYSICS_TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+    b2World_Step(mPhysicsWorldId, PHYSICS_TIME_STEP, SUBSTEP_COUNT); //VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 }
 
 void
@@ -96,7 +113,7 @@ Physics::setDebugPhysics(bool debugPhysics)
 
 void
 Physics::debugDrawSegment(b2Vec2 const &p1, b2Vec2 const &p2,
-                          b2Color const &color) const
+                          b2HexColor const &color) const
 {
     if (mDebugPhysicsActive)
     {
@@ -109,7 +126,8 @@ Physics::debugDraw() const
 {
     if(mDebugPhysicsActive)
     {
-        mPhysicsWorld->DebugDraw();
+        // TODO: how to draw physics ?
+        // mPhysicsWorld->DebugDraw();
     }
 }
 
@@ -125,8 +143,8 @@ Physics::draw(sf::RenderWindow& window)
     // TODO: next step ask with help on ChatGTP what could be wrong in this situation
     if (sceneObjects.size() > 0) {
         for (auto& obj : sceneObjects.at(ELevel::Level2)) {
-            fmt::print("draw: get PhysicsBody: {} \n",obj.mPhysicsBody == nullptr ? "nullptr" : "is there");
-            auto shape = getShapeFromPhysicsBody(obj.mPhysicsBody);
+            fmt::print("draw: get PhysicsBody: {} \n",b2Body_IsValid(obj.mPhysicsBodyId) ? "no there" : "is there");
+            auto shape = getShapeFromPhysicsBody(obj.mPhysicsBodyId);
             if (shape == nullptr) {
                 fmt::print("shape ptr seems to be null\n");
                 fmt::print("damn\n");
@@ -139,12 +157,12 @@ Physics::draw(sf::RenderWindow& window)
 }
 
 sf::Shape*
-Physics::getShapeFromPhysicsBody(b2Body* physicsBody) {
-    if (physicsBody == nullptr)
+Physics::getShapeFromPhysicsBody(b2BodyId physicsBodyId) {
+    if (b2Body_IsValid(physicsBodyId))
         return nullptr;
 
-    b2BodyUserData& data = physicsBody->GetUserData();
-    auto entity = reinterpret_cast<EntityStatic*>(data.pointer);
+    auto user_data = b2Body_GetUserData(physicsBodyId);
+    auto entity = reinterpret_cast<EntityStatic*>(user_data);
     /*
     auto body = reinterpret_cast<uintptr_t>(physicsBody);
     sf::Shape* shape =
@@ -157,11 +175,14 @@ Physics::getShapeFromPhysicsBody(b2Body* physicsBody) {
     if (shape) {
 
         try {
+            auto bodyPos = b2Body_GetPosition(physicsBodyId);
+            auto bodyRot = b2Body_GetRotation(physicsBodyId);
+            float angleInRadians = b2Rot_GetAngle(bodyRot);
             shape->setPosition({
-                Converter::metersToPixels(physicsBody->GetPosition().x),
-                Converter::metersToPixels(physicsBody->GetPosition().y)});
+                Converter::metersToPixels(bodyPos.x),
+                Converter::metersToPixels(bodyPos.y)});
             shape->setRotation(
-                sf::degrees(Converter::radToDeg<double>(physicsBody->GetAngle())));
+                sf::degrees(Converter::radToDeg<double>(angleInRadians)));
         } catch (std::exception) {
             fmt::print("No shape.\n");
         }
@@ -185,55 +206,56 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
     // init physics after the charactersprite was created !
     // Create the body of the falling Crate
     auto position = character.getPosition();
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody; /// TODO: or even kinematic body ?
-    bodyDef.position.Set(Converter::pixelsToMeters<double>(position.x),
-                         Converter::pixelsToMeters<double>(
-                             inDuckMode
-                                 ? position.y + (DUCK_FRAME_SIZE.second / 2)
-                                 : position.y));
-    bodyDef.fixedRotation = true;
-    auto charPhysic = mCharacterPhysics.at(character.getCharacterName());
-    bodyDef.gravityScale = charPhysic.mGravityScale;
-
-    // Create a shape
-    b2PolygonShape polygonShape;
 
     const auto shapeSize = inDuckMode ? DUCK_FRAME_SIZE : INIT_FRAME_SIZE;
-
     int size_x
         = shapeSize
               .first; // mCharacterAnimation.getSprite().getTextureRect().width;
     int size_y = shapeSize.second;
 
-    polygonShape.SetAsBox(Converter::pixelsToMeters<double>(size_x * 0.5f),
-                          Converter::pixelsToMeters<double>(size_y * 0.5f));
+    CharacterPhysicsParameters& charPhysics = mCharacterPhysics.at(character.getCharacterName());
 
-    // Create a fixture
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &polygonShape;
-    fixtureDef.density = charPhysic.mFixtureDensity;
-    fixtureDef.friction = charPhysic.mFixtureFriction;
-    fixtureDef.restitution = charPhysic.mFixtureRestitution;
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.type = b2_dynamicBody; /// TODO: or even kinematic body ?
+    bodyDef.position.x = Converter::pixelsToMeters<double>(position.x);
+    bodyDef.position.y = Converter::pixelsToMeters<double>(
+                             inDuckMode
+                                 ? position.y + (DUCK_FRAME_SIZE.second / 2)
+                                 : position.y);
+    bodyDef.fixedRotation = true;
+    bodyDef.gravityScale = charPhysics.mGravityScale;
 
-    charPhysic.mBody = mPhysicsWorld->CreateBody(&bodyDef);
-    charPhysic.mFixture = charPhysic.mBody->CreateFixture(&fixtureDef);
+    charPhysics.mBodyId = b2CreateBody(mPhysicsWorldId, &bodyDef);
+    
+    // Create a the shape
+    b2Polygon polygonBoxShape = b2MakeBox(Converter::pixelsToMeters<double>(size_x * 0.5f), Converter::pixelsToMeters<double>(size_y * 0.5f));
+    b2ShapeDef shapeDef = b2DefaultShapeDef(); // initialize shapedefinition
+    shapeDef.density = charPhysics.mDensity;
+    //shapeDef.friction = charPhysics.mFriction; deprecated since Box2D 3.1, different concept
 
+
+    //shapeDef.userData = (uintptr_t)shape;
+
+    charPhysics.mShapeDef = shapeDef;
+    charPhysics.mShapeId = b2CreatePolygonShape(charPhysics.mBodyId, &shapeDef, &polygonBoxShape);
+    //charPhysic.mShapeId. = (uintptr_t)shape; //.get();
+    
+    // SFML shape 
     // TODO: with SFML 3 there are probably smartPointer more elegant ? otherwise do RAII !
     sf::Shape *shape = new sf::RectangleShape(sf::Vector2f(size_x, size_y));
     // or can we delete this/free this at the end of the function ? bc its casted to uintptr_t
     // TODO: test it
-
     // std::unique_ptr<sf::Shape> shape =
     // std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x, size_y));
-
     shape->setOrigin({size_x / 2.0f, size_y / 2.0f});
     shape->setPosition(sf::Vector2f(position.x, position.y));
     // TODO check if we need setting a texture
     // shape->setTexture(
     //    &baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));
 
-    charPhysic.mBody->GetUserData().pointer = (uintptr_t)shape; //.get();
+    b2Shape_SetUserData(charPhysics.mShapeId, &shape);
+    //b2ShapeId shapeId = b2Body_AddShape(charPhysics.mBodyId, )
+    
     fmt::print("Init character at position {},{}\n",
                Converter::metersToPixels(bodyDef.position.x),
                Converter::metersToPixels(bodyDef.position.y));
@@ -241,7 +263,7 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
 
     // insert physics according to character
     mCharacterPhysics.insert(
-        std::make_pair(character.getCharacterName(), charPhysic)
+        std::make_pair(character.getCharacterName(), charPhysics)
     );
 }
 
@@ -253,44 +275,40 @@ Physics::createPhysicsSceneObjects(ELevel level)
     {
         fmt::print("create: {} \n", obj.mName);
         auto physObj = createPhysicsBody(obj, i);
-        obj.mPhysicsBody = physObj;
+        obj.mPhysicsBodyId = physObj;
         // phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(obj)));
     }
 }
 
-//void
-b2Body*
+// TODO: make method acc Box2D v3.1 !
+// and also clean / make it easier !, see InitCharacterPhysics, check what can be combined
+// lambda or helpermethods
+b2BodyId
 Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
 //Physics::createPhysicsBody(SceneObjectPhysicsParameters sceneObject)
 {
     sf::Vector2i objPosition = sceneObject.mPosition;
     sf::Vector2i objSize = sceneObject.mSize;
 
-    b2BodyDef bodyDef;
-    bodyDef.position.Set(Converter::pixelsToMeters<double>(objPosition.x),
-                         Converter::pixelsToMeters<double>(objPosition.y));
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.position = (b2Vec2){Converter::pixelsToMeters<double>(objPosition.x), Converter::pixelsToMeters<double>(objPosition.y)};
     bodyDef.type = sceneObject.mType;
-    b2PolygonShape b2Shape;
-
-    b2Shape.SetAsBox(Converter::pixelsToMeters<double>(objSize.x / 2.0),
-                     Converter::pixelsToMeters<double>(objSize.y / 2.0));
-
-    b2FixtureDef fixtureDef;
-    fixtureDef.density = 2.0;
-    fixtureDef.friction = 0.98;
-    fixtureDef.restitution = 0.1;
-    fixtureDef.shape = &b2Shape;
-
-    if(not mPhysicsWorld){
+    
+    if(B2_IS_NULL(mPhysicsWorldId)){
         fmt::print("no physics world created\n");
-        return nullptr;
+        return b2_nullBodyId;
     }
 
-    b2Body *res = mPhysicsWorld->CreateBody(&bodyDef);
-    // std::unique_ptr<b2Body> res =
-    // std::make_unique<b2Body>(phWorld->CreateBody(&bodyDef));
-    res->CreateFixture(&fixtureDef);
+    b2BodyId bodyId = b2CreateBody(mPhysicsWorldId, &bodyDef);
 
+    b2ShapeDef shapeDef = b2DefaultShapeDef(); // initialize shapedefinition
+    shapeDef.density = 2.0; // TODO make it configurable ?
+    // shapeDef.friction = 0.98; // deprecated since Box2D 3.1
+    // fixtureDef.restitution = 0.1;
+    
+    b2Polygon box = b2MakeBox(Converter::pixelsToMeters<double>(objSize.x / 2.0), Converter::pixelsToMeters<double>(objSize.y / 2.0));
+
+    b2ShapeId shapeId = b2CreatePolygonShape(bodyId, &shapeDef, &box);
     // std::unique_ptr<sf::RectangleShape> shape =
     // std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
     // sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
@@ -302,7 +320,22 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     shape->setOrigin({(float)(objSize.x / 2.0), (float)(objSize.y / 2.0)});
     shape->setPosition(sf::Vector2f(objPosition.x, objPosition.y));
 
-    // TODO: check what for
+    if (sceneObject.mTextureId != Textures::SceneID::Unknown) {
+         shape->setFillColor(sf::Color::Red);
+         shape->setOutlineColor(sf::Color::Red);
+         shape->setOutlineThickness(2.0f);
+        // TODO: how to set texture without coupling to texturestuff
+        // this can be probably be part of the Levelmanager and to LM we need a link
+        // from World and from Physics ... ? MAYBE
+        // shape->setTexture(&mSceneTextures.getResource(texture));
+    }
+    else {
+        shape->setFillColor(sf::Color::Green);
+    }
+
+    b2Shape_SetUserData(shapeId, &shape);
+    
+    // TODO: check what is staticEntity for
     auto staticEntity = std::make_unique<EntityStatic>(sceneObject.mEntityType);
     // std::shared_ptr<EntityStatic> staticEntity =
     // std::make_shared<EntityStatic>());
@@ -318,23 +351,10 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
          shapePosition.y + shapeSize.y}};
 
     staticEntity->setCornerPoints(cornerPoints);
-
-    if (sceneObject.mTextureId != Textures::SceneID::Unknown) {
-         shape->setFillColor(sf::Color::Red);
-         shape->setOutlineColor(sf::Color::Red);
-         shape->setOutlineThickness(2.0f);
-        // TODO: how to set texture without coupling to texturestuff
-        // this can be probably be part of the Levelmanager and to LM we need a link
-        // from World and from Physics ... ? MAYBE
-        // shape->setTexture(&mSceneTextures.getResource(texture));
-    }
-    else {
-        shape->setFillColor(sf::Color::Green);
-    }
-
+    // TODO: is this up to date and needable ?
     staticEntity->setShape(std::move(shape));
-    res->GetUserData().pointer = reinterpret_cast<uintptr_t>(staticEntity.get());
-    mStaticEntities[reinterpret_cast<uintptr_t>(res)] = std::move(staticEntity);
+    // res->GetUserData().pointer = reinterpret_cast<uintptr_t>(staticEntity.get());
+    mStaticEntities[bodyId] = std::move(staticEntity);
     //mStaticEntities[reinterpret_cast<uintptr_t>(res)] = staticEntity;
 
     // Dangling pointer for EntityStatic ?
@@ -343,20 +363,23 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     // investigate further with state from before (see MR)
     // is it maybe bc of the definition of the objects (many values are predefined in SceneObjectPhysicsParameters::SceneObjectPhysicsParameters() :
     // tryo so set them by hand at creation in the map ....
-    fmt::print("Before set: Physicsbody for {} set ,{}, i={} \n",sceneObject.mName, sceneObject.mPhysicsBody == nullptr ? "nullptr" : "physBody exists", i);
-    fmt::print("{} sceneObjects.at({}): , {} \n",i,sceneObjects.at(ELevel::Level2)[i].mName, sceneObjects.at(ELevel::Level2)[i].mPhysicsBody == nullptr ? "physbody==nullptr" : "physBody exists");
-    sceneObject.mPhysicsBody = res;
-    fmt::print("After set: Physicsbody for {} set ,{} \n",sceneObject.mName, sceneObject.mPhysicsBody == nullptr ? "nullptr" : "physBody exists");
+    fmt::print("Before set: Physicsbody for {} set ,{}, i={} \n",sceneObject.mName, B2_IS_NULL(sceneObject.mPhysicsBodyId) ? "null_BodyId" : "physBody exists", i);
+    fmt::print("{} sceneObjects.at({}): , {} \n",i,sceneObjects.at(ELevel::Level2)[i].mName, B2_IS_NULL(sceneObjects.at(ELevel::Level2)[i].mPhysicsBodyId) ? "physbody==null_BodyId" : "physBody exists");
+    //fmt::print("BodyID: {} \n", bodyId);
+    sceneObject.mPhysicsBodyId = bodyId;
+    fmt::print("After set: Physicsbody for {} set ,{} \n",sceneObject.mName, B2_IS_NULL(sceneObject.mPhysicsBodyId) ? "null_BodyId" : "physBody exists");
     i++;
-    return res;
+    return bodyId;
 
 }
 
 void
 Physics::setDebugDrawer(b2DrawSFML dbgDrawer)
 {
+    /* TODO: How to set the Tags in Box2d v3.1 ?
     debugDrawer.SetTarget(dbgDrawer.GetRenderTarget());
     debugDrawer.SetScale(dbgDrawer.GetScale());
     debugDrawer.SetFlags(dbgDrawer.GetFlags());
     mPhysicsWorld->SetDebugDraw(&debugDrawer);// was located as static in World
+    */
 }

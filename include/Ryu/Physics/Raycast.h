@@ -4,8 +4,7 @@
 #include <Ryu/Events/Subject.h>
 #include <Ryu/Physics/RaycastTypes.h>
 
-#include <box2d/b2_world_callbacks.h>
-#include <box2d/b2_math.h>
+#include <box2d/box2d.h>
 #include <fmt/core.h>
 
 #include <iostream>
@@ -16,7 +15,21 @@ class SceneNode;
 /*
 *  This callback finds the closest hit.
 */
-class RayCastClosest : public b2RayCastCallback
+/*
+** From v3.x or so on the RayCast works differently and need to be revised
+** see https://box2d.org/documentation/md_collision.html#autotoc_md42
+** b2RayCastInput input = {0};
+input.origin = (b2Vec2){0.0f, 0.0f};
+input.translation = (b2Vec2){1.0f, 0.0f};
+input.maxFraction = 1.0f;
+
+b2CastOutput output = b2RayCastPolygon(&input, &myPolygon);
+if (output.hit == true)
+{
+    // do something
+}
+ */
+class RayCastClosest 
 {
   public:
     RayCastClosest() : 
@@ -25,6 +38,7 @@ class RayCastClosest : public b2RayCastCallback
       m_fraction(0)
     {}
 
+        /*
     float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override
     {
       // TODO: check if fixture with index 1 needs to be ignored like in the testbed test, see fr details [b2d_testbed]tests/ray_cast.cpp
@@ -53,7 +67,7 @@ class RayCastClosest : public b2RayCastCallback
     {
       owner = std::move(raycastOwner);
     }
-
+*/
     std::unique_ptr<SceneNode> owner;
 
     bool m_Hit;

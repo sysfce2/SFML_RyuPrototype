@@ -9,7 +9,6 @@
 #include <tuple>
 #include <memory>
 
-class b2World;
 //class RayCastClosest;
 /*
 * box2D uses MSR - meter-seconds-radians - unities

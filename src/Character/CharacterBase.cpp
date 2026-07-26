@@ -18,9 +18,6 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <Thirdparty/glm/glm.hpp>
-#include <box2d/b2_body.h>
-#include <box2d/b2_math.h>
-#include <box2d/b2_shape.h>
 #include <cmath>
 #include <fmt/core.h>
 
@@ -249,16 +246,18 @@ CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event)
         event); // notify the state (we dont want the states to be an observer)
 }
 
-sf::Shape *
-CharacterBase::getShapeFromCharPhysicsBody(b2Body *physicsBody) const
+sf::Shape*
+CharacterBase::getShapeFromCharPhysicsBody(b2BodyId physicsBodyId) const
 {
-    b2BodyUserData &data = physicsBody->GetUserData();
-    sf::Shape *shape = reinterpret_cast<sf::RectangleShape *>(data.pointer);
+    auto data = b2Body_GetUserData(physicsBodyId);
+    sf::Shape* shape = reinterpret_cast<sf::RectangleShape *>(data);
 
-    shape->setPosition({Converter::metersToPixels(physicsBody->GetPosition().x),
-            Converter::metersToPixels(physicsBody->GetPosition().y)});
+    auto bodyPos = b2Body_GetPosition(physicsBodyId);
+    shape->setPosition({Converter::metersToPixels(bodyPos.x),
+            Converter::metersToPixels(bodyPos.y)});
     // shape->setRotation(sf::degrees(Converter::radToDeg<double>(physicsBody->GetAngle())));
-    shape->setRotation(sf::radians(physicsBody->GetAngle()));
+    float bodyAngle = b2Rot_GetAngle(b2Body_GetRotation(physicsBodyId));
+    shape->setRotation(sf::radians(bodyAngle));
     return shape;
 }
 
@@ -266,9 +265,9 @@ void
 CharacterBase::drawCurrent(sf::RenderTarget &target, sf::RenderStates) const
 {
     // draw physics outline
-    if (mBody)
+    if (B2_IS_NON_NULL(mBodyId))
     {
-        target.draw(*(getShapeFromCharPhysicsBody(mBody)));
+        target.draw(*(getShapeFromCharPhysicsBody(mBodyId)));
     }
 }
 
@@ -387,7 +386,7 @@ CharacterBase::update(sf::Time deltaTime)
     *ground
     */
 
-    if (mBody->GetLinearVelocity().y > 0.5f)
+    if (b2Body_GetLinearVelocity(mBodyId).y > 0.5f)
     {
         if (allowedToFall() && not mCharacterFalling
             && mECharacterState._value != ECharacterState::Falling)
@@ -400,12 +399,14 @@ CharacterBase::update(sf::Time deltaTime)
             mCharacterState->enter(*this);
         }
 
+        b2Vec2 bodyPosition = b2Body_GetPosition(mBodyId);
+
         mCharacterAnimation.setAnimationPosition(
-            {Converter::metersToPixels<float>(mBody->GetPosition().x),
+            {Converter::metersToPixels<float>(bodyPosition.x),
              inDuckMode()
                  ? (Converter::metersToPixels<float>(
-                     mBody->GetPosition().y - (DUCK_FRAME_SIZE.second) / 2))
-                 : Converter::metersToPixels<float>(mBody->GetPosition().y)});
+                     bodyPosition.y - (DUCK_FRAME_SIZE.second) / 2))
+                 : Converter::metersToPixels<float>(bodyPosition.y)});
     }
     /*
         fmt::print("GravityScale: {}\n",  mBody->GetGravityScale());;
@@ -413,7 +414,7 @@ CharacterBase::update(sf::Time deltaTime)
         fmt::print("Mass: {}\n",  mBody->GetMass());
     */
     if (not inDuckMode()
-        && IsInBounds(mBody->GetLinearVelocity().y, 0.f, 0.01f))
+        && IsInBounds(b2Body_GetLinearVelocity(mBodyId).y, 0.f, 0.01f))
     {
         mCharacterFalling = false;
     }
@@ -428,13 +429,16 @@ CharacterBase::update(sf::Time deltaTime)
 void
 CharacterBase::checkClimbingState()
 {
-    auto contacts = mBody->GetContactList();
+    // TODO: tbc
+    // auto contacts = mBody->GetContactList();
 }
 
 void
 CharacterBase::toggleTestStates()
 {
-    // TODO: as these are on another sritesheet we need to change the
+    // TODO:
+    // make this cleaner
+    // as these are on another spritesheet we need to change the
     // textureatlas on the character and setup fresh preferences for
     // center/texturesize etc. / evtl. we need to change the character- position
     // (see reference point (cross in adventures when changing outfits /
@@ -453,7 +457,7 @@ CharacterBase::toggleTestStates()
 
     testStateCurrent++;
 
-    mBody->Dump();
+    // mBody->Dump(); // what was dump() doing ?
 }
 
 void
@@ -531,8 +535,8 @@ CharacterBase::updateCharacterPosition(sf::Time deltaTime)
         && not mCharacterFalling)
     {
 
-        if (not IsInBounds(mLastBodyPosition.Length()
-                               - mBody->GetPosition().Length(),
+        if (not IsInBounds(b2Length(mLastBodyPosition)
+                               - b2Length(b2Body_GetPosition(mBodyId)),
                            0.f, 0.01f))
         {
             mCharacterAnimation.move(movement * deltaTime.asSeconds());
@@ -553,7 +557,7 @@ CharacterBase::updateCharacterPosition(sf::Time deltaTime)
         || mECharacterState._value == ECharacterState::JumpForward)
     {
         // physics body get a impulse in jump(), so here no update is needed
-        auto pPosi = mBody->GetPosition();
+        auto pPosi = b2Body_GetPosition(mBodyId);
         mCharacterAnimation.setAnimationPosition(
             {Converter::metersToPixels(pPosi.x),
              Converter::metersToPixels(pPosi.y)});

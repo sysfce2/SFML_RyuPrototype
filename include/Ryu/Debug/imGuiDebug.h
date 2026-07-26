@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Ryu/Events/Subject.h>
-#include <box2d/b2_math.h>
-#include <box2d/b2_types.h>
+#include <box2d/box2d.h>
 #include <fmt/core.h>
 #include <imgui.h>
 #include <iostream>

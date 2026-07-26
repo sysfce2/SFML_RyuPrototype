@@ -11,4 +11,5 @@ set(HEADER
 add_library(ryueventslib STATIC "${SRC}" "${HEADER}")
 
 target_include_directories(ryueventslib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
+target_include_directories(ryueventslib PUBLIC "${fmt_SOURCE_DIR}/include") 
 link_sfml_to_target(ryueventslib)

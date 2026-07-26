@@ -3,14 +3,14 @@
 #include <Ryu/Scene/EntityStatic.h>
 
 #include <box2d/box2d.h>
-#include <box2d/b2_contact.h>
 #include <fmt/core.h>
 #include <vector>
 
 
-class RyuContactListener : public b2ContactListener
+class RyuContactListener //: public b2ContactListener
 {
 
+  // TODO:contacts also changed completely: revise it! see: docs/migration.md
   public:
 
     RyuContactListener()
@@ -18,10 +18,10 @@ class RyuContactListener : public b2ContactListener
     {
     }
 
-    void BeginContact(b2Contact* contact)
+    void BeginContact(/*b2Contact* contact*/)
     {
       // t.b.c
-
+      /*
       auto userData = contact->GetFixtureA()->GetBody()->GetUserData();
       EntityStatic* entity = reinterpret_cast<EntityStatic*>(userData.pointer);
 
@@ -38,17 +38,20 @@ class RyuContactListener : public b2ContactListener
                  );
 
       contactObject = entity->getName();
+      */
     }
 
-    void EndContact(b2Contact* contact)
+    void EndContact(/*b2Contact* contact*/)
     {
-
+/*
       auto userData = contact->GetFixtureA()->GetBody()->GetUserData();
       EntityStatic* entity = reinterpret_cast<EntityStatic*>(userData.pointer);
       entity->decreaseContactPoints();
       fmt::print("End Contact with {} ({})\n", entity->getName(), entity->getContactPoints());
       contactObject = "";
+      */
     }
 
     std::string contactObject;
+    b2ContactEvents contactEvents;
 };

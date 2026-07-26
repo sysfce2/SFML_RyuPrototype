@@ -1,11 +1,9 @@
 set (SRC 
-     "DebugDraw.cpp"
      "Physics.cpp"
      "RaycastComponent.cpp"
     )
 
 set(HEADER
-     "${RyuPrototype_SOURCE_DIR}/include/Ryu/Physics/DebugDraw.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Physics/Physics.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Physics/PhysicsObject.h"
      "${RyuPrototype_SOURCE_DIR}/include/Ryu/Physics/Raycast.h"
@@ -16,4 +14,7 @@ set(HEADER
 add_library(ryuphysicslib STATIC "${SRC}" "${HEADER}")
 
 target_include_directories(ryuphysicslib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
+target_include_directories(ryuphysicslib PUBLIC "${box2d_SOURCE_DIR}/include") 
+target_include_directories(ryuphysicslib PUBLIC "${fmt_SOURCE_DIR}/include") 
+target_include_directories(ryuphysicslib PUBLIC "${nlohmann_json_SOURCE_DIR}/include") 
 link_sfml_to_target(ryuphysicslib)

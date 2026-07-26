@@ -10,5 +10,9 @@ set(HEADER
 
 add_library(ryudebuglib STATIC "${SRC}" "${HEADER}")
 
+target_include_directories(ryudebuglib PUBLIC "${nlohmann_json_SOURCE_DIR}/include") 
 target_include_directories(ryudebuglib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
+target_include_directories(ryudebuglib PUBLIC "${box2d_SOURCE_DIR}/include") 
+target_include_directories(ryudebuglib PUBLIC "${fmt_SOURCE_DIR}/include") 
+target_include_directories(ryudebuglib PUBLIC "${imgui_SOURCE_DIR}/") 
 link_sfml_to_target(ryudebuglib)

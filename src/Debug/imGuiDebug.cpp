@@ -2,7 +2,7 @@
 #include <Ryu/Debug/imGuiDebug.h>
 #include <Ryu/Events/EventEnums.h>
 
-#include <box2d/b2_math.h>
+#include <box2d/box2d.h>
 #include <fmt/core.h>
 #include <imgui.h>
 #include <iostream>

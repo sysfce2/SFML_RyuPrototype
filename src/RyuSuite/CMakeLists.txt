@@ -16,4 +16,6 @@ target_link_libraries(ryusuitelib PUBLIC
 )
 
 target_include_directories(ryusuitelib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
+target_include_directories(ryusuitelib PUBLIC "${nlohmann_json_SOURCE_DIR}/include") 
+target_include_directories(ryusuitelib PUBLIC "${fmt_SOURCE_DIR}/include") 
 link_sfml_to_target(ryusuitelib)

@@ -19,7 +19,7 @@ public:
 
     void createCharacterRaycast(RaycastPosition position, float rcPositionX, float rcPositionY,
                                 float angle, float length, EMoveDirection moveDirection,
-                                std::unique_ptr<b2World>& physWorld);
+                                std::unique_ptr<b2WorldId>& physWorldId);
 
     bool getHit(RaycastPosition rcName);
 
@@ -38,6 +38,6 @@ private:
                                std::pair<double,double> startPoint,
                                float angle, float length,
                                EMoveDirection charMoveDirection,
-                               std::unique_ptr<b2World>& physWorld,
+                               std::unique_ptr<b2WorldId>& physWorld,
                                RaycastPoints& rayCastPoints);
 } // namespace Ryu::Physics

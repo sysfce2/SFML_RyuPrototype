@@ -15,5 +15,6 @@ add_library(ryuanimationlib STATIC "${SRC}" "${HEADER}" )
 
 target_link_libraries(ryuanimationlib PUBLIC ryueventslib ryucharacterlib)
 
+target_include_directories(ryuanimationlib PUBLIC "${nlohmann_json_SOURCE_DIR}/include") 
 target_include_directories(ryuanimationlib PUBLIC "${RyuPrototype_SOURCE_DIR}/include")
 link_sfml_to_target(ryuanimationlib)

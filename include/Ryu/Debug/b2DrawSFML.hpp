@@ -6,10 +6,10 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 // Box2D
-#include <box2d/b2_draw.h>
+#include <box2d/types.h>
 
 ///
-class b2DrawSFML : public b2Draw
+class b2DrawSFML
 {
 public:
 
@@ -39,30 +39,56 @@ public:
     float GetScale() noexcept;
 
     ///
-    void DrawPolygon(b2Vec2 const* vertices, int32 vertexCount, b2Color const& color) noexcept;
+    void DrawPolygon(const b2Vec2* vertices, int vertexCount, b2HexColor color) noexcept;
 
     ///
-    void DrawSolidPolygon(b2Vec2 const* vertices, int32 vertexCount, b2Color const& color) noexcept;
+    void DrawSolidPolygon(b2Transform transform, const b2Vec2* vertices, int vertexCount, b2HexColor color) noexcept;
 
     ///
-    void DrawCircle(b2Vec2 const& center, float radius, b2Color const& color) noexcept;
+    void DrawCircle(b2Vec2 center, float radius, b2HexColor color) noexcept;
 
     ///
-    void DrawSolidCircle(b2Vec2 const& center, float radius, b2Vec2 const& axis, b2Color const& color) noexcept;
+    void DrawSolidCircle(b2Transform transform, float radius, b2HexColor color) noexcept;
+
+    void DrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color) noexcept;
 
     ///
-    void DrawSegment(b2Vec2 const& p1, b2Vec2 const& p2, b2Color const& color) noexcept;
+    void DrawSegment(b2Vec2 p1, b2Vec2 p2, b2HexColor color) noexcept;
 
     ///
-    void DrawTransform(b2Transform const& xf) noexcept;
+    void DrawTransform(b2Transform transform) noexcept;
 
     ///
-    void DrawPoint(b2Vec2 const& p, float size, b2Color const& color) noexcept;
+    void DrawPoint(b2Vec2 p, float size, b2HexColor color) noexcept;
+        
+    void DrawString( b2Vec2 p, const char* s, b2HexColor color) noexcept;
 
     void setContact(bool contacted){contact = contacted;};
 
 private:
 
+    void initialize_debug_draw();
+
+    // Static callback wrappers (to pass member functions as C-style callbacks)
+    static void DrawPolygonFcn( const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context );
+    
+    static void DrawSolidPolygonFcn ( b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color, void* context );
+
+    static void DrawCircleFcn ( b2Vec2 center, float radius, b2HexColor color, void* context );
+
+    static void DrawSolidCircleFcn( b2Transform transform, float radius, b2HexColor color, void* context );
+
+    static void DrawSolidCapsuleFcn( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, void* context );
+
+    static void DrawSegmentFcn( b2Vec2 p1, b2Vec2 p2, b2HexColor color, void* context );
+
+    static void DrawTransformFcn( b2Transform transform, void* context );
+
+    static void DrawPointFcn ( b2Vec2 p, float size, b2HexColor color, void* context );
+
+    static void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, void* context );
+
+        
     /// PRIV:
     float M_ToPixels(float f) const noexcept;
 
@@ -70,10 +96,10 @@ private:
     sf::Vector2f M_ToPixels(b2Vec2 const& p) const noexcept;
 
     /// PRIV:
-    sf::Color M_ConvertColor(b2Color const& color) const noexcept;
+    sf::Color M_ConvertColor(b2HexColor const& color) const noexcept;
 
     /// PRIV:
-    sf::Color M_ConvertColor(b2Color const& color, float newAlpha) const noexcept;
+    sf::Color M_ConvertColor(b2HexColor const& color, float newAlpha) const noexcept;
 
     sf::RenderTarget* m_renderTarget;
     sf::ConvexShape m_convexShape;
@@ -81,4 +107,8 @@ private:
     float m_scale;
 
     bool contact;
+
+    b2DebugDraw debugDraw;
 };
+
+

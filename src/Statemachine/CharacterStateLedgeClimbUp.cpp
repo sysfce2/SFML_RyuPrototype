@@ -7,7 +7,7 @@
 #include <Ryu/Statemachine/CharacterState.h>
 
 #include <SFML/System/Vector2.hpp>
-#include <box2d/b2_math.h>
+#include <box2d/box2d.h>
 #include <fmt/core.h>
 #include <memory>
 

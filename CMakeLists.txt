@@ -2,6 +2,9 @@
 
 cmake_minimum_required(VERSION 3.28)
 
+# set debugbuild to standard
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
+
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
@@ -66,7 +69,7 @@ include(FetchContent)
 message(STATUS "Fetching ImGUI...")
 FetchContent_Declare(ImGui
 	GIT_REPOSITORY https://github.com/ocornut/imgui.git 
-	GIT_TAG v1.92.8
+	GIT_TAG v1.91.1
 	GIT_SHALLOW ON
 	EXCLUDE_FROM_ALL
 	SYSTEM
@@ -83,7 +86,7 @@ include(FetchContent)
 message(STATUS "Fetching ImGui-SFML...")
 FetchContent_Declare(ImGuiSFML
     GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
-    GIT_TAG v3.0
+    GIT_TAG master
     GIT_SHALLOW ON
     EXCLUDE_FROM_ALL
     SYSTEM
@@ -159,7 +162,10 @@ target_compile_features(ryupt PRIVATE cxx_std_20)
 target_include_directories(ryupt PUBLIC "${INCLUDE_FOLDER}") #HOW >TO ADD SUBFOLDErS ?
 #target_include_directories(ryupt PUBLIC "${box2d_SOURCE_DIR}/include") 
 target_include_directories(ryuscenelib PUBLIC "${box2d_SOURCE_DIR}/include") 
+target_include_directories(ryudebuglib PUBLIC "${box2d_SOURCE_DIR}/include") 
 target_include_directories(ryuscenelib PUBLIC "${fmt_SOURCE_DIR}/include") 
+target_include_directories(ryupt PUBLIC "${nlohmann_json_SOURCE_DIR}/include") 
+message("nlohmann src: ${nlohmann_json_SOURCE_DIR}")
 message("Box2D src: ${box2d_SOURCE_DIR} ")
 #message("-- Linking SFML: found in ${SFML_DIR}, Libraries: ${SFML_LIBRARIES}")
 link_sfml_to_target(ryupt)
@@ -176,7 +182,7 @@ target_link_libraries(ryupt PUBLIC
 	ryuanimationlib
 	ryucharacterlib
 	ryustateslib
-	Box2D	
+	box2d	
 	fmt::fmt
 	ImGui-SFML::ImGui-SFML
 	#${SFML_LIBRARIES}

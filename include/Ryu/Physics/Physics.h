@@ -16,10 +16,10 @@
 #include <Ryu/Control/CharacterEnums.h>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
-#include <box2d/b2_world.h>
-#include <box2d/b2_body.h>
+#include <box2d/box2d.h>
 #include <memory>
-#include <map>
+//#include <map>
+#include <unordered_map>
 
 class CharacterBase;
 class ICharacter;
@@ -30,13 +30,19 @@ static b2DrawSFML debugDrawer;
 
 struct CharacterPhysicsParameters{
     CharacterPhysicsParameters();
+    ~CharacterPhysicsParameters();
 
     b2Body* mBody;
-    b2Fixture* mFixture;
+    b2BodyId mBodyId; // maybe only save BodyId ?
+    [[deprecated]] b2Fixture* mFixture; // since Box2d v3.1 the fixture-concept is gone
+    b2ShapeId mShapeId;
+    b2ShapeDef mShapeDef;
+    // these are stored inside mShapeDef as well ! (since Box2D v3.1)
     float mGravityScale;
-    float mFixtureDensity;
-    float mFixtureFriction;
-    float mFixtureRestitution;
+    float mDensity;
+    float mFriction;
+    [[deprecated]] float mFixtureRestitution;
+
     float mRaycastLength;
     // due increase of gravityscale (falling is then more gamey) the physicbody
     // needs some adustments for movement so its not behind the movement of
@@ -63,10 +69,26 @@ struct SceneObjectPhysicsParameters
     b2BodyType mType;
     Textures::SceneID mTextureId;
     EntityType mEntityType;
-    b2Body* mPhysicsBody;
+    b2BodyId mPhysicsBodyId;
     //std::unique_ptr<b2Body> mPhysicsBody;
 };
 
+// Custom hash function for b2BodyId
+struct b2BodyIdHash {
+    std::size_t operator()(const b2BodyId& id) const {
+        // Assuming b2BodyId has 'index' and 'generation' fields
+        // If not, replace with the actual fields in b2BodyId
+        return std::hash<uint32_t>()(id.index1) ^ std::hash<uint32_t>()(id.generation);
+    }
+};
+
+// Custom equality function for b2BodyId
+struct b2BodyIdEqual {
+    bool operator()(const b2BodyId& lhs, const b2BodyId& rhs) const {
+        // Assuming b2BodyId has 'index' and 'generation' fields
+        return lhs.index1 == rhs.index1 && lhs.generation == rhs.generation;
+    }
+};
 
 class Physics : public Subject {
    public:
@@ -75,10 +97,10 @@ class Physics : public Subject {
 
     void createPhysicsSceneObjects(ELevel level);
     void debugDrawSegment(const b2Vec2& p1, const b2Vec2& p2,
-                          const  b2Color& color) const;
+                          const  b2HexColor& color) const;
     void debugDraw() const;
     void draw(sf::RenderWindow& window);
-    sf::Shape* getShapeFromPhysicsBody(b2Body* physicsBody);
+    sf::Shape* getShapeFromPhysicsBody(b2BodyId physicsBodyId);
     void initCharacterPhysics(ICharacter& character, bool inDuckMode);
     void setDebugDrawer(b2DrawSFML dbgDrawer);
     void setDebugPhysics(bool debugPhysics);
@@ -86,16 +108,16 @@ class Physics : public Subject {
 
    private:
     //void createPhysicsBody(SceneObjectPhysicsParameters sceneObject);
-    b2Body* createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i);
+    b2BodyId createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i);
     // box2d physics
     std::map<ECharacters, CharacterPhysicsParameters> mCharacterPhysics;
-    std::unique_ptr<b2World> mPhysicsWorld;
+    b2WorldId mPhysicsWorldId;
     //b2World* mPhysicsWorld;
     // std::map<ELevel, std::vector<SceneObjectPhysicsParameters> > mSceneObjects; // see sceneObjects
 
     // TODO: check if we keep it here or not ? Do we even need this at all ?                                                                   // key is a combination of LevelName (ELevel.string) and ObjectName ? WHY ?
     // it was: why?
-    std::map<const uintptr_t, std::unique_ptr<EntityStatic> > mStaticEntities;
+    std::unordered_map<const b2BodyId, std::unique_ptr<EntityStatic>, b2BodyIdHash, b2BodyIdEqual> mStaticEntities;
     //std::map<const uintptr_t, std::shared_ptr<EntityStatic> > mStaticEntities;
     // std::map<uintptr_t, EntityStatic > mStaticEntities;
     float mPhTimeStep;
@@ -104,37 +126,37 @@ class Physics : public Subject {
    public: // TODO: tmp storage !!!! -> make static again outside of class
     std::map<ELevel , std::vector<SceneObjectPhysicsParameters>> sceneObjects = {
     {ELevel::Level1,
-     {{{600, 780}, {1200, 20}, "floor", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{8, 580}, {16, 800}, "left_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{1190, 580}, {16, 1100}, "right_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None}
+     {{{600, 780}, {1200, 20}, "floor", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{8, 580}, {16, 800}, "left_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{1190, 580}, {16, 1100}, "right_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None }
       ,// 1rst platform
-      {{70, 150}, {150, 32}, "platform_1", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{240, 280}, {140, 32}, "platform_2", b2_staticBody, Textures::SceneID::Grass, EntityType::Climbable},
-      {{380, 380}, {150, 32}, "platform_3", b2_staticBody, Textures::SceneID::Grass, EntityType::Climbable},
-      {{500, 500}, {320, 32}, "platform_4", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{720, 420}, {120, 32}, "platform_5", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{780, 300}, {120, 32}, "platform_6", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{720, 600}, {120, 32}, "platform_7", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{780, 700}, {120, 32}, "platform_8", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{300, 100}, {50, 50}, "box_pushable_1", b2_dynamicBody, Textures::SceneID::BoxPushable, EntityType::None}
+      {{70, 150}, {150, 32}, "platform_1", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{240, 280}, {140, 32}, "platform_2", b2_staticBody, Textures::SceneID::Grass, EntityType::Climbable },
+      {{380, 380}, {150, 32}, "platform_3", b2_staticBody, Textures::SceneID::Grass, EntityType::Climbable },
+      {{500, 500}, {320, 32}, "platform_4", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{720, 420}, {120, 32}, "platform_5", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{780, 300}, {120, 32}, "platform_6", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{720, 600}, {120, 32}, "platform_7", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{780, 700}, {120, 32}, "platform_8", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{300, 100}, {50, 50}, "box_pushable_1", b2_dynamicBody, Textures::SceneID::BoxPushable, EntityType::None }
    }},
     {ELevel::Level2,
-     {{{600, 800}, {1200, 20}, "floor", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{8, 580}, {16, 820}, "left_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{1190, 580}, {16, 1100}, "right_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None}, // 1rst platform
-      {{110, 150}, {220, 32}, "platform_1", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{450, 150}, {250, 32}, "platform_2", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{390, 100}, {32, 100}, "grate_1", b2_staticBody, Textures::SceneID::Grate, EntityType::None},
-      {{380, 370}, {200, 32}, "platform_3", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{400, 364}, {60, 20}, "button_1", b2_staticBody, Textures::SceneID::Button, EntityType::None},
-      {{1100, 800}, {60, 20}, "button_2", b2_staticBody, Textures::SceneID::Button, EntityType::None},
-      {{496, 345}, {32, 85}, "platform_3_wall", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{591, 435}, {32, 595}, "middle_wall", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
-      {{750, 100}, {50, 50}, "box_pushable_1", b2_dynamicBody, Textures::SceneID::BoxPushable, EntityType::None},
-      {{900, 280}, {50, 50}, "box_pushable_2", b2_dynamicBody, Textures::SceneID::BoxPushable, EntityType::None},
-      {{60, 800}, {60, 20}, "teleport_1", b2_staticBody, Textures::SceneID::Teleport, EntityType::None},
-      {{870, 800}, {60, 20}, "teleport_2", b2_staticBody, Textures::SceneID::Teleport, EntityType::None},
-      {{950, 385}, {250, 32}, "platform_4", b2_staticBody, Textures::SceneID::Grass, EntityType::None},
+     {{{600, 800}, {1200, 20}, "floor", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{8, 580}, {16, 820}, "left_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{1190, 580}, {16, 1100}, "right_side", b2_staticBody, Textures::SceneID::Grass, EntityType::None }, // 1rst platform
+      {{110, 150}, {220, 32}, "platform_1", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{450, 150}, {250, 32}, "platform_2", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{390, 100}, {32, 100}, "grate_1", b2_staticBody, Textures::SceneID::Grate, EntityType::None },
+      {{380, 370}, {200, 32}, "platform_3", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{400, 364}, {60, 20}, "button_1", b2_staticBody, Textures::SceneID::Button, EntityType::None },
+      {{1100, 800}, {60, 20}, "button_2", b2_staticBody, Textures::SceneID::Button, EntityType::None },
+      {{496, 345}, {32, 85}, "platform_3_wall", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{591, 435}, {32, 595}, "middle_wall", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
+      {{750, 100}, {50, 50}, "box_pushable_1", b2_dynamicBody, Textures::SceneID::BoxPushable, EntityType::None },
+      {{900, 280}, {50, 50}, "box_pushable_2", b2_dynamicBody, Textures::SceneID::BoxPushable, EntityType::None },
+      {{60, 800}, {60, 20}, "teleport_1", b2_staticBody, Textures::SceneID::Teleport, EntityType::None },
+      {{870, 800}, {60, 20}, "teleport_2", b2_staticBody, Textures::SceneID::Teleport, EntityType::None },
+      {{950, 385}, {250, 32}, "platform_4", b2_staticBody, Textures::SceneID::Grass, EntityType::None },
    }}
   };
 };

@@ -5,7 +5,7 @@
 #include <Ryu/Physics/Raycast.h>
 #include <Ryu/Physics/RaycastTypes.h>
 
-#include <box2d/b2_math.h>
+#include <box2d/box2d.h>
 
 // namespace ryu {
 

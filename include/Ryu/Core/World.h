@@ -15,7 +15,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <array>
-#include <box2d/b2_math.h>
+#include <box2d/box2d.h>
 #include <vector>
 #include <memory>
 

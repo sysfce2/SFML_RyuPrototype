@@ -10,7 +10,7 @@
 #include <Ryu/Core/EventManager.h>
 #include <Ryu/Core/Utilities.h>
 #include <Ryu/Core/World.h>
-#include <Ryu/Physics/DebugDraw.h>
+//#include <Ryu/Physics/DebugDraw.h>
 #include <Ryu/Physics/Raycast.h>
 #include <Ryu/Scene/Crate.h>
 #include <Ryu/Scene/EntityStatic.h>
@@ -23,9 +23,7 @@
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/System/Angle.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <box2d/b2_body.h>
-#include <box2d/b2_draw.h>
-#include <box2d/b2_world.h>
+#include <box2d/box2d.h>
 // TODO: integrate the files in the project
 #include <../build/_deps/tracy-src/public/tracy/Tracy.hpp>
 
@@ -283,7 +281,7 @@ void World::setDebugDrawer(sf::RenderTarget &target) {
     // Set flags for things that should be drawn
     // ALWAYS remember to set at least one flag,
     // otherwise nothing will be drawn
-    debugDrawer.SetFlags(b2Draw::e_shapeBit | b2Draw::e_pairBit);
+    debugDrawer.SetAllFlags(); //SetFlags(b2Draw::e_shapeBit | b2Draw::e_pairBit);
     // Set our drawer as world's drawer
     // TODO: crashes here ?
     // mPhysics.setDebugDrawer(dbgDrawer);

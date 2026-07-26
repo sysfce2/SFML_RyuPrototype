@@ -60,7 +60,8 @@ CharacterStateLedgeHang::enter(CharacterBase& character)
     auto posSprite = spriteAni.getPosition();
     auto origSprite = spriteAni.getOrigin();
 
-    character.getBody()->SetGravityScale(0); // "flymode"
+    auto bodyId = character.getBody();
+    b2Body_SetGravityScale(bodyId, 0); // "flymode"
     character.setupAnimation(Textures::CharacterID::IchiLedgeHangIdle);
     character.setCharacterStateEnum(ECharacterState::Hanging);
     sf::Vector2f vec{(float)posSprite.x,(float)posSprite.y-82.f};
@@ -74,7 +75,8 @@ void
 CharacterStateLedgeHang::exit(CharacterBase& character)
 {
     character.getSpriteAnimation().restart();
-    character.getBody()->SetGravityScale(4.8);
+    auto bodyId = character.getBody();
+    b2Body_SetGravityScale(bodyId, 4.8); // TODO: remove magic number, at least constant ?
 }
 
 //} /// namespace ryu
