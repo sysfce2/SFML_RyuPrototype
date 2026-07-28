@@ -143,26 +143,44 @@ Physics::draw(sf::RenderWindow& window)
     // TODO: next step ask with help on ChatGTP what could be wrong in this situation
     if (sceneObjects.size() > 0) {
         for (auto& obj : sceneObjects.at(ELevel::Level2)) {
-            fmt::print("draw: get PhysicsBody: {} \n",b2Body_IsValid(obj.mPhysicsBodyId) ? "no there" : "is there");
+            fmt::print("try to draw {}, with PhysicsBodyId: {} \n"
+                       , obj.mName
+                       , B2_IS_NULL(obj.mPhysicsBodyId) ? "not there" : std::to_string(obj.mPhysicsBodyId.index1));
             auto shape = getShapeFromPhysicsBody(obj.mPhysicsBodyId);
+            
             if (shape == nullptr) {
                 fmt::print("shape ptr seems to be null\n");
                 fmt::print("damn\n");
-                return;
+                //return;
             }
-
-            window.draw(*(shape));
+            else
+            {
+                window.draw(*(shape));
+            }
         }
+        fmt::print("#### next frame ####\n");
+        fmt::print("\n");
+        fmt::print("\n");
     }
 }
 
 sf::Shape*
 Physics::getShapeFromPhysicsBody(b2BodyId physicsBodyId) {
-    if (b2Body_IsValid(physicsBodyId))
+    if (not b2Body_IsValid(physicsBodyId) || B2_IS_NULL(physicsBodyId))
+    {
+        fmt::print("Body is null or invalid! \n");
         return nullptr;
+    }
 
-    auto user_data = b2Body_GetUserData(physicsBodyId);
-    auto entity = reinterpret_cast<EntityStatic*>(user_data);
+    void* userData = b2Body_GetUserData(physicsBodyId);
+
+    if (not userData)
+    {
+        fmt::print("Body UserData for id: {} is null! \n", physicsBodyId.index1);
+        return nullptr;
+    }
+    
+    //auto entity = reinterpret_cast<EntityStatic*>(user_data);
     /*
     auto body = reinterpret_cast<uintptr_t>(physicsBody);
     sf::Shape* shape =
@@ -170,7 +188,8 @@ Physics::getShapeFromPhysicsBody(b2BodyId physicsBodyId) {
     */
 
     sf::Shape* shape =
-        reinterpret_cast<sf::RectangleShape*>(entity->getShape());
+        static_cast<sf::RectangleShape*>(userData);
+        //reinterpret_cast<sf::RectangleShape*>(entity->getShape());
 
     if (shape) {
 
@@ -253,7 +272,7 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
     // shape->setTexture(
     //    &baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));
 
-    b2Shape_SetUserData(charPhysics.mShapeId, &shape);
+    b2Body_SetUserData(charPhysics.mBodyId, &shape);
     //b2ShapeId shapeId = b2Body_AddShape(charPhysics.mBodyId, )
     
     fmt::print("Init character at position {},{}\n",
@@ -270,12 +289,27 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
 void
 Physics::createPhysicsSceneObjects(ELevel level)
 {
+    
+
+    
     int i = 0;
-    for(auto obj : sceneObjects.at(level))
+    for(auto& obj : sceneObjects.at(level))
     {
         fmt::print("create: {} \n", obj.mName);
-        auto physObj = createPhysicsBody(obj, i);
-        obj.mPhysicsBodyId = physObj;
+        obj.mPhysicsBodyId = createPhysicsBody(obj, i);
+        fmt::print("After set: Physicsbody for {} set ,{} \n",obj.mName, B2_IS_NULL(obj.mPhysicsBodyId) ? "null_BodyId" : "physBody exists");
+        fmt::print("PhysicsID: {}\n", obj.mPhysicsBodyId.index1);
+         //obj.mPhysicsBodyId = std::move(physObj);
+        // phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(obj)));
+    }
+    
+    i = 0;
+    for(auto& obj : sceneObjects.at(level))
+    {
+        fmt::print("check: {} \n", obj.mName);
+        auto body_id = obj.mPhysicsBodyId;
+        B2_IS_NULL(body_id) ? fmt::print("BodyId is null. \n") :fmt::print("BodyId is NOT null. \n");   
+        fmt::print("PhysicsID: {}\n", body_id.index1);
         // phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(obj)));
     }
 }
@@ -313,9 +347,9 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     // std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
     // sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
     // TODO howto smartptr ?
-    // sf::Shape *shape = new sf::RectangleShape(objSize);
-    std::unique_ptr<sf::Shape> shape =
-        std::make_unique<sf::RectangleShape>(sf::Vector2f(objSize));
+    sf::Shape *shape = new sf::RectangleShape(sf::Vector2f(objSize));
+    //std::unique_ptr<sf::Shape> shape =
+    //    std::make_unique<sf::RectangleShape>(sf::Vector2f(objSize));
 
     shape->setOrigin({(float)(objSize.x / 2.0), (float)(objSize.y / 2.0)});
     shape->setPosition(sf::Vector2f(objPosition.x, objPosition.y));
@@ -333,7 +367,6 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
         shape->setFillColor(sf::Color::Green);
     }
 
-    b2Shape_SetUserData(shapeId, &shape);
     
     // TODO: check what is staticEntity for
     auto staticEntity = std::make_unique<EntityStatic>(sceneObject.mEntityType);
@@ -352,11 +385,27 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
 
     staticEntity->setCornerPoints(cornerPoints);
     // TODO: is this up to date and needable ?
-    staticEntity->setShape(std::move(shape));
+    //staticEntity->setShape(std::unique_ptr<sf::Shape>(shape));
+    
     // res->GetUserData().pointer = reinterpret_cast<uintptr_t>(staticEntity.get());
-    mStaticEntities[bodyId] = std::move(staticEntity);
     //mStaticEntities[reinterpret_cast<uintptr_t>(res)] = staticEntity;
 
+    //sf::Shape* rawShape = shape.release();
+    
+    //auto staticShape = mStaticEntities[bodyId]->getShape();
+    b2Body_SetUserData(bodyId, shape);
+
+    auto userData = b2Body_GetUserData(bodyId);
+
+    if(userData)
+    {
+       fmt::print("Getting userData directly is null.\n"); 
+    }
+    else
+    {
+       fmt::print("UserData is there.\n");
+        
+    }
     // Dangling pointer for EntityStatic ?
     //sceneObject.mPhysicsBody = res;
     // TODO: find out why the physbody is not copied to sceneObjects ! sie print debug, its in obj but not in the map
@@ -366,9 +415,11 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     fmt::print("Before set: Physicsbody for {} set ,{}, i={} \n",sceneObject.mName, B2_IS_NULL(sceneObject.mPhysicsBodyId) ? "null_BodyId" : "physBody exists", i);
     fmt::print("{} sceneObjects.at({}): , {} \n",i,sceneObjects.at(ELevel::Level2)[i].mName, B2_IS_NULL(sceneObjects.at(ELevel::Level2)[i].mPhysicsBodyId) ? "physbody==null_BodyId" : "physBody exists");
     //fmt::print("BodyID: {} \n", bodyId);
-    sceneObject.mPhysicsBodyId = bodyId;
-    fmt::print("After set: Physicsbody for {} set ,{} \n",sceneObject.mName, B2_IS_NULL(sceneObject.mPhysicsBodyId) ? "null_BodyId" : "physBody exists");
+ //   sceneObject.mPhysicsBodyId = std::move(bodyId);
     i++;
+    //mStaticEntities[bodyId]->setShape(std::unique_ptr<sf::Shape>(shape));
+
+//    return sceneObject.mPhysicsBodyId; // bodyId;
     return bodyId;
 
 }
