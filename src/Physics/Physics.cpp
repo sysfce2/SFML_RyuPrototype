@@ -1,8 +1,11 @@
 #include "Ryu/Core/AssetIdentifiers.h"
 #include "Ryu/Debug/b2DrawSFML.hpp"
+#include "Ryu/Events/EventEnums.h"
 #include "Ryu/Scene/EntityStatic.h"
 #include "Ryu/Scene/SceneEnums.h"
 #include <Ryu/Physics/Physics.h>
+#include <Ryu/Events/PhysicsEvents.h>
+#include <Ryu/Events/EventBus.h>
 
 #include <Ryu/Core/Utilities.h>
 
@@ -103,6 +106,42 @@ void
 Physics::update()
 {
     b2World_Step(mPhysicsWorldId, PHYSICS_TIME_STEP, SUBSTEP_COUNT); //VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+
+    // Emit update events for dynamic bodies
+    for (auto& [name, charPhysics] : mCharacterPhysics) {
+        if (!b2Body_IsValid(charPhysics.mBodyId)) continue;
+
+        // Skip if not dynamic or sleeping
+        if (b2Body_GetType(charPhysics.mBodyId) != b2_dynamicBody) continue;
+        if (!b2Body_IsAwake(charPhysics.mBodyId)) continue;
+            auto position = b2Body_GetPosition(charPhysics.mBodyId);
+            auto rotation = b2Rot_GetAngle(b2Body_GetRotation(charPhysics.mBodyId));
+
+            PhysicsObjectUpdatedEvent event;
+            event.bodyId = charPhysics.mBodyId;
+            event.position = position;
+            event.rotation = rotation;
+            EventBus::emit(Ryu::EPhysicsEvent::CharacterUpdated, event);
+    }
+
+    // --- Emit updates for dynamic SCENE OBJECTS when they're transformed (e.g., falling boxes) ---
+    for (auto& [level, objects] : sceneObjects) {
+        for (auto& obj : objects) {
+            if (!b2Body_IsValid(obj.mPhysicsBodyId)) continue;
+
+            // Skip if not dynamic or sleeping
+            if (obj.mType != b2_dynamicBody) continue;
+            if (!b2Body_IsAwake(obj.mPhysicsBodyId)) continue;
+
+            PhysicsObjectUpdatedEvent event;
+            event.bodyId = obj.mPhysicsBodyId;
+            event.name = obj.mName;
+            event.position = b2Body_GetPosition(obj.mPhysicsBodyId);
+            event.rotation = b2Rot_GetAngle(b2Body_GetRotation(obj.mPhysicsBodyId));
+            EventBus::emit(Ryu::EPhysicsEvent::ObjectUpdated, event);
+        }
+    }
+    
 }
 
 void
@@ -308,32 +347,33 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
     mCharacterPhysics.insert(
         std::make_pair(character.getCharacterName(), charPhysics)
     );
+
+    // Emit event for new physics object
+    PhysicsObjectCreatedEvent event;
+    event.bodyId = charPhysics.mBodyId;
+    event.shapeId = charPhysics.mShapeId;
+    event.name = character.getCharacterName();
+    event.size = {size_x, size_y};
+    event.isDynamic = true;
+    event.textureId = Textures::SpritesheetID::Ichi80x96;  // StartSpritesheet is the normal one
+    
+    EventBus::emit(Ryu::EPhysicsEvent::CharacterCreated, event);
+
+    // EventBus::emit(Ryu::EPhysicsEvent::ObjectCreated, event);
 }
 
 void
 Physics::createPhysicsSceneObjects(ELevel level)
 {
-    
-
-    
     int i = 0;
     for(auto& obj : sceneObjects.at(level))
     {
         fmt::print("create: {} \n", obj.mName);
         obj.mPhysicsBodyId = createPhysicsBody(obj, i);
-        fmt::print("After set: Physicsbody for {} set ,{} \n",obj.mName, B2_IS_NULL(obj.mPhysicsBodyId) ? "null_BodyId" : "physBody exists");
-        fmt::print("PhysicsID: {}\n", obj.mPhysicsBodyId.index1);
-         //obj.mPhysicsBodyId = std::move(physObj);
-        // phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(obj)));
-    }
-    
-    i = 0;
-    for(auto& obj : sceneObjects.at(level))
-    {
-        fmt::print("check: {} \n", obj.mName);
-        auto body_id = obj.mPhysicsBodyId;
-        B2_IS_NULL(body_id) ? fmt::print("BodyId is null. \n") :fmt::print("BodyId is NOT null. \n");   
-        fmt::print("PhysicsID: {}\n", body_id.index1);
+        fmt::print("After set: Physicsbody for {} set ,{} with ID: {}. \n",obj.mName
+                   , B2_IS_NULL(obj.mPhysicsBodyId) ? "null_BodyId" : "physBody exists"
+                   , obj.mPhysicsBodyId.index1);
+        // TODO: still relevant ?
         // phGroundBodies.emplace_back(PhysicsObject("", createPhysicalBox(obj)));
     }
 }
@@ -366,11 +406,23 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     b2ShapeDef shapeDef = b2DefaultShapeDef(); // initialize shapedefinition
     shapeDef.density = 2.0; // TODO make it configurable ?
     // shapeDef.friction = 0.98; // deprecated since Box2D 3.1
-    // fixtureDef.restitution = 0.1;
     
+    b2Filter filter = b2DefaultFilter();
+    filter.categoryBits = CollisionCategories::STATIC;  // This is a static object
+    filter.maskBits = CollisionCategories::DYNAMIC | CollisionCategories::PLAYER;  // Collide with dynamic and player
+    filter.groupIndex = 0;
+    
+    shapeDef.filter = filter;
+
+    b2SurfaceMaterial material = b2DefaultSurfaceMaterial();
+    material.restitution = 0.2f;  // Bounciness (0 = no bounce, 1 = perfect bounce)
+    material.friction = 0.3f;     // Friction coefficient
+
     b2Polygon box = b2MakeBox((objSize.x / 2.0), (objSize.y / 2.0));
 
     b2ShapeId shapeId = b2CreatePolygonShape(bodyId, &shapeDef, &box);
+    b2Shape_SetSurfaceMaterial(shapeId, material);
+
     // std::unique_ptr<sf::RectangleShape> shape =
     // std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
     // sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
@@ -436,22 +488,22 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
        fmt::print("UserData is there.\n");
         
     }
-    // Dangling pointer for EntityStatic ?
-    //sceneObject.mPhysicsBody = res;
-    // TODO: find out why the physbody is not copied to sceneObjects ! sie print debug, its in obj but not in the map
-    // investigate further with state from before (see MR)
-    // is it maybe bc of the definition of the objects (many values are predefined in SceneObjectPhysicsParameters::SceneObjectPhysicsParameters() :
-    // tryo so set them by hand at creation in the map ....
-    fmt::print("Before set: Physicsbody for {} set ,{}, i={} \n",sceneObject.mName, B2_IS_NULL(sceneObject.mPhysicsBodyId) ? "null_BodyId" : "physBody exists", i);
-    fmt::print("{} sceneObjects.at({}): , {} \n",i,sceneObjects.at(ELevel::Level2)[i].mName, B2_IS_NULL(sceneObjects.at(ELevel::Level2)[i].mPhysicsBodyId) ? "physbody==null_BodyId" : "physBody exists");
-    //fmt::print("BodyID: {} \n", bodyId);
- //   sceneObject.mPhysicsBodyId = std::move(bodyId);
     i++;
+    // TODO: keep this not in the physics-class !!! -> renderer ? 
     //mStaticEntities[bodyId]->setShape(std::unique_ptr<sf::Shape>(shape));
 
-//    return sceneObject.mPhysicsBodyId; // bodyId;
+    // Emit event for new physics object
+    PhysicsObjectCreatedEvent event;
+    event.bodyId = bodyId;
+    event.shapeId = shapeId;
+    event.name = sceneObject.mName;
+    //TODO: convert correctly
+    event.size = sceneObject.mSize;
+    event.isDynamic = (sceneObject.mType == b2_dynamicBody);
+    event.textureId = sceneObject.mTextureId;  // Pass texture ID for rendering
+    
+    EventBus::emit(Ryu::EPhysicsEvent::ObjectCreated, event);
     return bodyId;
-
 }
 
 void

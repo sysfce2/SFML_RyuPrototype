@@ -19,6 +19,9 @@ namespace Ryu{
     
     BETTER_ENUM(EPhysicsEvent, char
                 ,None=0
+                ,CharacterCreated
+                ,CharacterDestroyed
+                ,CharacterUpdated
                 ,ObjectCreated
                 ,ObjectDestroyed
                 ,ObjectUpdated
