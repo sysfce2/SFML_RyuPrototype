@@ -57,11 +57,11 @@ SceneObjectPhysicsParameters::SceneObjectPhysicsParameters() :
 
 
 SceneObjectPhysicsParameters::SceneObjectPhysicsParameters(
-        sf::Vector2i position, sf::Vector2i size,
+        b2Vec2 positionInPixel, b2Vec2 sizeInPixel,
         std::string name, b2BodyType type,
         Textures::SceneID textureId, EntityType entityType) :
-    mPosition(position),
-    mSize(size),
+    mPosition(Converter::pixelsToMeters(positionInPixel.x), Converter::pixelsToMeters(positionInPixel.y)),
+    mSize(Converter::pixelsToMeters(sizeInPixel.x), Converter::pixelsToMeters(sizeInPixel.y)),
     mName(name),
     mType(type),
     mTextureId(textureId),
@@ -106,6 +106,25 @@ Physics::update()
 }
 
 void
+Physics::onBodyCreated(BodyCreatedCallback callback)
+{
+    mBodyCreatedCallbacks.push_back(callback);
+}
+
+void
+Physics::onBodyDestroyed(BodyDestroyedCallback callback)
+{
+    mBodyDestroyedCallbacks.push_back(callback);
+}
+
+void
+Physics::onBodyTransformed(BodyTransformedCallback callback)
+{
+    mBodyTransformedCallbacks.push_back(callback);
+}
+
+
+void
 Physics::setDebugPhysics(bool debugPhysics)
 {
     mDebugPhysicsActive = debugPhysics;
@@ -141,11 +160,17 @@ Physics::draw(sf::RenderWindow& window)
     // before the refactoring the physicsbodies were emplaced in an physicsbodyarray
     // and created there directly
     // TODO: next step ask with help on ChatGTP what could be wrong in this situation
+    
     if (sceneObjects.size() > 0) {
         for (auto& obj : sceneObjects.at(ELevel::Level2)) {
-            fmt::print("try to draw {}, with PhysicsBodyId: {} \n"
+            fmt::print("try to draw {}, with PhysicsBodyId: {} , size {}/{} , position {}/{} \n"
                        , obj.mName
-                       , B2_IS_NULL(obj.mPhysicsBodyId) ? "not there" : std::to_string(obj.mPhysicsBodyId.index1));
+                       , B2_IS_NULL(obj.mPhysicsBodyId) ? "not there" : std::to_string(obj.mPhysicsBodyId.index1)
+                       , obj.mSize.x
+                       , obj.mSize.y
+                       , obj.mPosition.x
+                       , obj.mPosition.y
+            );
             auto shape = getShapeFromPhysicsBody(obj.mPhysicsBodyId);
             
             if (shape == nullptr) {
@@ -162,6 +187,7 @@ Physics::draw(sf::RenderWindow& window)
         fmt::print("\n");
         fmt::print("\n");
     }
+    
 }
 
 sf::Shape*
@@ -198,10 +224,9 @@ Physics::getShapeFromPhysicsBody(b2BodyId physicsBodyId) {
             auto bodyRot = b2Body_GetRotation(physicsBodyId);
             float angleInRadians = b2Rot_GetAngle(bodyRot);
             shape->setPosition({
-                Converter::metersToPixels(bodyPos.x),
-                Converter::metersToPixels(bodyPos.y)});
-            shape->setRotation(
-                sf::degrees(Converter::radToDeg<double>(angleInRadians)));
+                bodyPos.x,
+                bodyPos.y});
+            shape->setRotation(sf::radians(angleInRadians));
         } catch (std::exception) {
             fmt::print("No shape.\n");
         }
@@ -257,7 +282,6 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
 
     charPhysics.mShapeDef = shapeDef;
     charPhysics.mShapeId = b2CreatePolygonShape(charPhysics.mBodyId, &shapeDef, &polygonBoxShape);
-    //charPhysic.mShapeId. = (uintptr_t)shape; //.get();
     
     // SFML shape 
     // TODO: with SFML 3 there are probably smartPointer more elegant ? otherwise do RAII !
@@ -268,8 +292,8 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
     // std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x, size_y));
     shape->setOrigin({size_x / 2.0f, size_y / 2.0f});
     shape->setPosition(sf::Vector2f(position.x, position.y));
-    // TODO check if we need setting a texture
-    // shape->setTexture(
+    // TODO check how we set a texture
+    //shape->setTexture(
     //    &baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));
 
     b2Body_SetUserData(charPhysics.mBodyId, &shape);
@@ -321,11 +345,15 @@ b2BodyId
 Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
 //Physics::createPhysicsBody(SceneObjectPhysicsParameters sceneObject)
 {
-    sf::Vector2i objPosition = sceneObject.mPosition;
-    sf::Vector2i objSize = sceneObject.mSize;
+//    b2Vec2 objPosition = b2Vec2(Converter::pixelsToMeters(sceneObject.mPosition.x)
+//                               ,Converter::pixelsToMeters(sceneObject.mPosition.y));
+
+    b2Vec2 objPosition = sceneObject.mPosition;
+
+    b2Vec2 objSize = sceneObject.mSize;
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.position = (b2Vec2){Converter::pixelsToMeters<double>(objPosition.x), Converter::pixelsToMeters<double>(objPosition.y)};
+    bodyDef.position = (b2Vec2){Converter::metersToPixels(objPosition.x), Converter::metersToPixels(objPosition.y)};
     bodyDef.type = sceneObject.mType;
     
     if(B2_IS_NULL(mPhysicsWorldId)){
@@ -340,28 +368,30 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     // shapeDef.friction = 0.98; // deprecated since Box2D 3.1
     // fixtureDef.restitution = 0.1;
     
-    b2Polygon box = b2MakeBox(Converter::pixelsToMeters<double>(objSize.x / 2.0), Converter::pixelsToMeters<double>(objSize.y / 2.0));
+    b2Polygon box = b2MakeBox((objSize.x / 2.0), (objSize.y / 2.0));
 
     b2ShapeId shapeId = b2CreatePolygonShape(bodyId, &shapeDef, &box);
     // std::unique_ptr<sf::RectangleShape> shape =
     // std::make_unique<sf::RectangleShape>(sf::Vector2f(size_x,size_y));
     // sf::RectangleShape shape{sf::Vector2f(size_x,size_y)};
-    // TODO howto smartptr ?
-    sf::Shape *shape = new sf::RectangleShape(sf::Vector2f(objSize));
+    // TODO remove sfml dependency
+    // use smartpointer ?
+    sf::Vector2f sfml_size{Converter::metersToPixels(objSize.x), Converter::metersToPixels(objSize.y)};
+    sf::Shape *shape = new sf::RectangleShape(sfml_size);
     //std::unique_ptr<sf::Shape> shape =
     //    std::make_unique<sf::RectangleShape>(sf::Vector2f(objSize));
 
-    shape->setOrigin({(float)(objSize.x / 2.0), (float)(objSize.y / 2.0)});
-    shape->setPosition(sf::Vector2f(objPosition.x, objPosition.y));
+    shape->setOrigin({(float)(Converter::metersToPixels(objSize.x) / 2.0), (float)(Converter::metersToPixels(objSize.y) / 2.0)});
+    shape->setPosition(sf::Vector2f(Converter::metersToPixels(objPosition.x), Converter::metersToPixels(objPosition.y)));
 
     if (sceneObject.mTextureId != Textures::SceneID::Unknown) {
-         shape->setFillColor(sf::Color::Red);
+         //shape->setFillColor(sf::Color::Red);
          shape->setOutlineColor(sf::Color::Red);
          shape->setOutlineThickness(2.0f);
         // TODO: how to set texture without coupling to texturestuff
         // this can be probably be part of the Levelmanager and to LM we need a link
         // from World and from Physics ... ? MAYBE
-        // shape->setTexture(&mSceneTextures.getResource(texture));
+        //shape->setTexture(&mSceneTextures.getResource(texture));
     }
     else {
         shape->setFillColor(sf::Color::Green);

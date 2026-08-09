@@ -3,7 +3,7 @@
 
 namespace Ryu{
 
-BETTER_ENUM(EEvent, char
+    BETTER_ENUM(EEvent, char
         ,None=0
         ,CharacterSpeedChanged
         ,CharacterStartJump
@@ -14,7 +14,15 @@ BETTER_ENUM(EEvent, char
         ,TemporaryOutput
         ,TeleportWait
         ,TeleportDo
-);
+    );
+
+    
+    BETTER_ENUM(EPhysicsEvent, char
+                ,None=0
+                ,ObjectCreated
+                ,ObjectDestroyed
+                ,ObjectUpdated
+    );
 
 } // namespace Ryu
 /*

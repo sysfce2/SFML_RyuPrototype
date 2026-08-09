@@ -47,7 +47,7 @@ struct CharacterPhysicsParameters{
     // due increase of gravityscale (falling is then more gamey) the physicbody
     // needs some adustments for movement so its not behind the movement of
     // the characteranimation
-    sf::Vector2f mMoveMultiplier;
+    b2Vec2 mMoveMultiplier;
 
     b2Vec2 mJumpForwardImpulse;
     b2Vec2 mJumpUpImpulse;
@@ -59,12 +59,12 @@ struct SceneObjectPhysicsParameters
 {
     SceneObjectPhysicsParameters();
     SceneObjectPhysicsParameters(
-        sf::Vector2i position, sf::Vector2i size,
+        b2Vec2 position, b2Vec2 size,
         std::string name, b2BodyType type, /* = b2_staticBody,*/
         Textures::SceneID textureId, /* = Textures::SceneID::Grass,*/ EntityType entityType); /*=EntityType::None);*/
 
-    sf::Vector2i mPosition;
-    sf::Vector2i mSize;
+    b2Vec2 mPosition;
+    b2Vec2 mSize;
     std::string mName;
     b2BodyType mType;
     Textures::SceneID mTextureId;
@@ -91,6 +91,12 @@ struct b2BodyIdEqual {
 };
 
 class Physics : public Subject {
+
+    // use callbacks (for Observer-pattern) to notify other systems, like Renderer when physics changed
+    using BodyCreatedCallback = std::function<void(b2BodyId, const SceneObjectPhysicsParameters&)>;
+    using BodyDestroyedCallback = std::function<void(b2BodyId)>;
+    using BodyTransformedCallback = std::function<void(b2BodyId, b2Vec2, b2Rot)>;
+        
    public:
     Physics();
     ~Physics();
@@ -105,6 +111,10 @@ class Physics : public Subject {
     void setDebugDrawer(b2DrawSFML dbgDrawer);
     void setDebugPhysics(bool debugPhysics);
     void update();
+
+    void onBodyCreated(BodyCreatedCallback callback);
+    void onBodyDestroyed(BodyDestroyedCallback callback);
+    void onBodyTransformed(BodyTransformedCallback callback);
 
    private:
     //void createPhysicsBody(SceneObjectPhysicsParameters sceneObject);
@@ -123,7 +133,11 @@ class Physics : public Subject {
     float mPhTimeStep;
     bool mDebugPhysicsActive;
 
-   public: // TODO: tmp storage !!!! -> make static again outside of class
+    std::vector<BodyCreatedCallback> mBodyCreatedCallbacks;
+    std::vector<BodyDestroyedCallback> mBodyDestroyedCallbacks;
+    std::vector<BodyTransformedCallback> mBodyTransformedCallbacks;
+
+   public: // TODO: tmp storage !!!! -> make static again outside of class, e.g. mnovce to renderer-class
     std::map<ELevel , std::vector<SceneObjectPhysicsParameters>> sceneObjects = {
     {ELevel::Level1,
      {{{600, 780}, {1200, 20}, "floor", b2_staticBody, Textures::SceneID::Grass, EntityType::None },

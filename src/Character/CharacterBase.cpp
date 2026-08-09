@@ -174,6 +174,7 @@ CharacterBase::initPhysics()
 void
 CharacterBase::loadTextures()
 {
+    // just a transparent texture 32x32
     baseTextureManager.load(Textures::PhysicAssetsID::Empty,
                             "assets/scenes/99_dummy/box_empty.png");
 }

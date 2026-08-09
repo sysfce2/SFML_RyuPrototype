@@ -69,3 +69,6 @@ See [License.txt]. in 02_SFML_GD_BOOK.
     (- cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
     - make
     
+# system
+1. Observer/Subject-system to notify and get notified by SceneNodes
+2. Observer-pattern (WIP) for non-sceneNodes-objects (Physics/World...)
