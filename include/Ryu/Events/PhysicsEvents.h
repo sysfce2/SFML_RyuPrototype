@@ -11,7 +11,7 @@ struct PhysicsObjectCreatedEvent {
     std::string name;
     b2Vec2 size; // in m
     bool isDynamic;
-    std::variant<Textures::SceneID, Textures::SpritesheetID> textureId;  // Optional: Pass texture ID for rendering
+    std::variant<Textures::PhysicAssetsID, Textures::SceneID, Textures::SpritesheetID> textureId;  // Optional: Pass texture ID for rendering
 };
 
 struct PhysicsObjectUpdatedEvent {

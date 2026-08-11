@@ -4,6 +4,7 @@
 #include "Ryu/Physics/Physics.h"
 #include <Ryu/Core/AssetManager.h>
 #include <Ryu/Core/CommandQueue.h>
+#include <Ryu/Core/Renderer.h>
 #include <Ryu/Debug/b2DrawSFML.hpp>
 #include <Ryu/Events/EventEnums.h>
 #include <Ryu/Events/Observer.h>
@@ -78,6 +79,7 @@ class World : /*private sf::NonCopyable*/ public Observer {
     CommandQueue mActiveCommands;
 
     Physics mPhysics;
+    std::unique_ptr<Renderer> mRenderer;
 
     std::vector<sf::Text> texts;
     // TODO: move to physics

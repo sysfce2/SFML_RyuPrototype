@@ -228,6 +228,7 @@ class CharacterBase : public SceneNode, public Subject, public Observer, public 
     }
     // \ Raycastaccess
 
+    // TODO: also physics-stuff
     b2Vec2 getLinearVelocity() { return b2Body_GetLinearVelocity(mBodyId); }
     bool allowedToFall();
     bool inDuckMode();
@@ -274,6 +275,7 @@ class CharacterBase : public SceneNode, public Subject, public Observer, public 
     Ryu::Physics::RaycastComponent mRaycastComponent;
 
   private:
+    // TODO: move to Renderer-class ?!
     BaseTextureManager baseTextureManager;
     bool mDuckStateActive;
     int testStatesCount = 2;
@@ -295,6 +297,8 @@ class CharacterBase : public SceneNode, public Subject, public Observer, public 
     // TODO: physics -> physics interface
     //std::unique_ptr<b2World> &phWorldRef;
     b2BodyId mBodyId;
+
+    [[deprecated]]
     b2Fixture *mFixture;
     Textures::LevelID mCurrentLevel;
     CharacterPhysicsValues mCharacterPhysicsValues;

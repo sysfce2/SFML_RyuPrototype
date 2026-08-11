@@ -93,13 +93,21 @@ Physics::~Physics()
        for(auto& sceneObj : level.second)
        {
            // TODO: save every bodyId in a map
+           // destzroy every stored physical sceneobject
            // b2DestroyBody(sceneObj.mBodyId);
            // mPhysicsWorld->DestroyBody(sceneObj.mPhysicsBody);
        }
    }
 
-   b2DestroyWorld(mPhysicsWorldId);
-   mPhysicsWorldId = b2_nullWorldId;
+    for (auto& [name, charPhysics] : mCharacterPhysics) {
+        PhysicsObjectDestroyedEvent event;
+        event.bodyId = charPhysics.mBodyId;
+        event.name = name;
+        EventBus::emit(Ryu::EPhysicsEvent::CharacterDestroyed, event);
+    }
+
+    b2DestroyWorld(mPhysicsWorldId);
+    mPhysicsWorldId = b2_nullWorldId;
 }
 
 void
@@ -144,6 +152,7 @@ Physics::update()
     
 }
 
+// TODO: check if these are needable when using the EventBus-approach 
 void
 Physics::onBodyCreated(BodyCreatedCallback callback)
 {
@@ -192,7 +201,7 @@ Physics::debugDraw() const
 void
 Physics::draw(sf::RenderWindow& window)
 {
-
+/*
     // TODO: mPhysicsBody is nullptr but is set in CreatePhysicsBody!
     // thats why thy bodies cant be displayed
     // so probably not set correctly or destroyed when going out of scope
@@ -226,7 +235,7 @@ Physics::draw(sf::RenderWindow& window)
         fmt::print("\n");
         fmt::print("\n");
     }
-    
+  */  
 }
 
 sf::Shape*

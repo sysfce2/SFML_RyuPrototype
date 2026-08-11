@@ -50,7 +50,9 @@ World::World(sf::RenderWindow &window, EventManager& eventManager)
       phDebugPhysics(false), clock(),
       levelManager(std::make_unique<LevelManager>()),
       mEventManager(eventManager)
-      , mStaticEntities() {
+    , mStaticEntities() {
+
+    mRenderer = std::make_unique<Renderer>(mWindow);
 
     // TODO: in ctor we only should do 1 thing and if the following depends on this
     // only do this when the former is finished -> or/and PRO: use multithreading
@@ -84,6 +86,8 @@ const sf::Drawable &World::getPlayerSprite() {
 
 void World::loadTextures() {
     // TODO: cant find in debug mode !
+    // make them drawabla via the renderer !
+    /*
     mSceneTextures.load(Textures::SceneID::BoxPushable,
                         "assets/scenes/99_dummy/box_wood.png");
     mSceneTextures.load(Textures::SceneID::BGMountain,
@@ -96,7 +100,7 @@ void World::loadTextures() {
                         "assets/scenes/99_dummy/tile_teleport_1.png");
     mSceneTextures.load(Textures::SceneID::Grate,
                         "assets/scenes/99_dummy/tile_grate_1.png");
-
+*/
     // mSceneTextures.load(Textures::SceneID::Ground,
     // "assets/scenes/99_dummy/box_wood.png");
 }
@@ -114,6 +118,7 @@ void World::onNotify(const SceneNode &entity, Ryu::EEvent event) {
 
 // TODO: parametrize this for more level!
 // also: what can & should be moved to physics
+// bzw. to the renderer !!!
 void World::buildScene() {
     ZoneScopedS(60); // max_stacktracedepth = 60
     ZoneName("buildScene_World", 16);
@@ -124,7 +129,7 @@ void World::buildScene() {
 
         mSceneGraph.attachChild(std::move(layer));
     }
-
+/*
     sf::Texture &textureBg =
         mSceneTextures.getResource(Textures::SceneID::BGMountain);
     sf::IntRect textureRect(mWorldBounds);
@@ -141,11 +146,12 @@ void World::buildScene() {
         std::make_unique<Box>(Box::Type::Pushable, mSceneTextures);
     mPushBox = box.get();
     mPushBox->setPosition(sf::Vector2f(760.f,80.f));
-
-
-    auto player = mEventManager.requestPlayer(); /// TODO: get from PC
+    
     mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(
         std::move(box));
+*/
+
+    auto player = mEventManager.requestPlayer(); /// TODO: get from PC
     // TODO: is player really needable to attach to the layers ?
 //    mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(
 //        static_cast<SceneNode::Ptr>(player.get()));
@@ -305,9 +311,9 @@ void World::draw() {
     }
 
     // TODO: add the ground and stuff to the scenegraph !
+    // hmm ... now they're apart of a assetmap ...
     // make this also level dependent ! sceneObjects ios static in Physics !
-    // TODO: move to Physics
-    mPhysics.draw(mWindow);
+    mRenderer->draw();
 
     if (pBoxTest) {
         // TODO: segfault
