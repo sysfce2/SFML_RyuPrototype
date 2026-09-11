@@ -36,23 +36,18 @@
 // namespace ryu{
 World::World(sf::RenderWindow &window, EventManager& eventManager)
     : Observer("World"), mWindow(window), mWorldView(window.getDefaultView()),
-      mSceneTextures(), mSceneGraph(), mSceneLayers(),
-      mWorldBounds(               // TODO: check what it is about bounds
-          {0.f,                    // left X position
-           0.f,},                    // top Y position
-          {mWorldView.getSize().x, // widthb2Color(0.9f, 0.9f, 0.4f)
-           1200}) // mWorldView.getSize().y)                  // height
-      ,
+      mWorldBounds(
+          {0.f, 0.f},
+          {mWorldView.getSize().x, 1200}),
       mSpawnPosition({mWorldView.getSize().x / 2.f,
               (mWorldBounds.size.y - mWorldView.getSize().y)}),
-      mPushBox(nullptr),
       mPhysics(),
       phDebugPhysics(false), clock(),
       levelManager(std::make_unique<LevelManager>()),
       mEventManager(eventManager)
-    , mStaticEntities() {
+ {
 
-    mRenderer = std::make_unique<Renderer>(mWindow);
+    mRenderer = std::make_unique<Renderer>(mWindow, mEventManager);
 
     // TODO: in ctor we only should do 1 thing and if the following depends on this
     // only do this when the former is finished -> or/and PRO: use multithreading
@@ -70,13 +65,12 @@ World::World(sf::RenderWindow &window, EventManager& eventManager)
     // TODO: Race incoming !!!, see Game Ctor (create Ichi)
     // the scene should only be shown when everything is initalized and loaded !!!!
     // st. like: waiting on Event: PhysicsFinished, CharacterFinished, SceneFinished ...
-    buildScene();
+    mRenderer->buildScene();
 
     mWorldView.setCenter(mSpawnPosition);
-}
+
 
 World::~World() {
-    mPushBox = nullptr;
 }
 
 const sf::Drawable &World::getPlayerSprite() {
@@ -86,23 +80,7 @@ const sf::Drawable &World::getPlayerSprite() {
 
 void World::loadTextures() {
     // TODO: cant find in debug mode !
-    // make them drawabla via the renderer !
-    
-    mSceneTextures.load(Textures::SceneID::BoxPushable,
-                        "assets/scenes/99_dummy/box_wood.png");
-    mSceneTextures.load(Textures::SceneID::BGMountain,
-                        "assets/backgrounds/99_dummy/722756.png");
-    mSceneTextures.load(Textures::SceneID::Grass,
-                        "assets/scenes/99_dummy/tile_grass_1.png");
-    mSceneTextures.load(Textures::SceneID::Button,
-                        "assets/scenes/99_dummy/tile_button_1.png");
-    mSceneTextures.load(Textures::SceneID::Teleport,
-                        "assets/scenes/99_dummy/tile_teleport_1.png");
-    mSceneTextures.load(Textures::SceneID::Grate,
-                        "assets/scenes/99_dummy/tile_grate_1.png");
-
-    // mSceneTextures.load(Textures::SceneID::Ground,
-    // "assets/scenes/99_dummy/box_wood.png");
+    // Textures are now loaded in Renderer
 }
 
 void World::onNotify(const SceneNode &entity, Ryu::EEvent event) {
@@ -116,51 +94,22 @@ void World::onNotify(const SceneNode &entity, Ryu::EEvent event) {
     }
 }
 
-// TODO: parametrize this for more level!
-// also: what can & should be moved to physics
-// bzw. to the renderer !!!
-void World::buildScene() {
-    ZoneScopedS(60); // max_stacktracedepth = 60
-    ZoneName("buildScene_World", 16);
-    // set Layer
-    for (std::size_t i = 0; i < size_t(Layer::LayerCount); ++i) {
-        //SceneNode::Ptr layer = std::make_unique<SceneNode>(); //(new SceneNode());
-        std::shared_ptr<SceneNode> layer = std::make_shared<SceneNode>(); //(new SceneNode());
-    
-        mSceneLayers[i] = layer; //.get();
+void World::setDebugDrawer(sf::RenderTarget &target) {
+    // DebugDrawing
+    // Create debug drawer for window with 10x scale
+    // You can set any sf::RenderTarget as drawing target
+    b2DrawSFML dbgDrawer;
+    dbgDrawer.SetTarget(target);
+    dbgDrawer.SetScale(Converter::PIXELS_PER_METERS);
 
-        mSceneGraph.attachChild(std::move(layer));
-    }
-    
-    sf::Texture &textureBg =
-        mSceneTextures.getResource(Textures::SceneID::BGMountain);
-    sf::IntRect textureRect(mWorldBounds);
-    // textureBg.setRepeated(true);
+    // Set flags for things that should be drawn
+    // ALWAYS remember to set at least one flag,
+    // otherwise nothing will be drawn
+    debugDrawer.SetAllFlags();
+    // Set our drawer as world's drawer
+    // TODO: crashes here ?
+    // mPhysics.setDebugDrawer(dbgDrawer);
 
-    std::unique_ptr<SpriteNode> backgroundSprite =
-        std::make_unique<SpriteNode>(textureBg, textureRect);
-    backgroundSprite->setPosition({mWorldBounds.position.x, mWorldBounds.position.y}); // TODO before: left/top
-    mSceneLayers[static_cast<unsigned>(Layer::Background)]->attachChild(
-        std::move(backgroundSprite));
-
-    // pushable Box / moving platform test
-    std::unique_ptr<Box> box =
-        std::make_unique<Box>(Box::Type::Pushable, mSceneTextures);
-    mPushBox = box.get();
-    mPushBox->setPosition(sf::Vector2f(760.f,80.f));
-    
-    mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(
-        std::move(box));
-
-
-    auto player = mEventManager.requestPlayer(); /// TODO: get from PC
-    // TODO: is player really needable to attach to the layers ?
-//    mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(
-//        static_cast<SceneNode::Ptr>(player.get()));
-// --> player is a shared ptr, attachChild will move the pointer (only uniqueptrs) to sceneNode
-//
-    // texts.emplace_back(createText("TEST"));
-    setDebugDrawer(mWindow);
 }
 
 
@@ -226,7 +175,7 @@ World::createPhysicalBox(int pos_x, int pos_y, int size_x, int size_y,
         // shape->setFillColor(sf::Color::Red);
         // shape->setOutlineColor(sf::Color::Red);
         // shape->setOutlineThickness(2.0f);
-        shape->setTexture(&mSceneTextures.getResource(texture));
+        // shape->setTexture(&mSceneTextures.getResource(texture));
 
     } else {
         shape->setFillColor(sf::Color::Green);
@@ -301,8 +250,6 @@ void World::draw() {
 
     ZoneScopedN("Draw_World");
     mWindow.setView(mWorldView);
-    // delegate work to the scenegraph
-    mWindow.draw(mSceneGraph);
     // draw physics
     // TODO: phDebugPhysics && Physics::mDebugPhysicsActive ???
     if (phDebugPhysics) {
@@ -312,9 +259,12 @@ void World::draw() {
         player->drawRaycasts(debugDrawer); // TODO: to clarify where to move
     }
 
-    // TODO: add the ground and stuff to the scenegraph !
-    // hmm ... now they're apart of a assetmap ...
-    // make this also level dependent ! sceneObjects ios static in Physics !
+    if (phDebugPhysics) {
+        mPhysics.debugDraw();
+        auto player = mEventManager.requestPlayer();
+        player->drawRaycasts(debugDrawer);
+    }
+    
     mRenderer->draw();
 
     if (pBoxTest) {
@@ -348,7 +298,7 @@ void World::draw() {
 CommandQueue &World::getActiveCommands() {
     ZoneScopedN("getActCmd_World");
 
-    return mActiveCommands;
+    return mRenderer->getActiveCommands();
 }
 
 void World::createText(const sf::String text, sf::Text &textToShow) {
@@ -372,9 +322,6 @@ void World::update(sf::Time dt) {
 
 	ZoneScopedN("Update_World");
 
-    while (!mActiveCommands.isEmpty()) {
-        mSceneGraph.onCommand(mActiveCommands.pop(), dt);
-    }
     mPhysics.update();
     // Draw debug shapes of all physics objects
 
@@ -382,7 +329,7 @@ void World::update(sf::Time dt) {
     // TODO: is this efficient ?
     // we basically use a sharedptr of plyer in update, question is if we need this here
     // maybe here is also the discrepance btw. physics and characterassetmovement ! please investigate    mEventManager.requestPlayer()->update(dt); //slowmo
-    mSceneGraph.update(dt);
+    mRenderer->update(dt);
 
     /*
     for(auto& crate : mCrates)

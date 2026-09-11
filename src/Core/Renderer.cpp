@@ -3,13 +3,27 @@
 #include "Ryu/Events/EventEnums.h"
 #include "Ryu/Events/EventBus.h"
 #include "Ryu/Core/Utilities.h"
+#include "Ryu/Scene/Entity.h"
+#include "Ryu/Scene/SceneEnums.h"
+#include "Ryu/Core/EventManager.h"
 
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
- Renderer::Renderer(sf::RenderWindow& window)
+Renderer::Renderer(sf::RenderWindow& window, EventManager& eventManager)
      : mPhysicsAssetsManager()
      , mWindow(window)
      , mSceneAssetsManager()
      , mCharacterAssetsManager()
+     , mSceneGraph()
+     , mWorldBounds(
+          {0.f, 0.f},
+          {window.getDefaultView().getSize().x, 1200})
+     , mSpawnPosition({window.getDefaultView().getSize().x / 2.f,
+              (mWorldBounds.size.y - window.getDefaultView().getSize().y)})
+     , mPushBox(nullptr)
+     , mActiveCommands()
+     , mEventManager(eventManager)
  {
      // TODO: add assets to assetmanager like
      // baseTextureManager.load(Textures::PhysicAssetsID::Empty, "assets/scenes/99_dummy/box_empty.png");
@@ -60,68 +74,105 @@ void Renderer::loadTextures()
 
 }
 
+void Renderer::buildScene() {
+    // set Layer
+    for (std::size_t i = 0; i < size_t(Layer::LayerCount); ++i) {
+        std::shared_ptr<SceneNode> layer = std::make_shared<SceneNode>();
+        mSceneLayers[i] = layer;
+        mSceneGraph.attachChild(std::move(layer));
+    }
+    
+    sf::Texture &textureBg =
+        mSceneAssetsManager.getResource(Textures::SceneID::BGMountain);
+    sf::IntRect textureRect({0, 0, static_cast<int>(mWorldBounds.width), static_cast<int>(mWorldBounds.height)});
+
+    std::unique_ptr<SpriteNode> backgroundSprite =
+        std::make_unique<SpriteNode>(textureBg, textureRect);
+    backgroundSprite->setPosition({mWorldBounds.position.x, mWorldBounds.position.y});
+    mSceneLayers[static_cast<unsigned>(Layer::Background)]->attachChild(
+        std::move(backgroundSprite));
+
+    // pushable Box / moving platform test
+    std::unique_ptr<Box> box =
+        std::make_unique<Box>(Box::Type::Pushable, mSceneAssetsManager);
+    mPushBox = box.get();
+    mPushBox->setPosition(sf::Vector2f(760.f,80.f));
+    
+    mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(
+        std::move(box));
+
+    auto player = mEventManager.requestPlayer();
+}
+
 void Renderer::draw()
 {
-    for (auto& [name, renderObj] : mRenderObjects)
-    {
-        if (renderObj.shape)
-        {
-            mWindow.draw(*renderObj.shape);
-        }
+    mWindow.draw(mSceneGraph);
+}
 
+void Renderer::update(sf::Time dt)
+{
+    while (!mActiveCommands.isEmpty()) {
+        mSceneGraph.onCommand(mActiveCommands.pop(), dt);
     }
+    mSceneGraph.update(dt);
+}
+
+CommandQueue& Renderer::getActiveCommands()
+{
+    return mActiveCommands;
 }
 
 
 void
 Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
 {
-    auto shape = std::make_unique<sf::RectangleShape>(sf::Vector2f(event.size.x, event.size.y));
-    shape->setOrigin({event.size.x / 2.0f, event.size.y / 2.0f});
-
+    // Create a SpriteNode for the physics object
+    sf::Texture* texture = nullptr;
+    
     if (auto* physicsTextureId = std::get_if<Textures::PhysicAssetsID>(&event.textureId))
     {
         if (*physicsTextureId != Textures::PhysicAssetsID::Empty)
         {
-            // TODO: get assets the real way
-            shape->setTexture(&mPhysicsAssetsManager.getResource(*physicsTextureId));
+            texture = &mPhysicsAssetsManager.getResource(*physicsTextureId);
         }
         else
         {
-            shape->setTexture(&mPhysicsAssetsManager.getResource(Textures::PhysicAssetsID::Empty));
+            texture = &mPhysicsAssetsManager.getResource(Textures::PhysicAssetsID::Empty);
         }
     }
     else if (auto* sceneTextureId = std::get_if<Textures::SceneID>(&event.textureId))
     {
-            shape->setTexture(&mSceneAssetsManager.getResource(*sceneTextureId));
-        //t.b.c
+        texture = &mSceneAssetsManager.getResource(*sceneTextureId);
     }
     else if(auto* spriteSheetTextureId = std::get_if<Textures::SpritesheetID>(&event.textureId))
     {
-            shape->setTexture(&mCharacterAssetsManager.getResource(*spriteSheetTextureId));
-            // shape->setFillColor(sf::Color::Red); // Red if Spritesheet is Unknown
+        texture = &mCharacterAssetsManager.getResource(*spriteSheetTextureId);
     }
 
-    mRenderObjects.emplace(event.name, RenderObject{event.bodyId, std::move(shape), event.textureId});
+    if (texture)
+    {
+        auto spriteNode = std::make_unique<SpriteNode>(*texture);
+        spriteNode->setPosition(Converter::metersToPixels(event.position.x), 
+                               Converter::metersToPixels(event.position.y));
+        spriteNode->setRotation(Converter::radToDeg(event.rotation));
+        
+        // Attach to the appropriate layer
+        mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(spriteNode));
+    }
 }
 
 void
 Renderer::onPhysicsObjectUpdated(const PhysicsObjectUpdatedEvent& event)
 {
-    auto it = std::find_if(mRenderObjects.begin(), mRenderObjects.end(),
-                           [&event](const auto& pair) { return pair.second.bodyId.index1 == event.bodyId.index1; });
-
-    if (it != mRenderObjects.end())
-    {
-        auto& shape = it->second.shape;
-        shape->setPosition({Converter::metersToPixels(event.position.x)
-                , Converter::metersToPixels(event.position.y)});
-        shape->setRotation(sf::degrees(Converter::radToDeg(event.rotation)));
-    }
+    // Note: With the scenegraph approach, we don't need to manually update positions
+    // as the physics system should be updating the SceneNodes directly.
+    // This is a placeholder for any additional update logic if needed.
 }
 
 void
 Renderer::onPhysicsObjectDestroyed(const PhysicsObjectDestroyedEvent& event)
 {
-    mRenderObjects.erase(event.name);
+    // Note: With the scenegraph approach, we don't need to manually remove objects
+    // as they should be managed by the scenegraph.
+    // This is a placeholder for any cleanup logic if needed.
 }

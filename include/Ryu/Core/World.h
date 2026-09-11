@@ -12,7 +12,6 @@
 #include <Ryu/Scene/Crate.h>
 #include <Ryu/Scene/EntityStatic.h>
 #include <Ryu/Scene/LevelManager.h>
-#include <Ryu/Scene/SceneNode.h>
 #include <SFML/Graphics.hpp>
 
 #include <array>
@@ -20,17 +19,13 @@
 #include <vector>
 #include <memory>
 
-typedef AssetManager<sf::Texture, Textures::SceneID> SceneTextureHolder;
-
 class CharacterIchi;
 class b2World;
 class b2Body;
 class EventManager;
 
-
-
 // namespace ryu {
-class World : /*private sf::NonCopyable*/ public Observer {
+class World : public Observer {
 
   public:
     explicit World(sf::RenderWindow &window, EventManager& eventManager);
@@ -39,18 +34,13 @@ class World : /*private sf::NonCopyable*/ public Observer {
     void draw();
     CommandQueue &getActiveCommands();
     const sf::Drawable &getPlayerSprite();
-    // TODO: move to physics
-    sf::Shape *getShapeFromPhysicsBody(b2Body *physicsBody);
     void toggleDrawDebug() { phDebugPhysics = not phDebugPhysics; }
     void setDebugDrawer(sf::RenderTarget &target);
     void onNotify(const SceneNode &entity, Ryu::EEvent event) override;
 
   private:
-    enum class Layer { Background, Ground1, Foreground, LayerCount };
-
     void createText(const sf::String text, sf::Text &textToShow);
     void loadTextures();
-    void buildScene();
     // TODO: move to physics
     void setPhysics();
 
@@ -64,36 +54,21 @@ class World : /*private sf::NonCopyable*/ public Observer {
   private:
     sf::RenderWindow &mWindow;
     sf::View mWorldView;
-    SceneTextureHolder mSceneTextures;
-    SceneNode mSceneGraph;
-    std::array<std::shared_ptr<SceneNode>/* * */, std::size_t(Layer::LayerCount)> mSceneLayers;
-    // Shapes and MetaInfos to static physicalBodies
-    // std::vector<PhysicsObject> phGroundBodies; // TODO see in Physics -> static sceneObjects
-    std::map<uintptr_t, std::unique_ptr<EntityStatic> > mStaticEntities;
-
-
     sf::FloatRect mWorldBounds;
     sf::Vector2f mSpawnPosition;
-    Box *mPushBox;
 
-    CommandQueue mActiveCommands;
+    std::vector<sf::Text> texts;
+    bool phDebugPhysics;
+    float phTimeStep;
 
     Physics mPhysics;
     std::unique_ptr<Renderer> mRenderer;
-
-    std::vector<sf::Text> texts;
-    // TODO: move to physics
-    b2Body* pBoxTest;
-    bool phDebugPhysics;
-    float phTimeStep;
-    // b2DrawSFML debugDrawer;
 
     std::vector<Crate *> mCrates;
 
     // Clock for calculating delta time (for physics simulation)
     sf::Clock clock;
 
-    // TODO: does this belongs here ?
     std::unique_ptr<LevelManager> levelManager;
     EventManager& mEventManager;
 };
