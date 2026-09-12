@@ -69,6 +69,7 @@ World::World(sf::RenderWindow &window, EventManager& eventManager)
 
     mWorldView.setCenter(mSpawnPosition);
 
+}
 
 World::~World() {
 }
