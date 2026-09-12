@@ -2,6 +2,7 @@
 
 #include <Ryu/Core/AssetIdentifiers.h>
 #include <Ryu/Core/AssetManager.h>
+#include <Ryu/Core/CommandQueue.h>
 #include <Ryu/Events/PhysicsEvents.h>
 #include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Scene/Box.h>
