@@ -84,7 +84,7 @@ void Renderer::buildScene() {
     
     sf::Texture &textureBg =
         mSceneAssetsManager.getResource(Textures::SceneID::BGMountain);
-    sf::IntRect textureRect({0, 0, static_cast<int>(mWorldBounds.width), static_cast<int>(mWorldBounds.height)});
+    sf::IntRect textureRect(0, 0, static_cast<int>(mWorldBounds.size.x), static_cast<int>(mWorldBounds.size.y));
 
     std::unique_ptr<SpriteNode> backgroundSprite =
         std::make_unique<SpriteNode>(textureBg, textureRect);
@@ -152,9 +152,10 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
     if (texture)
     {
         auto spriteNode = std::make_unique<SpriteNode>(*texture);
-        spriteNode->setPosition(Converter::metersToPixels(event.position.x), 
-                               Converter::metersToPixels(event.position.y));
-        spriteNode->setRotation(Converter::radToDeg(event.rotation));
+        // PhysicsObjectCreatedEvent doesn't have position/rotation, use default values
+        // These will be updated by the physics system
+        spriteNode->setPosition(0, 0);
+        spriteNode->setRotation(0);
         
         // Attach to the appropriate layer
         mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(spriteNode));
