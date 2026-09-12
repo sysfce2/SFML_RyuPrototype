@@ -187,7 +187,7 @@ void Renderer::createSceneFromConfiguration(ELevel level)
     {
         auto spriteNode = std::make_unique<SpriteNode>(
             mSceneAssetsManager.getResource(obj.mTextureId));
-        spriteNode->setPosition(obj.mPosition.x, obj.mPosition.y);
+        spriteNode->setPosition(sf::Vector2f{obj.mPosition.x, obj.mPosition.y});
         
         // Assign to layer based on object type
         if (obj.mType == b2_dynamicBody)
