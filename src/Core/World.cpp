@@ -55,7 +55,11 @@ World::World(sf::RenderWindow &window, EventManager& eventManager)
     // use events for this ... we have a nice observer pattern ^^
     loadTextures();
 
-    // build pyhsics
+    // Build scene layers BEFORE creating physics objects
+    // (Renderer subscribes to physics events in its ctor, so layers must be ready)
+    mRenderer->buildScene();
+
+    // build physics - this will emit ObjectCreated events
     //OLD:
     // setPhysics();
     //NEW:
@@ -65,7 +69,6 @@ World::World(sf::RenderWindow &window, EventManager& eventManager)
     // TODO: Race incoming !!!, see Game Ctor (create Ichi)
     // the scene should only be shown when everything is initalized and loaded !!!!
     // st. like: waiting on Event: PhysicsFinished, CharacterFinished, SceneFinished ...
-    mRenderer->buildScene();
 
     mWorldView.setCenter(mSpawnPosition);
 
