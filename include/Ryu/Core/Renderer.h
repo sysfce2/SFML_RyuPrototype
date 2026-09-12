@@ -6,6 +6,7 @@
 #include <Ryu/Events/PhysicsEvents.h>
 #include <Ryu/Scene/SceneNode.h>
 #include <Ryu/Scene/Box.h>
+#include <Ryu/Physics/Physics.h>
 #include <Ryu/Core/SpriteNode.h>
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
@@ -20,7 +21,7 @@ class EventManager;
 class Renderer {
 public:
     
-    Renderer(sf::RenderWindow& window, EventManager& eventManager);
+    Renderer(sf::RenderWindow& window, EventManager& eventManager, const std::map<ELevel, std::vector<SceneObjectPhysicsParameters>>& sceneObjects);
     
     void draw();
     void buildScene();
@@ -55,4 +56,8 @@ private:
     // Character assets
     CharacterAssetsManager mCharacterAssetsManager;
     // Character assets - end
+
+    // Reference to scene configuration from Physics
+    const std::map<ELevel, std::vector<SceneObjectPhysicsParameters>>& mSceneObjects;
+    void createSceneFromConfiguration(ELevel level);
 };

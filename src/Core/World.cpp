@@ -47,7 +47,7 @@ World::World(sf::RenderWindow &window, EventManager& eventManager)
       mEventManager(eventManager)
  {
 
-    mRenderer = std::make_unique<Renderer>(mWindow, mEventManager);
+    mRenderer = std::make_unique<Renderer>(mWindow, mEventManager, mPhysics.sceneObjects);
 
     // TODO: in ctor we only should do 1 thing and if the following depends on this
     // only do this when the former is finished -> or/and PRO: use multithreading

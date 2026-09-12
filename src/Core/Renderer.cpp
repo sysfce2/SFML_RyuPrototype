@@ -10,7 +10,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
-Renderer::Renderer(sf::RenderWindow& window, EventManager& eventManager)
+Renderer::Renderer(sf::RenderWindow& window, EventManager& eventManager, const std::map<ELevel, std::vector<SceneObjectPhysicsParameters>>& sceneObjects)
      : mPhysicsAssetsManager()
      , mWindow(window)
      , mSceneAssetsManager()
@@ -23,11 +23,14 @@ Renderer::Renderer(sf::RenderWindow& window, EventManager& eventManager)
               (mWorldBounds.size.y - window.getDefaultView().getSize().y)})
      , mPushBox(nullptr)
      , mActiveCommands()
+     , mSceneObjects(sceneObjects)
      , mEventManager(eventManager)
  {
      // TODO: add assets to assetmanager like
      // baseTextureManager.load(Textures::PhysicAssetsID::Empty, "assets/scenes/99_dummy/box_empty.png");
      loadTextures();
+     buildScene();
+     createSceneFromConfiguration(ELevel::Level2);
 
      // Subscribe to physics events
      EventBus::subscribe(Ryu::EPhysicsEvent::ObjectCreated
@@ -176,4 +179,24 @@ Renderer::onPhysicsObjectDestroyed(const PhysicsObjectDestroyedEvent& event)
     // Note: With the scenegraph approach, we don't need to manually remove objects
     // as they should be managed by the scenegraph.
     // This is a placeholder for any cleanup logic if needed.
+}
+
+void Renderer::createSceneFromConfiguration(ELevel level)
+{
+    for (auto& obj : mSceneObjects.at(level))
+    {
+        auto spriteNode = std::make_unique<SpriteNode>(
+            mSceneAssetsManager.getResource(obj.mTextureId));
+        spriteNode->setPosition(obj.mPosition.x, obj.mPosition.y);
+        
+        // Assign to layer based on object type
+        if (obj.mType == b2_dynamicBody)
+        {
+            mSceneLayers[static_cast<size_t>(Layer::Foreground)]->attachChild(std::move(spriteNode));
+        }
+        else
+        {
+            mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChild(std::move(spriteNode));
+        }
+    }
 }
