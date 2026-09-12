@@ -228,24 +228,6 @@ void World::setPhysics() {
     // mCrates.push_back(std::move(&newCrate));
 }
 
-void World::setDebugDrawer(sf::RenderTarget &target) {
-    // DebugDrawing
-    // Create debug drawer for window with 10x scale
-    // You can set any sf::RenderTarget as drawing target
-    b2DrawSFML dbgDrawer;
-    dbgDrawer.SetTarget(target);
-    dbgDrawer.SetScale(Converter::PIXELS_PER_METERS);
-
-    // Set flags for things that should be drawn
-    // ALWAYS remember to set at least one flag,
-    // otherwise nothing will be drawn
-    debugDrawer.SetAllFlags(); //SetFlags(b2Draw::e_shapeBit | b2Draw::e_pairBit);
-    // Set our drawer as world's drawer
-    // TODO: crashes here ?
-    // mPhysics.setDebugDrawer(dbgDrawer);
-
-}
-
 
 void World::draw() {
 
@@ -268,10 +250,7 @@ void World::draw() {
     
     mRenderer->draw();
 
-    if (pBoxTest) {
-        // TODO: segfault
-        // mWindow.draw(*(getShapeFromPhysicsBody(pBoxTest)));
-    }
+    // pBoxTest is deprecated, removed from header
 
     // Clear window
     //    mWindow.clear();
