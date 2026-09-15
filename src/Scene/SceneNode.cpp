@@ -26,6 +26,15 @@ SceneNode::attachChild(Ptr child)
 }
 
 SceneNode::Ptr
+SceneNode::attachChild(std::unique_ptr<SceneNode> child)
+{
+    Ptr childPtr = std::move(child);
+    childPtr->mParent = this;
+    mChildren.push_back(std::move(childPtr));
+    return mChildren.back();
+}
+
+SceneNode::Ptr
 SceneNode::detachChild(const SceneNode& node)
 {
     // search element with STDL & lamda

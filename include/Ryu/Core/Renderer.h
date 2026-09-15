@@ -60,4 +60,7 @@ private:
     // Reference to scene configuration from Physics
     const std::map<ELevel, std::vector<SceneObjectPhysicsParameters>>& mSceneObjects;
     void createSceneFromConfiguration(ELevel level);
+
+    // Map to store bodyId -> SpriteNode for physics object updates
+    std::unordered_map<b2BodyId, std::weak_ptr<SceneNode>, b2BodyIdHash, b2BodyIdEqual> mPhysicsBodyToNode;
 };

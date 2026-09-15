@@ -28,6 +28,7 @@ class SceneNode : public sf::Drawable,
 
         void attachChild(Ptr child);
         Ptr detachChild(const SceneNode& node);
+        Ptr attachChild(std::unique_ptr<SceneNode> child);
         void update(sf::Time dt);
         virtual unsigned int getCategory() const;
         sf::Transform getWorldTransform() const;

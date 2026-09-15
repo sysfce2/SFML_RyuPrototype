@@ -177,17 +177,32 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
             Converter::metersToPixels(event.position.y)
         });
         
-        // Attach to the appropriate layer
-        mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(spriteNode));
+        // Attach to the appropriate layer and get the shared_ptr
+        auto nodeShared = mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(spriteNode));
+        
+        // Store the mapping from bodyId to the sprite node for updates
+        mPhysicsBodyToNode[event.bodyId] = nodeShared;
     }
 }
 
 void
 Renderer::onPhysicsObjectUpdated(const PhysicsObjectUpdatedEvent& event)
 {
-    // Note: With the scenegraph approach, we don't need to manually update positions
-    // as the physics system should be updating the SceneNodes directly.
-    // This is a placeholder for any additional update logic if needed.
+    // Find the sprite node for this physics body
+    auto it = mPhysicsBodyToNode.find(event.bodyId);
+    if (it != mPhysicsBodyToNode.end() && !it->second.expired())
+    {
+        auto node = it->second.lock();
+        if (node)
+        {
+            // Convert position from meters (Box2D) to pixels (SFML)
+            node->setPosition(sf::Vector2f{
+                Converter::metersToPixels(event.position.x),
+                Converter::metersToPixels(event.position.y)
+            });
+            node->setRotation(sf::radians(event.rotation));
+        }
+    }
 }
 
 void
