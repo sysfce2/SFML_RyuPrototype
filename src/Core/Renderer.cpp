@@ -154,10 +154,21 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
 
     if (texture)
     {
+        // Convert size from meters (Box2D) to pixels (SFML)
+        sf::Vector2f sizePixels{
+            Converter::metersToPixels(event.size.x),
+            Converter::metersToPixels(event.size.y)
+        };
+        
         auto spriteNode = std::make_unique<SpriteNode>(*texture);
-        // Set origin to center
+        
+        // Scale the sprite to match the physics object size
         sf::Vector2f textureSize(static_cast<float>(texture->getSize().x), 
                                 static_cast<float>(texture->getSize().y));
+        sf::Vector2f scale(sizePixels.x / textureSize.x, sizePixels.y / textureSize.y);
+        spriteNode->setScale(scale);
+        
+        // Set origin to center for proper positioning
         spriteNode->setOrigin(textureSize / 2.0f);
         
         // Convert position from meters (Box2D) to pixels (SFML)
@@ -191,16 +202,27 @@ void Renderer::createSceneFromConfiguration(ELevel level)
 {
     for (auto& obj : mSceneObjects.at(level))
     {
-        auto spriteNode = std::make_unique<SpriteNode>(
-            mSceneAssetsManager.getResource(obj.mTextureId));
-        
-        // Get the texture size to set the origin to the center
         const sf::Texture& texture = mSceneAssetsManager.getResource(obj.mTextureId);
+        
+        // Convert size from meters (Box2D) to pixels (SFML)
+        sf::Vector2f sizePixels{
+            Converter::metersToPixels(obj.mSize.x),
+            Converter::metersToPixels(obj.mSize.y)
+        };
+        
+        // Create SpriteNode with texture and scale it to the desired size
+        auto spriteNode = std::make_unique<SpriteNode>(texture);
+        
+        // Scale the sprite to match the physics object size
         sf::Vector2f textureSize(static_cast<float>(texture.getSize().x), 
                                 static_cast<float>(texture.getSize().y));
+        sf::Vector2f scale(sizePixels.x / textureSize.x, sizePixels.y / textureSize.y);
+        spriteNode->setScale(scale);
+        
+        // Set origin to center for proper positioning
         spriteNode->setOrigin(textureSize / 2.0f);
         
-        // Convert from meters (Box2D) to pixels (SFML)
+        // Convert position from meters (Box2D) to pixels (SFML)
         spriteNode->setPosition(sf::Vector2f{
             Converter::metersToPixels(obj.mPosition.x),
             Converter::metersToPixels(obj.mPosition.y)
