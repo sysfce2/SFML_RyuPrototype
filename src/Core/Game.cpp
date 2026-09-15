@@ -17,7 +17,7 @@
 #include <fmt/core.h>
 #include <imgui-SFML.h>
 // TODO: integrate the files in the project
-#include <../build/_deps/tracy-src/public/tracy/Tracy.hpp>
+#include <../build_arch/_deps/tracy-src/public/tracy/Tracy.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <imgui.h>
