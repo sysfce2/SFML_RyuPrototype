@@ -187,7 +187,18 @@ void Renderer::createSceneFromConfiguration(ELevel level)
     {
         auto spriteNode = std::make_unique<SpriteNode>(
             mSceneAssetsManager.getResource(obj.mTextureId));
-        spriteNode->setPosition(sf::Vector2f{obj.mPosition.x, obj.mPosition.y});
+        
+        // Get the texture size to set the origin to the center
+        const sf::Texture& texture = mSceneAssetsManager.getResource(obj.mTextureId);
+        sf::Vector2f textureSize(static_cast<float>(texture.getSize().x), 
+                                static_cast<float>(texture.getSize().y));
+        spriteNode->setOrigin(textureSize / 2.0f);
+        
+        // Convert from meters (Box2D) to pixels (SFML)
+        spriteNode->setPosition(sf::Vector2f{
+            Converter::metersToPixels(obj.mPosition.x),
+            Converter::metersToPixels(obj.mPosition.y)
+        });
         
         // Assign to layer based on object type
         if (obj.mType == b2_dynamicBody)

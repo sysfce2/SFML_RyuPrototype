@@ -411,7 +411,7 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     b2Vec2 objSize = sceneObject.mSize;
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.position = (b2Vec2){Converter::metersToPixels(objPosition.x), Converter::metersToPixels(objPosition.y)};
+    bodyDef.position = objPosition;
     bodyDef.type = sceneObject.mType;
     
     if(B2_IS_NULL(mPhysicsWorldId)){
@@ -448,8 +448,6 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     // use smartpointer ?
     sf::Vector2f sfml_size{Converter::metersToPixels(objSize.x), Converter::metersToPixels(objSize.y)};
     sf::Shape *shape = new sf::RectangleShape(sfml_size);
-    //std::unique_ptr<sf::Shape> shape =
-    //    std::make_unique<sf::RectangleShape>(sf::Vector2f(objSize));
 
     shape->setOrigin({(float)(Converter::metersToPixels(objSize.x) / 2.0), (float)(Converter::metersToPixels(objSize.y) / 2.0)});
     shape->setPosition(sf::Vector2f(Converter::metersToPixels(objPosition.x), Converter::metersToPixels(objPosition.y)));
