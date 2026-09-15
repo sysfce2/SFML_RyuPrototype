@@ -145,6 +145,7 @@ static std::map<Textures::CharacterID, Textures::SpritesheetID>
 
 class AnimationManager;
 
+// TODO: how to avoid multiple inheritance at all ?
 class CharacterBase : public SceneNode, public Subject, public Observer, public ICharacter {
 
   public:

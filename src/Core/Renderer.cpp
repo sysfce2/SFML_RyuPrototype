@@ -108,6 +108,7 @@ void Renderer::buildScene() {
         std::move(box));
 
     auto player = mEventManager.requestPlayer();
+    //mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChild(static_cast<SceneNode::Ptr>(player));
 }
 
 void Renderer::draw()
