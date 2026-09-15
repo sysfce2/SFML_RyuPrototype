@@ -178,7 +178,7 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
         });
         
         // Attach to the appropriate layer and get the shared_ptr
-        auto nodeShared = mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(spriteNode));
+        auto nodeShared = mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChildReturningPtr(std::move(spriteNode));
         
         // Store the mapping from bodyId to the sprite node for updates
         mPhysicsBodyToNode[event.bodyId] = nodeShared;

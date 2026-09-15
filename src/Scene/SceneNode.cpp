@@ -26,7 +26,7 @@ SceneNode::attachChild(Ptr child)
 }
 
 SceneNode::Ptr
-SceneNode::attachChild(std::unique_ptr<SceneNode> child)
+SceneNode::attachChildReturningPtr(std::unique_ptr<SceneNode> child)
 {
     Ptr childPtr = std::move(child);
     childPtr->mParent = this;
