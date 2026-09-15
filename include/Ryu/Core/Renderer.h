@@ -44,6 +44,7 @@ private:
     SceneAssetsManager mSceneAssetsManager;
     sf::FloatRect mWorldBounds;
     sf::Vector2f mSpawnPosition;
+    // TODO: just tempoprarly location to store a Box-ptr (just an example)
     Box* mPushBox;
     CommandQueue mActiveCommands;
     EventManager& mEventManager;

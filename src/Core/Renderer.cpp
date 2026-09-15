@@ -30,6 +30,7 @@ Renderer::Renderer(sf::RenderWindow& window, EventManager& eventManager, const s
      // baseTextureManager.load(Textures::PhysicAssetsID::Empty, "assets/scenes/99_dummy/box_empty.png");
      loadTextures();
      buildScene();
+     // TODO: more generic scenobject - creation
      createSceneFromConfiguration(ELevel::Level2);
 
      // Subscribe to physics events
@@ -85,6 +86,8 @@ void Renderer::buildScene() {
         mSceneGraph.attachChild(std::move(layer));
     }
     
+    // TODO: background is also scene-dependent
+    // move to where all the sceneobjects of a scene will be located
     sf::Texture &textureBg =
         mSceneAssetsManager.getResource(Textures::SceneID::BGMountain);
     sf::IntRect textureRect(sf::Vector2i(0, 0), sf::Vector2i(static_cast<int>(mWorldBounds.size.x), static_cast<int>(mWorldBounds.size.y)));
@@ -179,6 +182,7 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
         
         // Attach to the appropriate layer and get the shared_ptr
         // For physics objects created via events, use Ground1 layer by default
+        // TODO: check if this is valid for all cases, probably not
         auto nodeShared = mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChildReturningPtr(std::move(spriteNode));
         
         // Store the mapping from bodyId to the sprite node for updates

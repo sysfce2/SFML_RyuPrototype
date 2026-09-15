@@ -70,8 +70,8 @@ struct SceneObjectPhysicsParameters
     Textures::SceneID mTextureId;
     EntityType mEntityType;
     b2BodyId mPhysicsBodyId;
+    // TODO: use existing enum for more clarity
     int mLayer; // Layer for scenegraph rendering (0=Background, 1=Ground1, 2=Foreground)
-    //std::unique_ptr<b2Body> mPhysicsBody;
 };
 
 // Custom hash function for b2BodyId
