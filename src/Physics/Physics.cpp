@@ -513,7 +513,7 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     event.bodyId = bodyId;
     event.shapeId = shapeId;
     event.name = sceneObject.mName;
-    //TODO: convert correctly
+    event.position = objPosition;
     event.size = sceneObject.mSize;
     event.isDynamic = (sceneObject.mType == b2_dynamicBody);
     event.textureId = sceneObject.mTextureId;  // Pass texture ID for rendering

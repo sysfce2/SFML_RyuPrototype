@@ -9,7 +9,8 @@ struct PhysicsObjectCreatedEvent {
     b2BodyId bodyId;
     b2ShapeId shapeId;
     std::string name;
-    b2Vec2 size; // in m
+    b2Vec2 position; // in meters
+    b2Vec2 size; // in meters
     bool isDynamic;
     std::variant<Textures::PhysicAssetsID, Textures::SceneID, Textures::SpritesheetID> textureId;  // Optional: Pass texture ID for rendering
 };

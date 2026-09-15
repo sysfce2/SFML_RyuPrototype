@@ -155,10 +155,16 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
     if (texture)
     {
         auto spriteNode = std::make_unique<SpriteNode>(*texture);
-        // PhysicsObjectCreatedEvent doesn't have position/rotation, use default values
-        // These will be updated by the physics system
-        spriteNode->setPosition(sf::Vector2f(0, 0));
-        spriteNode->setRotation(sf::degrees(0.f));
+        // Set origin to center
+        sf::Vector2f textureSize(static_cast<float>(texture->getSize().x), 
+                                static_cast<float>(texture->getSize().y));
+        spriteNode->setOrigin(textureSize / 2.0f);
+        
+        // Convert position from meters (Box2D) to pixels (SFML)
+        spriteNode->setPosition(sf::Vector2f{
+            Converter::metersToPixels(event.position.x),
+            Converter::metersToPixels(event.position.y)
+        });
         
         // Attach to the appropriate layer
         mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(std::move(spriteNode));
