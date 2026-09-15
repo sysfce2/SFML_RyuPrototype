@@ -61,7 +61,7 @@ struct SceneObjectPhysicsParameters
     SceneObjectPhysicsParameters(
         b2Vec2 position, b2Vec2 size,
         std::string name, b2BodyType type, /* = b2_staticBody,*/
-        Textures::SceneID textureId, /* = Textures::SceneID::Grass,*/ EntityType entityType); /*=EntityType::None);*/
+        Textures::SceneID textureId, /* = Textures::SceneID::Grass,*/ EntityType entityType, int layer = 1); /*=EntityType::None);*/
 
     b2Vec2 mPosition;
     b2Vec2 mSize;
@@ -70,6 +70,7 @@ struct SceneObjectPhysicsParameters
     Textures::SceneID mTextureId;
     EntityType mEntityType;
     b2BodyId mPhysicsBodyId;
+    int mLayer; // Layer for scenegraph rendering (0=Background, 1=Ground1, 2=Foreground)
     //std::unique_ptr<b2Body> mPhysicsBody;
 };
 

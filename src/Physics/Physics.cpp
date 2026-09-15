@@ -55,6 +55,7 @@ SceneObjectPhysicsParameters::SceneObjectPhysicsParameters() :
     mType(b2BodyType::b2_staticBody),
     mTextureId(Textures::SceneID::Unknown),
     mEntityType(EntityType::None),
+    mLayer(1),
     mPhysicsBodyId(b2_nullBodyId) {}
     // polygonShape.SetAsBox(0.5,0.9);
 
@@ -62,13 +63,14 @@ SceneObjectPhysicsParameters::SceneObjectPhysicsParameters() :
 SceneObjectPhysicsParameters::SceneObjectPhysicsParameters(
         b2Vec2 positionInPixel, b2Vec2 sizeInPixel,
         std::string name, b2BodyType type,
-        Textures::SceneID textureId, EntityType entityType) :
+        Textures::SceneID textureId, EntityType entityType, int layer) :
     mPosition(Converter::pixelsToMeters(positionInPixel.x), Converter::pixelsToMeters(positionInPixel.y)),
     mSize(Converter::pixelsToMeters(sizeInPixel.x), Converter::pixelsToMeters(sizeInPixel.y)),
     mName(name),
     mType(type),
     mTextureId(textureId),
     mEntityType(entityType),
+    mLayer(layer),
     mPhysicsBodyId(b2_nullBodyId)
 {}
 

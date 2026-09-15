@@ -178,6 +178,7 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
         });
         
         // Attach to the appropriate layer and get the shared_ptr
+        // For physics objects created via events, use Ground1 layer by default
         auto nodeShared = mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChildReturningPtr(std::move(spriteNode));
         
         // Store the mapping from bodyId to the sprite node for updates
@@ -243,14 +244,7 @@ void Renderer::createSceneFromConfiguration(ELevel level)
             Converter::metersToPixels(obj.mPosition.y)
         });
         
-        // Assign to layer based on object type
-        if (obj.mType == b2_dynamicBody)
-        {
-            mSceneLayers[static_cast<size_t>(Layer::Foreground)]->attachChild(std::move(spriteNode));
-        }
-        else
-        {
-            mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChild(std::move(spriteNode));
-        }
+        // Use the layer specified in the scene object configuration
+        mSceneLayers[static_cast<size_t>(obj.mLayer)]->attachChild(std::move(spriteNode));
     }
 }
