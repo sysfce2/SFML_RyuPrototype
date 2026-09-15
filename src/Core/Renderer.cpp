@@ -101,7 +101,7 @@ void Renderer::buildScene() {
     mPushBox = box.get();
     mPushBox->setPosition(sf::Vector2f(760.f,80.f));
     
-    mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChild(
+    mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChild(
         std::move(box));
 
     auto player = mEventManager.requestPlayer();
@@ -178,7 +178,7 @@ Renderer::onPhysicsObjectCreated(const PhysicsObjectCreatedEvent& event)
         });
         
         // Attach to the appropriate layer and get the shared_ptr
-        auto nodeShared = mSceneLayers[static_cast<unsigned>(Layer::Foreground)]->attachChildReturningPtr(std::move(spriteNode));
+        auto nodeShared = mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChildReturningPtr(std::move(spriteNode));
         
         // Store the mapping from bodyId to the sprite node for updates
         mPhysicsBodyToNode[event.bodyId] = nodeShared;

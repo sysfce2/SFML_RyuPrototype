@@ -426,8 +426,14 @@ Physics::createPhysicsBody(SceneObjectPhysicsParameters& sceneObject, int& i)
     // shapeDef.friction = 0.98; // deprecated since Box2D 3.1
     
     b2Filter filter = b2DefaultFilter();
-    filter.categoryBits = CollisionCategories::STATIC;  // This is a static object
-    filter.maskBits = CollisionCategories::DYNAMIC | CollisionCategories::PLAYER;  // Collide with dynamic and player
+    // Set collision categories based on body type
+    if (sceneObject.mType == b2_dynamicBody) {
+        filter.categoryBits = CollisionCategories::DYNAMIC;  // Dynamic object
+        filter.maskBits = CollisionCategories::STATIC | CollisionCategories::DYNAMIC | CollisionCategories::PLAYER;
+    } else {
+        filter.categoryBits = CollisionCategories::STATIC;  // Static object
+        filter.maskBits = CollisionCategories::STATIC | CollisionCategories::DYNAMIC | CollisionCategories::PLAYER;
+    }
     filter.groupIndex = 0;
     
     shapeDef.filter = filter;
