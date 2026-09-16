@@ -38,14 +38,14 @@ class Game : public Observer
     void teleportMainCharacter(float x, float y);
 
   private:
-	  sf::RenderWindow mWindow;
-	  std::unique_ptr<PlayerController> mPlayerController;
-    EventManager mEventManager;
-    RyuAnimator::Editor mAnimator;
-	  bool mIsPaused;
-    RyuDebug::DebugWidgets mDebugWidgets;
-	  World mWorld;
-	  bool mDebugWidgetsActive;
+        sf::RenderWindow mWindow;
+        EventManager mEventManager;
+        std::unique_ptr<PlayerController> mPlayerController;
+        RyuAnimator::Editor mAnimator;
+        bool mIsPaused;
+        RyuDebug::DebugWidgets mDebugWidgets;
+        World mWorld;
+        bool mDebugWidgetsActive;
 	//ryu::AssetManager<sf::Font,std::string> fontManager;
 };
 

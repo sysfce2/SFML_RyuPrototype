@@ -37,12 +37,12 @@ class SceneNode : public sf::Drawable,
     
     protected:
         virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+        virtual void updateCurrent(sf::Time dt);
     
     private:
         void draw(sf::RenderTarget& target, sf::RenderStates states) const /*TODO: for a test : remove comment  !final*/;
         void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
         
-        virtual void updateCurrent(sf::Time dt);
         void updateChildren(sf::Time dt);
 
     private:

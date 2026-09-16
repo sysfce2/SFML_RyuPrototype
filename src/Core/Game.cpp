@@ -33,8 +33,8 @@ const sf::Time TimePerFrame = sf::milliseconds(17); // seconds(1.f / 60.f);
 Game::Game()
 :Observer("Game")
 ,mWindow(sf::VideoMode({1200, 800}), PROJECT_NAME.data())
-,mPlayerController(std::make_unique<PlayerController>())
 ,mEventManager()
+,mPlayerController(std::make_unique<PlayerController>(mEventManager))
 ,mAnimator(RyuAnimator::Editor())
 ,mIsPaused(false)
 ,mDebugWidgets(mPlayerController->getPlayableCharacter()) // TODO: player from 1691421player controller
@@ -42,7 +42,7 @@ Game::Game()
 ,mDebugWidgetsActive(false)
 {
 	addObservers();
-	mEventManager.registerPlayer(mPlayerController->getPlayableCharacter());
+	//mEventManager.registerPlayer(mPlayerController->getPlayableCharacter());
 	// 1. when everthing is loaded and initialized
 	// 2. in main.cpp: call run() the game
 }

@@ -5,6 +5,7 @@
 #include <memory>
 #include <SFML/Window/Keyboard.hpp>
 #include <Ryu/Control/CharacterEnums.h>
+#include <Ryu/Core/EventManager.h>
 #include <Ryu/Events/Observer.h>
 #include <Ryu/Events/Subject.h>
 #include <Ryu/Events/EventEnums.h>
@@ -14,6 +15,7 @@ class CommandQueue;
 class Command;
 class CharacterIchi;
 class Time;
+class EventManager;
 
 using RyuEvent = Ryu::EEvent;
 
@@ -26,7 +28,7 @@ class PlayerController : public Observer, public Subject /// notifier and observ
     public:
 
         //PlayerController(std::unique_ptr<CharacterIchi> const &character);
-        PlayerController();
+        PlayerController(EventManager& eventManager);
 
         void assignKey(EInput action, sf::Keyboard::Key key);
         sf::Keyboard::Key getAssignedKey(EInput action) const;
@@ -51,5 +53,6 @@ class PlayerController : public Observer, public Subject /// notifier and observ
         std::map<EInput, Command> mActionBindingRelease;
 
         std::shared_ptr<CharacterIchi> playerCharacter;
+        EventManager& mEventManager;
 
 };

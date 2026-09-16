@@ -4,6 +4,7 @@
 #include <Ryu/Events/EventEnums.h>
 
 //#include "aircarft.h"
+#include <Ryu/Core/EventManager.h>
 #include <Ryu/Core/Category.h>
 #include <Ryu/Core/Command.h>
 #include <Ryu/Core/CommandQueue.h>
@@ -53,15 +54,17 @@ std::function<void(SceneNode&, sf::Time)> derivedEInput(Function fn)
     };
 }
 
-PlayerController::PlayerController()
+PlayerController::PlayerController(EventManager& eventManager)
 : Observer("Playercontroller")
 , mKeyBindingPress({})
 , mActionBindingPress({})
 , mKeyBindingRelease({})
 , mActionBindingRelease({})
 , playerCharacter(std::make_shared<CharacterIchi>(ECharacterState::Idle, CHAR_START_POSITION))
+, mEventManager(eventManager)
 {
     initializeBindings();
+    mEventManager.registerPlayer(playerCharacter);
 }
 
 const std::shared_ptr<CharacterIchi>

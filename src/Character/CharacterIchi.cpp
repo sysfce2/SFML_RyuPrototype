@@ -26,8 +26,12 @@ CharacterIchi::CharacterIchi(ECharacterState startState,
     : CharacterBase(startState, position), ichiTextureManager()
 {
     loadTextures();
-    // mCharacterAnimation.setPosition({100.f,50.f});
+    //mCharacterAnimation.setPosition({100.f,50.f});
     mCharacterState->enter(*this);
+
+    // TMP set
+    mCharacterAnimation.getSprite().setTexture(ichiTextureManager.getResource(Textures::SpritesheetID::Ichi80x96));
+    mCharacterAnimation.getSprite().setTextureRect(sf::IntRect({0, 0}, {80, 96}));
 }
 
 void
@@ -86,6 +90,12 @@ CharacterIchi::loadTextures()
     }
     // Outfit combat
     // ichiTextureManager.load(Textures::CharacterID::IchiKatanaWalk,"assets/spritesheets/ichi/02_sheet_ichi_katana_walk.png");
+    // DEBUG: Check if texture is loaded
+    auto& tex = ichiTextureManager.getResource(Textures::SpritesheetID::Ichi80x96);
+    if (tex.getSize().x == 0 || tex.getSize().y == 0) {
+        std::cerr << "ERROR: Texture Ichi80x96 not loaded properly!\n";
+        std::cerr << "Path: " << spritesheePaths[Textures::SpritesheetID::Ichi80x96] << "\n";
+    }
 }
 
 unsigned int
@@ -143,7 +153,7 @@ CharacterIchi::drawCurrent(sf::RenderTarget &target,
                            sf::RenderStates states) const
 {
     // draw physicsshape (visible in debug-mode)
-    CharacterBase::drawCurrent(target, states);
+    // CharacterBase::drawCurrent(target, states);
     // draw PlayerSprite
     target.draw(mCharacterAnimation);
 }
@@ -166,6 +176,7 @@ void
 CharacterIchi::update(sf::Time deltaTime)
 {
 
+    // TODO:never called ?
     CharacterBase::update(deltaTime);
 
     checkTeleportContact(CharacterBase::checkContactObjects());

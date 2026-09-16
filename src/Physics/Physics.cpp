@@ -355,7 +355,7 @@ Physics::initCharacterPhysics(ICharacter& character, bool inDuckMode)
     //shape->setTexture(
     //    &baseTextureManager.getResource(Textures::PhysicAssetsID::Empty));
 
-    b2Body_SetUserData(charPhysics.mBodyId, &shape);
+    b2Body_SetUserData(charPhysics.mBodyId, shape);
     //b2ShapeId shapeId = b2Body_AddShape(charPhysics.mBodyId, )
     
     fmt::print("Init character at position {},{}\n",

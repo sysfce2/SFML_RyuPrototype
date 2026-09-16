@@ -250,6 +250,7 @@ CharacterBase::onNotify(const SceneNode &entity, Ryu::EEvent event)
 sf::Shape*
 CharacterBase::getShapeFromCharPhysicsBody(b2BodyId physicsBodyId) const
 {
+    fmt::print("BodyId: {}", physicsBodyId.index1);
     auto data = b2Body_GetUserData(physicsBodyId);
     sf::Shape* shape = reinterpret_cast<sf::RectangleShape *>(data);
 
@@ -268,7 +269,8 @@ CharacterBase::drawCurrent(sf::RenderTarget &target, sf::RenderStates) const
     // draw physics outline
     if (B2_IS_NON_NULL(mBodyId))
     {
-        target.draw(*(getShapeFromCharPhysicsBody(mBodyId)));
+        fmt::print("Drawing is delegated to the ChildClass of CharacterBase.\n");
+        //target.draw(*(getShapeFromCharPhysicsBody(mBodyId)));
     }
 }
 
@@ -360,8 +362,17 @@ CharacterBase::createRaycasts()
 }
 
 void
+CharacterBase::updateCurrent(sf::Time deltaTime)
+{
+    fmt::print("Updatecurrent\n");
+    //update(deltaTime);
+}
+
+
+void
 CharacterBase::update(sf::Time deltaTime)
 {
+    fmt::print("UpdateCharacterBase\n");
     // std::cout //<< " x(pBody): " <<
     // Converter::metersToPixels(mBody->GetPosition().x)
     //<< " y(pBody): " << Converter::metersToPixels(mBody->GetPosition().y) <<
@@ -584,7 +595,14 @@ CharacterBase::setTexture(
     AssetManager<sf::Texture, Textures::SpritesheetID> &textureManager,
     Textures::SpritesheetID id)
 {
-    mCharacterAnimation.setTexture(textureManager.getResource(id));
+    try{
+        fmt::print("Set texture with id {} \n", (int)id);
+        mCharacterAnimation.setTexture(textureManager.getResource(id));
+    }
+    catch(...)
+    {
+        fmt::print("ERROR: texture not loaded yet with id {} \n", (int)id);
+    }
 }
 
 void

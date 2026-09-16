@@ -6,7 +6,7 @@
 #include "Ryu/Scene/Entity.h"
 #include "Ryu/Scene/SceneEnums.h"
 #include "Ryu/Core/EventManager.h"
-
+#include "Ryu/Character/CharacterIchi.h"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
@@ -108,7 +108,13 @@ void Renderer::buildScene() {
         std::move(box));
 
     auto player = mEventManager.requestPlayer();
-    //mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChild(static_cast<SceneNode::Ptr>(player));
+
+    if (player) {
+    mSceneLayers[static_cast<size_t>(Layer::Ground1)]->attachChild(
+        std::static_pointer_cast<SceneNode>(player));
+    } else {
+        std::cerr << "WARNING: Player is null in Renderer::buildScene()" << std::endl;
+    }
 }
 
 void Renderer::draw()
